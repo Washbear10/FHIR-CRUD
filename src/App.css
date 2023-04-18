@@ -1,0 +1,4 @@
+body {
+	background: radial-gradient(ellipse at top, #2d6db3, #171d55);
+	background-attachment: fixed; /*edit*/
+}

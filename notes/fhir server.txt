@@ -1,0 +1,19 @@
+https://fhiruser:change-password@h96-31.net2.misit-augsburg.de/fhir-server/api/v4/
+https://git.rz.uni-augsburg.de/freijoha/ibm-fhir-server
+
+https://h96-31.net2.misit-augsburg.de/fhir-server/api/v4/
+Username: fhiruser
+Password: change-password
+
+
+
+
+
+
+Notes:
+https://ontoserver.csiro.au/site 
+https://www.medplum.com/docs/fhir-basics
+https://medvertical.com
+commure
+React Table
+syncfusion

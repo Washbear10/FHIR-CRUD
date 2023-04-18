@@ -1,0 +1,38 @@
+Validate each attribute before saving
+      either leave empty strings or remove attribute alltogether, but NO NULL!
+test behaviour of sending vs getting time (regarding  offset)
+Implement search error handling (resource has been edited/deleted in the meantime)
+when switching date tabs and user makes no change, it does not yet register a change in date, only on "onChange"
+add descriptive labels/tooltips to fields
+creat login functionality > avoid hardcoded credentials
+
+
+
+Resume :
+      resetting reference reset selectedtype
+
+Done, further test when time:
+      check if all elements are represented with corresponding cardinality
+      birthdate switching date when chaning year in partial date
+      test passing internalReactID to classes, and only set in constructor if not in arguments
+
+
+
+
+Backlog:
+      display name text if property existing
+      add tooltips to every button/ui
+      check if "shouldPrefixautoFocus" is still needed (aswell as suffix and given)
+      bundle all multi-item inputs into new reusable component (names, prefix, coding ....) with their placeholder
+      test better solution for empty inputs instead of placeholders (maybe pass newly Constructed instances => problem was with updating the reactID)
+      rework approach for input dialog: better: just fill with resource, don't update resource every time ?
+      implement Required field logic
+      implement freesolo datetimeinputs
+      set all inputs to empty strings instead of null > prevents defaulting to allowing all inputs and prevents mui errors in console
+      fix memo / callbacks  for better performance within an attributeblock.
+      go through all elements and read through descriptions and conditions. See if implementable easily
+      reinvent autofocus
+      Read about bindings and value sets (f.e. marital status)
+      save token as cookie
+      better performance rendering, check out memo again
+      allow empty values, remove non-value inputs
