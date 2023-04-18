@@ -258,8 +258,9 @@ const Home = () => {
 			/>
 			<Button
 				onClick={async () => {
-					let r = await searchReference("Patient", "name:contains=");
-					console.log(r);
+					/* let r = await searchReference("Patient", "name:contains=");
+					console.log(r); */
+					alert(process.env.REACT_APP_FHIR_BASE);
 				}}
 			>
 				Test Error

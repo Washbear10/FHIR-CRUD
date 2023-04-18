@@ -15,7 +15,7 @@ export default async function queryFHIR(resources, limit) {
 			searchParams.append("_count", limit);
 		}
 		for (const resource of [Patient]) {
-			const searchUrl = `http://${window.FHIR_BASE}/fhir/R4/${resource.name}`;
+			const searchUrl = `http://${process.env.REACT_APP_FHIR_BASE}/fhir/R4/${resource.name}`;
 			const headers = new Headers();
 			var errorMessages;
 			headers.set("Authorization", "Bearer " + token);
@@ -61,7 +61,7 @@ export async function createFHIRResource(resourceType, newResource) {
 				"Failed to update FHIR resource because of token error"
 			);
 		}
-		const resourceURL = `http://${window.FHIR_BASE}/fhir/R4/${resourceType}`;
+		const resourceURL = `http://${process.env.REACT_APP_FHIR_BASE}/fhir/R4/${resourceType}`;
 		const headers = new Headers();
 		headers.set("Authorization", "Bearer " + token);
 		headers.set("Content-Type", "application/fhir+json");
@@ -110,7 +110,7 @@ export async function updateFHIRResource(
 				"Failed to update FHIR resource because of token error"
 			);
 		}
-		const resourceURL = `http://${window.FHIR_BASE}/fhir/R4/${resourceType}/${oldResource.id}`;
+		const resourceURL = `http://${process.env.REACT_APP_FHIR_BASE}/fhir/R4/${resourceType}/${oldResource.id}`;
 		const headers = new Headers();
 		headers.set("Authorization", "Bearer " + token);
 		headers.set("Content-Type", "application/fhir+json");
@@ -183,7 +183,7 @@ export const deleteResources = async (ids, resourceType) => {
 		}
 		const results = await Promise.all(
 			ids.map(async (id) => {
-				const searchUrl = `http://${window.FHIR_BASE}/fhir/R4/${resourceType}/${id}`;
+				const searchUrl = `http://${process.env.REACT_APP_FHIR_BASE}/fhir/R4/${resourceType}/${id}`;
 				const headers = new Headers();
 				headers.set("Authorization", "Bearer " + token);
 				headers.set("Content-Type", "application/fhir+json");
@@ -252,8 +252,8 @@ export const getToken = () => {
 	const urlParams = new URLSearchParams();
 	urlParams.append("grant_type", "client_credentials");
 	urlParams.append("client_id", "5b582c95-65f8-46d1-9ce4-0591846140b5");
-	urlParams.append("client_secret", window.CLIENT_SECRET);
-	return fetch(`http://${window.FHIR_BASE}/oauth2/token`, {
+	urlParams.append("client_secret", process.env.REACT_APP_CLIENT_SECRET);
+	return fetch(`http://${process.env.REACT_APP_FHIR_BASE}/oauth2/token`, {
 		method: "POST",
 		headers: tokenHeaders,
 		body: urlParams,
@@ -308,8 +308,8 @@ export async function searchReference(resourcetype, paramsAndModifiers) {
 
 	// This functionality will be added if the IBM server supports the _filter option to allow logical OR on multiple element types, not only on the values
 	// of a single element Type.
-	//const searchUrl = `http://${window.FHIR_BASE}/fhir/R4/${resourcetype}?${paramsAndModifiers}`;
-	const searchUrl = `http://${window.FHIR_BASE}/fhir/R4/${resourcetype}?`;
+	//const searchUrl = `http://${process.env.REACT_APP_FHIR_BASE}/fhir/R4/${resourcetype}?${paramsAndModifiers}`;
+	const searchUrl = `http://${process.env.REACT_APP_FHIR_BASE}/fhir/R4/${resourcetype}?`;
 
 	const headers = new Headers();
 	headers.set("Authorization", "Bearer " + token);
