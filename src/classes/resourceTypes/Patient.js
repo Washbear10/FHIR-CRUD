@@ -15,6 +15,9 @@ import Reference from "../specialTypes/Reference";
 import Link from "../dataTypes/Link";
 import IdentifierDisplay from "../../components/elementDataGridDisplays.js/IdentifierDisplay";
 import HumanNameDisplay from "../../components/elementDataGridDisplays.js/HumanNameDisplay";
+import ContactPointDisplay from "../../components/elementDataGridDisplays.js/ContactPointDisplay";
+import { Stack } from "@mui/system";
+import ExpandableCell from "../../utilities/renderCellExpand";
 
 export class Patient {
 	[immerable] = true;
@@ -79,6 +82,8 @@ export class Patient {
 		this.link = link
 			? link.map((singleLink) => new Link({ ...singleLink }))
 			: [new Link({})];
+
+		this.internalReactExpanded = false;
 	}
 
 	setDeceasedBoolean(newValue) {
@@ -98,7 +103,8 @@ export class Patient {
 		this.multipleBirthBoolean = null;
 	}
 
-	static getAttributeDisplay(propertyName, propertyValue) {
+	static getAttributeDisplay(propertyName, propertyValue, rowExpanded) {
+		console.log(rowExpanded);
 		if (
 			[
 				"id",
@@ -112,26 +118,70 @@ export class Patient {
 			].includes(propertyName)
 		) {
 			return (
-				<Typography>{propertyValue ? String(propertyValue) : ""}</Typography>
+				<ExpandableCell
+					value={propertyValue ? String(propertyValue) : ""}
+					lengthThreshhold={50}
+					rowExpanded={rowExpanded}
+				/>
 			);
 		} else {
 			switch (propertyName) {
 				case "identifier":
-					return <IdentifierDisplay identifier={propertyValue} />;
+					return (
+						<Stack>
+							{propertyValue.map((singleIdentifier) => (
+								<IdentifierDisplay identifier={singleIdentifier} />
+							))}
+						</Stack>
+					);
 				case "name":
-					return <HumanNameDisplay humanName={propertyValue} />;
+					let namesString = propertyValue
+						.map((name) => name.calcDisplayString())
+						.join("\n");
+					console.log(namesString);
+					return (
+						<ExpandableCell
+							value={namesString || ""}
+							lengthThreshhold={100}
+							rowExpanded={rowExpanded}
+						/>
+					);
+
+				case "telecom" /* return (
+						<Stack sx={{ maxWidth: "100%", width: "100%" }}>
+							{propertyValue.map((singleTelecom) => (
+								<ContactPointDisplay contactPoint={singleTelecom} />
+							))}
+						</Stack>
+					); */: {
+					let s = propertyValue
+						.map((singleTelecom) => singleTelecom.value)
+						.join(";abc");
+					return s;
+				}
+				case "telecom":
+					return (
+						<Stack>
+							{propertyValue.map((singleTelecom) => (
+								<ContactPointDisplay contactPoint={singleTelecom} />
+							))}
+						</Stack>
+					);
+
 				default:
-					return <Box>ahlo</Box>;
+					return (
+						<Box>
+							<small>(no display)</small>
+						</Box>
+					);
 			}
 		}
 	}
 
 	toFHIRJson() {
 		let o = JSON.parse(JSON.stringify(this));
-		//removeInternalReactID(o);
 		clearObjectFromEmptyValues(o);
 		o.resourceType = "Patient";
 		return JSON.stringify(o);
-		//return JSON.stringify({ resourceType: "Patient", ...this });
 	}
 }

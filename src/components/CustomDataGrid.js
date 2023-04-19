@@ -36,12 +36,22 @@ export default function CustomDataGrid({
 	const [selectedResources, setSelectedResources] = useImmer([]);
 	const [backDropOpen, setBackDropOpen] = useState(false);
 
+	const [rerender, setRerender] = useState(false);
+
+	const triggerRerender = () => {
+		setRerender((prev) => !prev);
+	};
+
 	useEffect(() => {
 		if (originalResource !== null) {
 			setOpen(true);
 			setBackDropOpen(false);
 		}
 	}, [originalResource]);
+
+	useEffect(() => {
+		console.log(rows);
+	}, []);
 
 	const handleSaveUpdates = async (editedResource) => {
 		let updateResult = await saveUpdates(
@@ -66,6 +76,14 @@ export default function CustomDataGrid({
 		updateRows([...rows, newInstance], resourceType);
 		setOriginalResource(newInstance);
 		setOpen(true);
+	};
+
+	const handleRowClick = (params, e, d) => {
+		let i = rows.indexOf(params.row);
+
+		rows[i].internalReactExpanded = !rows[i].internalReactExpanded;
+		triggerRerender();
+		//updateRows([...rows, newInstance], resourceType);
 	};
 
 	const handleCellClick = (params, event, details) => {
@@ -180,6 +198,7 @@ export default function CustomDataGrid({
 				selectionModel={selectedResources}
 				experimentalFeatures={{ newEditingApi: true }}
 				onCellClick={handleCellClick}
+				onRowClick={handleRowClick}
 				components={{
 					Footer: MyFooter,
 					Header: MyHeader,

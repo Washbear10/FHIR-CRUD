@@ -45,7 +45,9 @@ import { Snackbar, Alert } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { Dialog, DialogTitle, DialogActions } from "@mui/material";
 import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog";
+import ExpandableCell from "../../utilities/renderCellExpand";
 import { constructList } from "../../utilities/helpConstructInstances";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 
 const Home = () => {
 	// state for Search Component
@@ -66,7 +68,6 @@ const Home = () => {
 	const [snackbarTitle, setSnackbarTitle] = useState("");
 
 	const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
-	const [confirmed, setConfirmed] = useState(false);
 
 	const [deleteCandidates, setDeleteCandidates] = useState([]);
 	const [deleteCandidatType, setDeleteCandidatType] = useState(null);
@@ -265,6 +266,7 @@ const Home = () => {
 			>
 				Test Error
 			</Button>
+			<Box>{"test1 test2\ntest3"}</Box>
 			<SearchForm
 				onSubmit={handleSearch}
 				resourceList={resourceList}
@@ -292,29 +294,50 @@ const Home = () => {
 						width: property == "id" || property == "name" ? 300 : 150,
 						editable: false,
 						/* renderCell: (params) =>
-							getRenderCell(resourceType, property, params), */
-						renderCell: (params) =>
 							constructList[resourceType].getAttributeDisplay(
 								property,
 								params.value
+							), */
+						renderCell: (params) =>
+							constructList[resourceType].getAttributeDisplay(
+								property,
+								params.value,
+								params.row.internalReactExpanded
 							),
 					};
+
 					return columnDefinition;
 				});
-				columns.unshift({
-					field: "editButton",
-					headerName: "",
-					editable: false,
-					sortable: false,
-					flex: 1,
-					disableColumnMenu: true,
-					align: "center",
-					renderCell: (row) => (
-						<IconButton>
-							<EditIcon color="primary" />
-						</IconButton>
-					),
-				});
+				columns.unshift(
+					{
+						field: "editButton",
+						headerName: "",
+						editable: false,
+						sortable: false,
+						flex: 1,
+						disableColumnMenu: true,
+						align: "center",
+						renderCell: (row) => (
+							<IconButton>
+								<EditIcon color="primary" />
+							</IconButton>
+						),
+					},
+					{
+						field: "expandButton",
+						headerName: "",
+						editable: false,
+						sortable: false,
+						flex: 1,
+						disableColumnMenu: true,
+						align: "center",
+						renderCell: (row) => (
+							<IconButton>
+								<KeyboardArrowDownIcon color="primary" />
+							</IconButton>
+						),
+					}
+				);
 
 				return (
 					<CustomDataGrid

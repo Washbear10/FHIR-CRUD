@@ -4,16 +4,10 @@ import { Stack } from "@mui/system";
 import { Typography } from "@mui/material";
 const IdentifierDisplay = ({ identifier }) => {
 	return (
-		<Stack>
-			{identifier.map((singleIdentifier) => (
-				<Typography>
-					{singleIdentifier.system ? (
-						<i>{singleIdentifier.system + ": "}</i>
-					) : null}
-					{singleIdentifier.value ? singleIdentifier.value : null}
-				</Typography>
-			))}
-		</Stack>
+		<Typography>
+			{identifier.system ? <i>{identifier.system + ": "}</i> : null}
+			{identifier.value ? identifier.value : null}
+		</Typography>
 	);
 };
 

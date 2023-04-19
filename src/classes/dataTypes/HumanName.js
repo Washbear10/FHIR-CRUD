@@ -25,30 +25,14 @@ export class HumanName {
 		this.internalReactID = internalReactID ? internalReactID : uuidv4();
 	}
 
-	#computeDisplay() {
-		var s = "";
-		if (this.prefix) {
-			var test = this.prefix.reduce((acc, curr) => acc + " " + curr, "");
-			s = s + test + " ";
-		}
-		if (this.given) {
-			var test = this.given.reduce((acc, curr) => acc + " " + curr, "");
-			s = s + test + " ";
-		}
-		if (this.family) {
-			s = s + this.family + " ";
-		}
-		if (this.suffix) {
-			var test = this.suffix.reduce((acc, curr) => acc + " " + curr, "");
-			s = s + test + " ";
-		}
-
-		s = s.trim();
+	calcDisplayString = () => {
+		let s = "";
+		this.prefix.forEach((pf) => {
+			s += pf + " ";
+		});
+		if (this.family) s += this.family;
+		if (this.given) if (this.family) s += ", ";
+		s += this.given.reduce((acc, curr) => acc + " " + curr, "");
 		return s;
-	}
-
-	getRenderComponent() {
-		const display = this.#computeDisplay();
-		return <Box>{display}</Box>;
-	}
+	};
 }
