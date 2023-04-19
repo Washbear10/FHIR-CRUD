@@ -90,7 +90,10 @@ const ReferenceInput = ({ reference, changeReference, referenceOptions }) => {
 			changeReference(newRef, reference);
 		} else {
 			setSelectedValue("");
-			changeReference(new Reference({}), reference);
+			changeReference(
+				new Reference({ internalReactID: reference.internalReactID }),
+				reference
+			);
 		}
 	};
 
@@ -110,6 +113,7 @@ const ReferenceInput = ({ reference, changeReference, referenceOptions }) => {
 				label="Resource type"
 				disabledCursor={Object.keys(referenceOptions).length <= 1}
 				disabled={Object.keys(referenceOptions).length <= 1}
+				disableClearable
 			/>
 			<CodeInput
 				v={selectedValue}

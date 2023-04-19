@@ -785,9 +785,10 @@ const PatientInput = ({ resource, modifyResource }) => {
 																					(singleName) => {
 																						s +=
 																							singleName.given.join(" ") +
-																							", " +
-																							singleName.family;
-																						s += " ;";
+																							+(singleName.family
+																								? ", " + singleName.family
+																								: "");
+																						s += ";";
 																					}
 																				);
 																			} else {

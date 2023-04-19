@@ -27,8 +27,10 @@ const LinkInput = ({ link, changeLink }) => {
 								let s = "";
 								if (jsonResource.name) {
 									jsonResource.name.forEach((singleName) => {
-										s += singleName.given.join(" ") + ", " + singleName.family;
-										s += " ;";
+										s +=
+											singleName.given.join(" ") +
+											+(singleName.family ? ", " + singleName.family : "");
+										s += ";";
 									});
 								} else {
 									s = "(Unnamed)";
@@ -43,8 +45,10 @@ const LinkInput = ({ link, changeLink }) => {
 								let s = "";
 								if (jsonResource.name) {
 									jsonResource.name.forEach((singleName) => {
-										s += singleName.given.join(" ") + ", " + singleName.family;
-										s += " ;";
+										s +=
+											singleName.given.join(" ") +
+											+(singleName.family ? ", " + singleName.family : "");
+										s += ";";
 									});
 								} else {
 									s = "(Unnamed)";

@@ -102,8 +102,6 @@ export class Patient {
 		return <Box>{display}</Box>;
 	}
 
-	#validate() {}
-
 	toFHIRJson() {
 		let o = JSON.parse(JSON.stringify(this));
 		//removeInternalReactID(o);

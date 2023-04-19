@@ -45,6 +45,7 @@ import { Snackbar, Alert } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { Dialog, DialogTitle, DialogActions } from "@mui/material";
 import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog";
+import { constructList } from "../../utilities/helpConstructInstances";
 
 const Home = () => {
 	// state for Search Component
@@ -281,54 +282,35 @@ const Home = () => {
 			) : null}
 			{Object.keys(results).map((resourceType) => {
 				let columns;
-				if (resourceType == "Patient") {
-					//let helperInstance = eval("new " + resourceType + "();");
-					let helperInstance = new Patient({});
-					const classProperties = Object.keys(helperInstance).filter(
-						(element) => element != "internalReactID"
-					);
-					columns = classProperties.map((property) => {
-						const columnDefinition = {
-							field: property,
-							headerName: property,
-							width: property == "id" || property == "name" ? 300 : 150,
-							editable: false,
-							renderCell: (params) =>
-								getRenderCell(resourceType, property, params),
-						};
-						return columnDefinition;
-					});
-					columns.unshift({
-						field: "editButton",
-						headerName: "",
+				let helperInstance = new constructList[resourceType]({});
+				const classProperties = Object.keys(helperInstance).filter(
+					(element) => element != "internalReactID"
+				);
+				columns = classProperties.map((property) => {
+					const columnDefinition = {
+						field: property,
+						headerName: property,
+						width: property == "id" || property == "name" ? 300 : 150,
 						editable: false,
-						sortable: false,
-						flex: 1,
-						disableColumnMenu: true,
-						align: "center",
-						renderCell: (row) => (
-							<IconButton>
-								<EditIcon color="primary" />
-							</IconButton>
-						),
-					});
-				} else {
-					alert("TEST2");
-
-					const elements = resourcesAttributes[resourceType];
-					columns = elements.map((element) => {
-						const colDef = {
-							field: element,
-							headerName: element,
-							width: element == "id" || element == "name" ? 300 : 100,
-							editable: false,
-							renderCell: (params) =>
-								getRenderCell(resourceType, element, params),
-						};
-
-						return colDef;
-					});
-				}
+						renderCell: (params) =>
+							getRenderCell(resourceType, property, params),
+					};
+					return columnDefinition;
+				});
+				columns.unshift({
+					field: "editButton",
+					headerName: "",
+					editable: false,
+					sortable: false,
+					flex: 1,
+					disableColumnMenu: true,
+					align: "center",
+					renderCell: (row) => (
+						<IconButton>
+							<EditIcon color="primary" />
+						</IconButton>
+					),
+				});
 
 				return (
 					<CustomDataGrid
