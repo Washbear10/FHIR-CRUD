@@ -4,25 +4,43 @@ import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-
+import { Stack } from "@mui/system";
+import { Divider } from "@mui/material";
+import { GridCell } from "@mui/x-data-grid";
 const ExpandableCell = ({ value, lengthThreshhold, rowExpanded }) => {
 	const [numLines, setNumLines] = React.useState(value.split("\n").length);
 	const [splitString, setSplitString] = React.useState(value.split("\n"));
 
-	return rowExpanded ? (
-		<>
-			{splitString.map((line) => {
-				return (
-					<>
-						{line}
-						<br />
-						<br />
-					</>
-				);
-			})}
-		</>
-	) : (
-		splitString[0]
+	return (
+		<Stack
+			spacing={1}
+			divider={
+				<Divider orientation="horizontal" flexItem variant="middle" light />
+			}
+			sx={{ width: "100%" }}
+		>
+			{rowExpanded ? (
+				splitString.map((line) => {
+					return (
+						<div
+							style={{
+								overflowWrap: "break-word",
+							}}
+						>
+							{line}
+						</div>
+					);
+				})
+			) : (
+				<div
+					style={{
+						overflowWrap: "break-word",
+					}}
+				>
+					{splitString[0]}
+				</div>
+			)}
+		</Stack>
 	);
 };
 

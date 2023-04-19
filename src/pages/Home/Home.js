@@ -7,6 +7,7 @@ import {
 	DialogContent,
 	IconButton,
 	Skeleton,
+	Tooltip,
 } from "@mui/material";
 import CustomAppBar from "../../components/CustomAppBar";
 import CustomDataGrid from "../../components/CustomDataGrid";
@@ -48,6 +49,7 @@ import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog";
 import ExpandableCell from "../../utilities/renderCellExpand";
 import { constructList } from "../../utilities/helpConstructInstances";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 const Home = () => {
 	// state for Search Component
@@ -291,7 +293,7 @@ const Home = () => {
 					const columnDefinition = {
 						field: property,
 						headerName: property,
-						width: property == "id" || property == "name" ? 300 : 150,
+						width: property == "id" || property == "name" ? 200 : 150,
 						editable: false,
 						/* renderCell: (params) =>
 							constructList[resourceType].getAttributeDisplay(
@@ -331,11 +333,22 @@ const Home = () => {
 						flex: 1,
 						disableColumnMenu: true,
 						align: "center",
-						renderCell: (row) => (
-							<IconButton>
-								<KeyboardArrowDownIcon color="primary" />
-							</IconButton>
-						),
+						renderCell: (row) => {
+							console.log(row);
+							return (
+								<IconButton>
+									{row.row.internalReactExpanded ? (
+										<Tooltip title="Collapse row">
+											<KeyboardArrowUpIcon color="primary" />
+										</Tooltip>
+									) : (
+										<Tooltip title="Expand row">
+											<KeyboardArrowDownIcon color="primary" />
+										</Tooltip>
+									)}
+								</IconButton>
+							);
+						},
 					}
 				);
 

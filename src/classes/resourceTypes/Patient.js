@@ -104,7 +104,6 @@ export class Patient {
 	}
 
 	static getAttributeDisplay(propertyName, propertyValue, rowExpanded) {
-		console.log(rowExpanded);
 		if (
 			[
 				"id",
@@ -124,48 +123,21 @@ export class Patient {
 					rowExpanded={rowExpanded}
 				/>
 			);
+			/* return "abcabcacbacbacbacbacbacbacbacb"; */
 		} else {
 			switch (propertyName) {
 				case "identifier":
-					return (
-						<Stack>
-							{propertyValue.map((singleIdentifier) => (
-								<IdentifierDisplay identifier={singleIdentifier} />
-							))}
-						</Stack>
-					);
 				case "name":
-					let namesString = propertyValue
-						.map((name) => name.calcDisplayString())
+				case "telecom":
+					let propertyValueString = propertyValue
+						.map((singleItem) => singleItem.calcDisplayString())
 						.join("\n");
-					console.log(namesString);
 					return (
 						<ExpandableCell
-							value={namesString || ""}
+							value={propertyValueString || ""}
 							lengthThreshhold={100}
 							rowExpanded={rowExpanded}
 						/>
-					);
-
-				case "telecom" /* return (
-						<Stack sx={{ maxWidth: "100%", width: "100%" }}>
-							{propertyValue.map((singleTelecom) => (
-								<ContactPointDisplay contactPoint={singleTelecom} />
-							))}
-						</Stack>
-					); */: {
-					let s = propertyValue
-						.map((singleTelecom) => singleTelecom.value)
-						.join(";abc");
-					return s;
-				}
-				case "telecom":
-					return (
-						<Stack>
-							{propertyValue.map((singleTelecom) => (
-								<ContactPointDisplay contactPoint={singleTelecom} />
-							))}
-						</Stack>
 					);
 
 				default:

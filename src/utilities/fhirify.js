@@ -1,15 +1,3 @@
-export default function removeInternalReactID(obj) {
-	if (obj instanceof Object) {
-		for (let key in obj) {
-			if (key === "internalReactID" || obj[key] === null) {
-				delete obj[key];
-			} else {
-				removeInternalReactID(obj[key]);
-			}
-		}
-	}
-}
-
 export function clearObjectFromEmptyValues(obj) {
 	if (obj instanceof Object) {
 		if (Array.isArray(obj)) {
@@ -25,6 +13,7 @@ export function clearObjectFromEmptyValues(obj) {
 		for (let key in obj) {
 			if (
 				key === "internalReactID" ||
+				key === "internalReactExpanded" ||
 				obj[key] === null ||
 				obj[key] === undefined ||
 				obj[key] === "" ||
@@ -42,6 +31,7 @@ export function clearObjectFromEmptyValues(obj) {
 	} else {
 		if (
 			obj === "internalReactID" ||
+			obj === "internalReactExpanded" ||
 			obj === null ||
 			obj === undefined ||
 			obj === "" ||
@@ -62,7 +52,8 @@ export const isObjectEmptyRecursive = (obj) => {
 			return obj.every((item) => isObjectEmptyRecursive(item));
 		}
 		return Object.keys(obj).every((key) => {
-			if (key === "internalReactID") return true;
+			if (key === "internalReactID" || key === "internalReactExpanded")
+				return true;
 			return isObjectEmptyRecursive(obj[key]);
 		});
 	} else {

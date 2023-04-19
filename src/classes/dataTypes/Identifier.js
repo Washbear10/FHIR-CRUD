@@ -15,23 +15,10 @@ export class Identifier {
 		this.internalReactID = internalReactID ? internalReactID : uuidv4();
 	}
 
-	#computeDisplay() {
-		return (
-			<Box>
-				{" "}
-				<span>
-					<Typography>System: </Typography>
-					{this.system || "(missing)"}
-				</span>{" "}
-				<span>
-					<Typography>Value: </Typography>
-					{this.value || "(missing)"}
-				</span>
-			</Box>
-		);
-	}
-	getRenderComponent() {
-		const display = this.#computeDisplay();
-		return <Box>{display}</Box>;
-	}
+	calcDisplayString = () => {
+		let s = "";
+		if (this.system) s += this.system + ": ";
+		if (this.value) s += this.value;
+		return s;
+	};
 }

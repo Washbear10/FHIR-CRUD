@@ -206,6 +206,12 @@ export default function CustomDataGrid({
 				}}
 				loading={loading}
 				disableRowSelectionOnClick={loading}
+				/* sx={{
+					"& .MuiDataGrid-cell": {
+						overflow: "hidden",
+						textOverflow: "ellipsis",
+					},
+				}} */
 			/>
 		</Box>
 	);

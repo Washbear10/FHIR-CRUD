@@ -9,7 +9,8 @@ creat login functionality > avoid hardcoded credentials
 
 
 Resume :
-      resetting reference reset selectedtype
+      check if internal stuff gets removed
+      disable open close if copying
 
 Done, further test when time:
       check if all elements are represented with corresponding cardinality
