@@ -3,12 +3,14 @@ import { HumanName } from "../../classes/dataTypes/HumanName";
 import { Identifier } from "../../classes/dataTypes/Identifier";
 
 export const getRenderCellComponent = (resourcesType, element, value) => {
-	if (typeof value == "string" || typeof value == "number") {
-		return <div>{value}</div>;
+	if (
+		typeof value == "string" ||
+		typeof value == "number" ||
+		typeof value == "boolean"
+	) {
+		return <div>{String(value)}</div>;
 	}
-	if (typeof value == "boolean") {
-		return value ? "true" : "false";
-	}
+
 	if (Array.isArray(value)) {
 		if (value[0] instanceof HumanName || value[0] instanceof Identifier) {
 			return <Box>{value.map((item) => item.getRenderComponent())}</Box>;
@@ -21,7 +23,6 @@ export const getRenderCellComponent = (resourcesType, element, value) => {
 			</Box>
 		);
 	}
-
 	if (value == undefined) return "";
 	if (value instanceof HumanName) {
 		return value.getRenderComponent();
