@@ -259,9 +259,8 @@ const Home = () => {
 			/>
 			<Button
 				onClick={async () => {
-					/* let r = await searchReference("Patient", "name:contains=");
-					console.log(r); */
-					alert(process.env.REACT_APP_FHIR_BASE);
+					let x = constructList["Patient"];
+					console.log(x.getAttributeDisplay("id", 123));
 				}}
 			>
 				Test Error
@@ -292,8 +291,13 @@ const Home = () => {
 						headerName: property,
 						width: property == "id" || property == "name" ? 300 : 150,
 						editable: false,
+						/* renderCell: (params) =>
+							getRenderCell(resourceType, property, params), */
 						renderCell: (params) =>
-							getRenderCell(resourceType, property, params),
+							constructList[resourceType].getAttributeDisplay(
+								property,
+								params.value
+							),
 					};
 					return columnDefinition;
 				});

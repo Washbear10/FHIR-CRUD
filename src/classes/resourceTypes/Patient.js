@@ -13,6 +13,8 @@ import Contact from "../dataTypes/Contact";
 import Communication from "../dataTypes/Communication";
 import Reference from "../specialTypes/Reference";
 import Link from "../dataTypes/Link";
+import IdentifierDisplay from "../../components/elementDataGridDisplays.js/IdentifierDisplay";
+import HumanNameDisplay from "../../components/elementDataGridDisplays.js/HumanNameDisplay";
 
 export class Patient {
 	[immerable] = true;
@@ -38,10 +40,11 @@ export class Patient {
 		link,
 	}) {
 		this.id = id;
-		this.active = active;
 		this.name = name
 			? name.map((singleName) => new HumanName({ ...singleName }))
 			: [new HumanName({})];
+		this.active = active;
+
 		this.identifier = identifier
 			? identifier.map(
 					(singleIdentifier) => new Identifier({ ...singleIdentifier })
@@ -95,11 +98,32 @@ export class Patient {
 		this.multipleBirthBoolean = null;
 	}
 
-	#computeDisplay() {}
-
-	getRenderComponent() {
-		const display = this.#computeDisplay();
-		return <Box>{display}</Box>;
+	static getAttributeDisplay(propertyName, propertyValue) {
+		if (
+			[
+				"id",
+				"active",
+				"gender",
+				"birthDate",
+				"deceasedBoolean",
+				"deceasedDateTime",
+				"multipleBirthBoolean",
+				"multipleBirthInteger",
+			].includes(propertyName)
+		) {
+			return (
+				<Typography>{propertyValue ? String(propertyValue) : ""}</Typography>
+			);
+		} else {
+			switch (propertyName) {
+				case "identifier":
+					return <IdentifierDisplay identifier={propertyValue} />;
+				case "name":
+					return <HumanNameDisplay humanName={propertyValue} />;
+				default:
+					return <Box>ahlo</Box>;
+			}
+		}
 	}
 
 	toFHIRJson() {
