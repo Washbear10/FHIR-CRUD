@@ -8,8 +8,11 @@ import { Stack } from "@mui/system";
 import { Divider } from "@mui/material";
 import { GridCell } from "@mui/x-data-grid";
 const ExpandableCell = ({ value, lengthThreshhold, rowExpanded }) => {
-	const [numLines, setNumLines] = React.useState(value.split("\n").length);
 	const [splitString, setSplitString] = React.useState(value.split("\n"));
+
+	React.useEffect(() => {
+		setSplitString(value.split("\n"));
+	}, [value]);
 
 	return (
 		<Stack
@@ -20,25 +23,28 @@ const ExpandableCell = ({ value, lengthThreshhold, rowExpanded }) => {
 			sx={{ width: "100%" }}
 		>
 			{rowExpanded ? (
-				splitString.map((line) => {
+				splitString.map((line, index) => {
 					return (
-						<div
-							style={{
+						<Box
+							key={index}
+							sx={{
 								overflowWrap: "break-word",
 							}}
 						>
 							{line}
-						</div>
+						</Box>
 					);
 				})
 			) : (
-				<div
-					style={{
-						overflowWrap: "break-word",
+				<Box
+					key={0}
+					sx={{
+						textOverflow: "ellipsis",
+						overflow: "clip",
 					}}
 				>
 					{splitString[0]}
-				</div>
+				</Box>
 			)}
 		</Stack>
 	);
@@ -53,24 +59,3 @@ ExpandableCell.propTypes = {
 };
 
 export default ExpandableCell;
-
-/* 
-					<Link
-						type="button"
-						component="button"
-						underline="none"
-						sx={{ fontSize: "inherit", ml: "2px" }}
-						onClick={() => setExpanded(!expanded)}
-					>
-						{expanded ? (
-							<Box sx={{ display: "flex", justifyContent: "center" }}>
-								<KeyboardArrowUpIcon />
-								<span>view less</span>
-							</Box>
-						) : (
-							<Box sx={{ display: "flex", justifyContent: "center" }}>
-								<KeyboardArrowDownIcon />
-								view more
-							</Box>
-						)}
-					</Link> */

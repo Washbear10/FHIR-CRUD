@@ -111,7 +111,7 @@ const ReferenceInput = ({ reference, changeReference, referenceOptions }) => {
 				changeInput={handleTypeChange}
 				/* readOnly={Object.keys(referenceOptions).length <= 1} */
 				label="Resource type"
-				disabledCursor={Object.keys(referenceOptions).length <= 1}
+				mycursordisabled={Object.keys(referenceOptions).length <= 1}
 				disabled={Object.keys(referenceOptions).length <= 1}
 				disableClearable
 			/>

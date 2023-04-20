@@ -48,6 +48,7 @@ import Reference from "../../classes/specialTypes/Reference";
 import LinkInput from "../elementInputs/LinkInput";
 import Link from "../../classes/dataTypes/Link";
 import AttachmentInput from "../elementInputs/AttachmentInput";
+import Attachment from "../../classes/dataTypes/Attachment";
 
 const IterableElementClassList = {
 	telecom: ContactPoint,
@@ -289,6 +290,17 @@ const PatientInput = ({ resource, modifyResource }) => {
 			.indexOf(oldValue.internalReactID);
 		let newPhotos = [...resource.photo];
 		newPhotos[i] = newValue;
+		modifyResource("photo", newPhotos);
+	};
+	const handleDeletePhoto = (index) => {
+		let newPhotos = [...resource.photo];
+		newPhotos.splice(index, 1);
+		if (newPhotos.length == 0) newPhotos.push(new Attachment({}));
+		modifyResource("photo", newPhotos);
+	};
+	const addPhoto = () => {
+		let newPhotos = [...resource.photo];
+		newPhotos.push(new Attachment({}));
 		modifyResource("photo", newPhotos);
 	};
 	return (
@@ -893,14 +905,14 @@ const PatientInput = ({ resource, modifyResource }) => {
 				}
 			/>
 			<AttributeBlock
-				attributeName="Attachment"
+				attributeName="Photo"
 				attributeDescription="Images of the patient"
 				renderKey={resource ? resource.photo : null}
 				inputComponents={
 					<ExtendableComponent
 						title="Add a photo"
 						handleExtend={() => {
-							alert("todo");
+							addPhoto();
 						}}
 					>
 						{resource
@@ -919,8 +931,7 @@ const PatientInput = ({ resource, modifyResource }) => {
 													<DeleteableComponent
 														title="Delete this photo"
 														handleDelete={() => {
-															/* handleDeleteLink(singleLink.index); */
-															alert("TODO");
+															handleDeletePhoto(singlePhoto.index);
 														}}
 														disabled={
 															resource.photo.length == 1 &&

@@ -281,13 +281,23 @@ const Home = () => {
 				let helperInstance = new constructList[resourceType]({});
 				const classProperties = Object.keys(helperInstance).filter(
 					(element) =>
-						element != "internalReactID" && element != "internalReactExpanded"
+						element != "internalReactID" &&
+						element != "internalReactExpanded" &&
+						element != "photo"
 				);
 				columns = classProperties.map((property) => {
 					const columnDefinition = {
 						field: property,
 						headerName: property,
-						width: property == "id" || property == "name" ? 200 : 150,
+						width:
+							property == "id"
+								? 300
+								: property == "name" ||
+								  property == "address" ||
+								  property == "telecom"
+								? 200
+								: 100,
+
 						editable: false,
 						/* renderCell: (params) =>
 							constructList[resourceType].getAttributeDisplay(
@@ -330,15 +340,21 @@ const Home = () => {
 						renderCell: (row) => {
 							return (
 								<IconButton>
-									{row.row.internalReactExpanded ? (
-										<Tooltip title="Collapse row">
-											<KeyboardArrowUpIcon color="primary" />
-										</Tooltip>
-									) : (
-										<Tooltip title="Expand row">
-											<KeyboardArrowDownIcon color="primary" />
-										</Tooltip>
-									)}
+									<Tooltip
+										title={
+											row.row.internalReactExpanded
+												? "Collapse row"
+												: "Expand row"
+										}
+									>
+										<div>
+											{row.row.internalReactExpanded ? (
+												<KeyboardArrowUpIcon color="primary" />
+											) : (
+												<KeyboardArrowDownIcon color="primary" />
+											)}
+										</div>
+									</Tooltip>
 								</IconButton>
 							);
 						},

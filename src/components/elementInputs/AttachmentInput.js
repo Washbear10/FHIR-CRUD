@@ -51,7 +51,9 @@ const AttachmentInput = ({ attachment, changeAttachment }) => {
 			reader.readAsDataURL(file);
 			reader.onload = () => {
 				if (reader.result.startsWith("data:")) {
-					const parsedData = reader.result.replace(/data:.*\/.*;base64,/, "");
+					/* const parsedData = reader.result.replace(/data:.*\/.*;base64,/, ""); */
+					const parsedData = reader.result;
+
 					let newAttachment = new Attachment({
 						...attachment,
 						data: parsedData,
@@ -106,7 +108,7 @@ const AttachmentInput = ({ attachment, changeAttachment }) => {
 		);
 	} else {
 		return (
-			<Button variant="contained" component="label">
+			<Button variant="contained" component="label" sx={{ width: "3rem" }}>
 				Upload
 				<input
 					hidden

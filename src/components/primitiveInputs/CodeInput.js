@@ -7,12 +7,15 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ClearIcon from "@mui/icons-material/Clear";
 import { useEffect } from "react";
 import { DisabledTextField } from "../styledComponents/DisabledTextfield";
-const CodeInput = ({ values, v, label, changeInput, width, ...rest }) => {
-	/* 	useEffect(() => {
-		
-		
-	}, [values, value]); */
-
+const CodeInput = ({
+	values,
+	v,
+	label,
+	changeInput,
+	width,
+	mycursordisabled,
+	...rest
+}) => {
 	return (
 		<Autocomplete
 			options={values}
@@ -45,7 +48,7 @@ const CodeInput = ({ values, v, label, changeInput, width, ...rest }) => {
 			popupIcon={<ArrowDropDownIcon size="small" fontSize="16px" />}
 			clearIcon={<ClearIcon size="small" fontSize="16px" />}
 			renderInput={
-				!Object.keys(rest).includes("disabledCursor")
+				!mycursordisabled
 					? (params) => (
 							<TextField
 								{...params}
@@ -56,16 +59,19 @@ const CodeInput = ({ values, v, label, changeInput, width, ...rest }) => {
 								}}
 							/>
 					  )
-					: (params) => (
-							<DisabledTextField
-								{...params}
-								label={label}
-								sx={{
-									textOverflow: "clip",
-									overflow: "visible",
-								}}
-							/>
-					  )
+					: (params) => {
+							return (
+								<DisabledTextField
+									{...params}
+									disabled
+									label={label}
+									sx={{
+										textOverflow: "clip",
+										overflow: "visible",
+									}}
+								/>
+							);
+					  }
 			}
 			{...rest}
 		/>

@@ -78,7 +78,7 @@ export default function CustomDataGrid({
 		setOpen(true);
 	};
 
-	const handleRowClick = (params, e, d) => {
+	const handleRowDoubleClick = (params, e, d) => {
 		let i = rows.indexOf(params.row);
 
 		rows[i].internalReactExpanded = !rows[i].internalReactExpanded;
@@ -90,6 +90,11 @@ export default function CustomDataGrid({
 		if (!loading && params.colDef.field == "editButton") {
 			setOriginalResource(params.row);
 			setBackDropOpen(true);
+		}
+		if (!loading && params.colDef.field == "expandButton") {
+			let i = rows.indexOf(params.row);
+			rows[i].internalReactExpanded = !rows[i].internalReactExpanded;
+			triggerRerender();
 		}
 	};
 
@@ -125,14 +130,6 @@ export default function CustomDataGrid({
 						onClick={handleDelete}
 					>
 						Delete selected
-					</Button>
-					<Button
-						sx={{}}
-						disabled={selectedResources.length == 0}
-						variant="contained"
-						color="primary"
-					>
-						Bulk edit
 					</Button>
 				</Box>
 			</>
@@ -198,7 +195,7 @@ export default function CustomDataGrid({
 				selectionModel={selectedResources}
 				experimentalFeatures={{ newEditingApi: true }}
 				onCellClick={handleCellClick}
-				onRowClick={handleRowClick}
+				onRowDoubleClick={handleRowDoubleClick}
 				components={{
 					Footer: MyFooter,
 					Header: MyHeader,
