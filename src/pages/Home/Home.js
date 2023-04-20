@@ -260,14 +260,7 @@ const Home = () => {
 					setDeleteCandidates([]);
 				}}
 			/>
-			<Button
-				onClick={async () => {
-					let x = constructList["Patient"];
-					console.log(x.getAttributeDisplay("id", 123));
-				}}
-			>
-				Test Error
-			</Button>
+			<Button onClick={async () => {}}>Test Error</Button>
 			<Box>{"test1 test2\ntest3"}</Box>
 			<SearchForm
 				onSubmit={handleSearch}
@@ -335,7 +328,6 @@ const Home = () => {
 						disableColumnMenu: true,
 						align: "center",
 						renderCell: (row) => {
-							console.log(row);
 							return (
 								<IconButton>
 									{row.row.internalReactExpanded ? (

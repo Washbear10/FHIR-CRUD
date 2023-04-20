@@ -282,6 +282,15 @@ const PatientInput = ({ resource, modifyResource }) => {
 		newLinks[i] = newValue;
 		modifyResource("link", newLinks);
 	};
+
+	const changePhoto = (newValue, oldValue) => {
+		const i = resource.photo
+			.map((item) => item.internalReactID)
+			.indexOf(oldValue.internalReactID);
+		let newPhotos = [...resource.photo];
+		newPhotos[i] = newValue;
+		modifyResource("photo", newPhotos);
+	};
 	return (
 		<Box>
 			<AttributeBlock
@@ -921,7 +930,7 @@ const PatientInput = ({ resource, modifyResource }) => {
 														<Subcomponent>
 															<AttachmentInput
 																attachment={singlePhoto.singlePhoto}
-																changeAttachment={() => {}}
+																changeAttachment={changePhoto}
 															/>
 														</Subcomponent>
 													</DeleteableComponent>
