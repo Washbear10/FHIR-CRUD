@@ -343,3 +343,17 @@ export async function searchReference(resourcetype, paramsAndModifiers) {
 		});
 	return results;
 }
+
+export async function getAttachment(url) {
+	// This function differs from the normal queryFHIR function in that it does deserialize the results, but keeps it in JSON. This is because
+	// the referenced types are not (yet) represented in this application (for now only "Patient").
+	let token;
+	token = await getToken();
+	// This functionality will be added if the IBM server supports the _filter option to allow logical OR on multiple element types, not only on the values
+	// of a single element Type.
+	//const searchUrl = `http://${process.env.REACT_APP_FHIR_BASE}/fhir/R4/${resourcetype}?${paramsAndModifiers}`;
+	const searchUrl = url;
+	const headers = new Headers();
+	/* headers.set("Authorization", "Bearer " + token); */
+	return fetch(searchUrl, { method: "GET", headers: headers });
+}

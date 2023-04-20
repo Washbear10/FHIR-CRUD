@@ -1,21 +1,42 @@
 import React, { useEffect, useState } from "react";
 import { Button, Box } from "@mui/material";
 import Attachment from "../../classes/dataTypes/Attachment";
+import { getAttachment } from "../../utilities/query";
 const AttachmentInput = ({ attachment, changeAttachment }) => {
-	const [dimensions, setDimensions] = useState({});
+	const [displayImage, setDisplayImage] = useState(null);
 
 	useEffect(() => {
 		if (attachment.data) {
 			makeImage(attachment.data).then((image) => {
-				setDimensions({ height: image.height, width: image.width });
+				setDisplayImage(image);
 			});
+		} else if (attachment.url) {
+			console.log("has url: ", attachment.url);
+			getAttachment(attachment.url)
+				.then((response) => {
+					console.log(response);
+					return response.blob();
+				})
+				.then((blob) => {
+					const reader = new FileReader();
+					reader.readAsDataURL(blob);
+
+					reader.onload = () => {
+						/* const parsedData = reader.result.replace(/data:.*\/.*;base64,/, ""); */
+						const parsedData = reader.result;
+						makeImage(parsedData).then((image) => {
+							setDisplayImage(image);
+						});
+					};
+				});
 		}
 	}, [attachment]);
 
 	function makeImage(fileData) {
 		return new Promise(function (resolved, rejected) {
+			console.log(fileData);
 			var i = new Image();
-			i.onload = function () {
+			i.onload = function (e) {
 				resolved(i);
 			};
 			i.src = fileData;
@@ -41,10 +62,7 @@ const AttachmentInput = ({ attachment, changeAttachment }) => {
 			};
 		}
 	};
-	if (attachment.url) {
-		return "has some url";
-	} else if (attachment.data) {
-		/* const image = await getImageDimensions(attachment.data); */
+	/* if (attachment.url) {
 		return (
 			<Box
 				sx={{
@@ -55,6 +73,35 @@ const AttachmentInput = ({ attachment, changeAttachment }) => {
 				}}
 			>
 				<img src={`data:image/jpeg;base64,${attachment.data}`} />;
+			</Box>
+		);
+	} else if (attachment.data) {
+		/* const image = await getImageDimensions(attachment.data); 
+		return (
+			<Box
+				sx={{
+					height: dimensions.heigh,
+					width: dimensions.width,
+					maxWidth: "100%",
+					maxHeight: "500px",
+				}}
+			>
+				<img src={`data:image/jpeg;base64,${attachment.data}`} />;
+			</Box>
+		);
+	} */
+	if (displayImage) {
+		return (
+			<Box sx={{}}>
+				<img
+					src={`${displayImage.src}`}
+					style={{
+						objectFit: "contain ",
+						maxHeight: "200px",
+						maxWidth: "500px",
+					}}
+				/>
+				;
 			</Box>
 		);
 	} else {
