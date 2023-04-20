@@ -287,7 +287,8 @@ const Home = () => {
 				let columns;
 				let helperInstance = new constructList[resourceType]({});
 				const classProperties = Object.keys(helperInstance).filter(
-					(element) => element != "internalReactID"
+					(element) =>
+						element != "internalReactID" && element != "internalReactExpanded"
 				);
 				columns = classProperties.map((property) => {
 					const columnDefinition = {

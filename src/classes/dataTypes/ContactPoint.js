@@ -15,7 +15,6 @@ export class ContactPoint {
 
 	calcDisplayString = () => {
 		let s = "";
-		if (this.system) s += this.system + ": ";
 		if (this.value) s += this.value;
 		return s;
 	};

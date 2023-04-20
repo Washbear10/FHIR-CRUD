@@ -29,4 +29,19 @@ export default class Contact {
 		this.organization = new Reference({ ...organization });
 		this.internalReactID = internalReactID ? internalReactID : uuidv4();
 	}
+
+	calcDisplayString = () => {
+		let s1 = "";
+		this.name.prefix.forEach((pf) => {
+			s1 += pf + " ";
+		});
+		if (this.name.family) s1 += this.name.family;
+		s1 = s1.trim();
+		let s3 = "";
+		if (this.name.given)
+			s3 += this.name.given.reduce((acc, curr) => acc + " " + curr, "");
+		s3 = s3.trim();
+		let final = [s1, s3].filter((item) => item).join(", ");
+		return final;
+	};
 }

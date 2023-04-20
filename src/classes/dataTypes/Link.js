@@ -7,4 +7,8 @@ export default class Link {
 		this.other = new Reference({ ...other });
 		this.internalReactID = internalReactID ? internalReactID : uuidv4();
 	}
+	calcDisplayString = () => {
+		let s1 = this.other.display ? this.other.display : this.other.id;
+		return s1;
+	};
 }

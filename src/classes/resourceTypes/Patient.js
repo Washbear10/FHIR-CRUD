@@ -18,6 +18,7 @@ import HumanNameDisplay from "../../components/elementDataGridDisplays.js/HumanN
 import ContactPointDisplay from "../../components/elementDataGridDisplays.js/ContactPointDisplay";
 import { Stack } from "@mui/system";
 import ExpandableCell from "../../utilities/renderCellExpand";
+import Attachment from "../dataTypes/Attachment";
 
 export class Patient {
 	[immerable] = true;
@@ -41,6 +42,7 @@ export class Patient {
 		generalPractitioner,
 		managingOrganization,
 		link,
+		photo,
 	}) {
 		this.id = id;
 		this.name = name
@@ -82,6 +84,10 @@ export class Patient {
 		this.link = link
 			? link.map((singleLink) => new Link({ ...singleLink }))
 			: [new Link({})];
+
+		this.photo = photo
+			? photo.map((singlePhoto) => new Attachment({ ...singlePhoto }))
+			: [new Attachment({})];
 
 		this.internalReactExpanded = false;
 	}
@@ -129,9 +135,18 @@ export class Patient {
 				case "identifier":
 				case "name":
 				case "telecom":
-					let propertyValueString = propertyValue
-						.map((singleItem) => singleItem.calcDisplayString())
-						.join("\n");
+				case "address":
+				case "contact":
+				case "communication":
+				case "generalPractitioner":
+				case "managingOrganization":
+				case "link":
+				case "maritalStatus":
+					let propertyValueString = Array.isArray(propertyValue)
+						? propertyValue
+								.map((singleItem) => singleItem.calcDisplayString())
+								.join("\n")
+						: propertyValue.calcDisplayString();
 					return (
 						<ExpandableCell
 							value={propertyValueString || ""}

@@ -14,4 +14,9 @@ export default class CodeableConcept {
 		this.text = text;
 		this.internalReactID = internalReactID ? internalReactID : uuidv4();
 	}
+
+	calcDisplayString = () => {
+		let s1 = this.text || "";
+		return s1;
+	};
 }

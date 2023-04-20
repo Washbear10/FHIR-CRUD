@@ -8,4 +8,9 @@ export default class Communication {
 		this.preferred = preferred;
 		this.internalReactID = internalReactID ? internalReactID : uuidv4();
 	}
+
+	calcDisplayString = () => {
+		let s1 = this.language.text || "";
+		return s1;
+	};
 }

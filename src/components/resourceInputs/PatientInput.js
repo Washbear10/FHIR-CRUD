@@ -47,6 +47,7 @@ import ReferenceInput from "../elementInputs/ReferenceInput";
 import Reference from "../../classes/specialTypes/Reference";
 import LinkInput from "../elementInputs/LinkInput";
 import Link from "../../classes/dataTypes/Link";
+import AttachmentInput from "../elementInputs/AttachmentInput";
 
 const IterableElementClassList = {
 	telecom: ContactPoint,
@@ -871,6 +872,56 @@ const PatientInput = ({ resource, modifyResource }) => {
 															<LinkInput
 																link={singleLink.singleLink}
 																changeLink={changeLink}
+															/>
+														</Subcomponent>
+													</DeleteableComponent>
+												</Box>
+											);
+										})
+								: null
+							: null}
+					</ExtendableComponent>
+				}
+			/>
+			<AttributeBlock
+				attributeName="Attachment"
+				attributeDescription="Images of the patient"
+				renderKey={resource ? resource.photo : null}
+				inputComponents={
+					<ExtendableComponent
+						title="Add a photo"
+						handleExtend={() => {
+							alert("todo");
+						}}
+					>
+						{resource
+							? resource.photo
+								? resource.photo
+										.map((singlePhoto, index) => {
+											return {
+												singlePhoto: singlePhoto,
+												key: singlePhoto.internalReactID,
+												index: index,
+											};
+										})
+										.map((singlePhoto) => {
+											return (
+												<Box key={singlePhoto.key}>
+													<DeleteableComponent
+														title="Delete this photo"
+														handleDelete={() => {
+															/* handleDeleteLink(singleLink.index); */
+															alert("TODO");
+														}}
+														disabled={
+															resource.photo.length == 1 &&
+															isObjectEmptyRecursive(resource.photo)
+														}
+													>
+														<Subcomponent>
+															<AttachmentInput
+																attachment={singlePhoto.singlePhoto}
+																changeAttachment={() => {}}
 															/>
 														</Subcomponent>
 													</DeleteableComponent>

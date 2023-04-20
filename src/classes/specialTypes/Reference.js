@@ -11,4 +11,12 @@ export default class Reference {
 		this.display = display;
 		this.internalReactID = internalReactID ? internalReactID : uuidv4();
 	}
+
+	calcDisplayString = () => {
+		let s1 = this.display
+			? this.display
+			: this.reference
+			? this.reference.id
+			: "";
+	};
 }

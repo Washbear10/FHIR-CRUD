@@ -26,13 +26,17 @@ export class HumanName {
 	}
 
 	calcDisplayString = () => {
-		let s = "";
+		let s1 = "";
 		this.prefix.forEach((pf) => {
-			s += pf + " ";
+			s1 += pf + " ";
 		});
-		if (this.family) s += this.family;
-		if (this.given) if (this.family) s += ", ";
-		s += this.given.reduce((acc, curr) => acc + " " + curr, "");
-		return s;
+		if (this.family) s1 += this.family;
+		s1 = s1.trim();
+		let s3 = "";
+		if (this.given)
+			s3 += this.given.reduce((acc, curr) => acc + " " + curr, "");
+		s3 = s3.trim();
+		let final = [s1, s3].filter((item) => item).join(", ");
+		return final;
 	};
 }

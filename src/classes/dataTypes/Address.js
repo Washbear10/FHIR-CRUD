@@ -27,4 +27,20 @@ export default class Address {
 		this.period = new Period({ ...period });
 		this.internalReactID = internalReactID ? internalReactID : uuidv4();
 	}
+
+	calcDisplayString = () => {
+		let s1 = "";
+		if (this.line) s1 += this.line.reduce((acc, curr) => curr + "," + acc, "");
+		s1 = s1.slice(0, s1.length - 1);
+		let s2 = "";
+		if (this.postalCode) s2 += this.postalCode;
+		let s3 = "";
+		if (this.state) s3 += this.state;
+		let s4 = "";
+		if (this.country) {
+			s4 += this.country;
+		}
+		let joined = [s1, s2, s3, s4].filter((item) => item).join(", ");
+		return joined;
+	};
 }
