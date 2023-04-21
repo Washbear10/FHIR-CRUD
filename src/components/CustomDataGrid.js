@@ -50,8 +50,20 @@ export default function CustomDataGrid({
 	}, [originalResource]);
 
 	useEffect(() => {
-		console.log(rows);
-	}, []);
+		console.log("CDG rerendered");
+	}, [
+		resourceType,
+		columns,
+		rows,
+		updateRows,
+		changedResources,
+		updateChangedResources,
+		newResources,
+		updateNewResources,
+		deleteSelectedResources,
+		saveUpdates,
+		loading,
+	]);
 
 	const handleSaveUpdates = async (editedResource) => {
 		let updateResult = await saveUpdates(
@@ -203,12 +215,7 @@ export default function CustomDataGrid({
 				}}
 				loading={loading}
 				disableRowSelectionOnClick={loading}
-				/* sx={{
-					"& .MuiDataGrid-cell": {
-						overflow: "hidden",
-						textOverflow: "ellipsis",
-					},
-				}} */
+				disableVirtualization
 			/>
 		</Box>
 	);

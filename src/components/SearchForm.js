@@ -17,28 +17,29 @@ const SearchForm = ({
 	onSubmit,
 	resourceList,
 	updateResourceList,
-	inputValue,
-	updateInputValue,
-	limit,
-	updateLimit,
 	filterResource,
 	updateFilterResource,
 }) => {
+	const [inputValue, setInputValue] = useState("");
+	const [limit, setLimit] = useState("");
 	function handleLimitChange(event) {
 		const input = parseInt(event.target.value);
-		if (event.target.value == "") updateLimit("");
+		if (event.target.value == "") setLimit("");
 		if (!isNaN(input)) {
-			updateLimit(Math.abs(input));
+			setLimit(Math.abs(input));
 		}
 	}
-
 	function handleDeleteResource(resource) {
 		const newResourceList = resourceList.filter((item) => item != resource);
 		updateResourceList(newResourceList);
 	}
-
 	return (
-		<Box component={"form"} onSubmit={onSubmit}>
+		<Box
+			component={"form"}
+			onSubmit={(e) => {
+				onSubmit({ event: e, searchValue: inputValue, limit: limit });
+			}}
+		>
 			<Box
 				sx={{
 					display: "flex",
@@ -76,13 +77,13 @@ const SearchForm = ({
 								label="Search"
 								value={inputValue}
 								onChange={(event) => {
-									updateInputValue(event.target.value);
+									setInputValue(event.target.value);
 								}}
 							/>
 						)}
 					/>
 				</Box>
-				<FormGroup>
+				{/* <FormGroup>
 					<FormControlLabel
 						sx={{ width: "fit-content", marginBottom: "-1rem" }}
 						control={
@@ -185,7 +186,7 @@ const SearchForm = ({
 							</Box>
 						))}
 					</Box>
-				</Box>
+				</Box> */}
 				<Box
 					sx={{
 						width: `${searchBarWidth}px`,
@@ -205,10 +206,10 @@ const SearchForm = ({
 							label="Limit"
 							value={limit}
 							onBlur={() => {
-								if (limit == "0" || limit == "") updateLimit("-");
+								if (limit == "0" || limit == "") setLimit("-");
 							}}
 							onFocus={() => {
-								if (limit == "-") updateLimit("");
+								if (limit == "-") setLimit("");
 							}}
 							sx={{ maxWidth: "5rem" }}
 							InputLabelProps={{

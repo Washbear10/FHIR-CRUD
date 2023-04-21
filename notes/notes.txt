@@ -35,3 +35,8 @@ Implementation:
 			- does not offer additional functionality
 	- configure IBM Fhire server to support update as create (https://linuxforhealth.github.io/FHIR/guides/FHIRServerUsersGuide#34-updatecreate-feature)
 	- configure IBM to support _filter searches
+
+	- caveats:
+		- performance will suffer on very big Datasets (all rows saved in client memory)
+			- if time -> implement server side pagination on datagrid
+		- 

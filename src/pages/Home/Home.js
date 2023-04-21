@@ -41,7 +41,7 @@ import SmallTextField from "../../components/styledComponents/SmallTextField";
 import dayjs from "dayjs";
 import DateTabs from "../../components/common/DateTabs";
 import removeInternalReactID from "../../utilities/fhirify";
-import { queryError, updateError } from "../../utilities/errors";
+import { queryError, timeoutError, updateError } from "../../utilities/errors";
 import { Snackbar, Alert } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { Dialog, DialogTitle, DialogActions } from "@mui/material";
@@ -53,7 +53,7 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 const Home = () => {
 	// state for Search Component
-	const [resourceList, setResourceList] = useState([]);
+	const [resourceList, setResourceList] = useState(["Patient"]);
 	const [inputValue, setInputValue] = useState("");
 	const [limit, setLimit] = useState("-");
 	const [filterResource, setFilterResource] = useState(false);
@@ -75,22 +75,33 @@ const Home = () => {
 	const [deleteCandidatType, setDeleteCandidatType] = useState(null);
 
 	const handleCatchError = (error) => {
-		setSnackbarColor("error");
-		setSnackbarMessage(error.message);
-		setSnackbarOpen(true);
-		setSnackbarTitle("Error");
-		/* setResults({});
-		setInitialResources({}); */
+		if (error instanceof timeoutError) {
+			setSnackbarColor("warning");
+			setSnackbarMessage(error.message);
+			setSnackbarOpen(true);
+			setSnackbarTitle("Warning");
+		} else {
+			setSnackbarColor("error");
+			setSnackbarMessage(error.message);
+			setSnackbarOpen(true);
+			setSnackbarTitle("Error");
+		}
 	};
 
-	const handleSearch = async (event) => {
+	const handleSearch = async ({ event, searchValue, limit }) => {
 		if (event) event.preventDefault();
 		setLoading(true);
 		try {
-			const queryResult = await queryFHIR({
+			/* const queryResult = await queryFHIR({
 				resources: filterResource ? resourceList : allResources,
 				limit: limit,
-			});
+				searchString: "Agnes",
+			}); */
+			const queryResult = await queryFHIR(
+				resourceList,
+				searchValue,
+				parseInt(limit) || 0
+			);
 			console.log(queryResult);
 			setResults(queryResult);
 			//setInitialResources(queryResult);
@@ -163,7 +174,7 @@ const Home = () => {
 			return error;
 		}
 		try {
-			handleSearch();
+			handleSearch({ searchValue: inputValue, limit: parseInt(limit) || 0 });
 			setSnackbarColor("success");
 			setSnackbarMessage(
 				updated
@@ -222,6 +233,12 @@ const Home = () => {
 		return getRenderCellComponent(resourcesType, element, params.value);
 	};
 
+	const handleSubmit = ({ event, searchValue, limit }) => {
+		handleSearch({ event: event, searchValue: searchValue, limit: limit });
+		setInputValue(searchValue);
+		setLimit(limit);
+	};
+
 	return (
 		<Box
 			sx={{
@@ -261,9 +278,8 @@ const Home = () => {
 				}}
 			/>
 			<Button onClick={async () => {}}>Test Error</Button>
-			<Box>{"test1 test2\ntest3"}</Box>
 			<SearchForm
-				onSubmit={handleSearch}
+				onSubmit={handleSubmit}
 				resourceList={resourceList}
 				updateResourceList={updateResourceList}
 				inputValue={inputValue}

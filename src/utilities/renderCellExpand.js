@@ -12,7 +12,11 @@ const ExpandableCell = ({ value, lengthThreshhold, rowExpanded }) => {
 
 	React.useEffect(() => {
 		setSplitString(value.split("\n"));
+		console.log("rerendrng of expandl cell");
 	}, [value]);
+	React.useEffect(() => {
+		console.log("rerendrng of expandl cell");
+	}, []);
 
 	return (
 		<Stack
@@ -58,4 +62,11 @@ ExpandableCell.propTypes = {
 	value: PropTypes.any,
 };
 
-export default ExpandableCell;
+/* export default ExpandableCell; */
+const areEqual = (last, next) => {
+	let x =
+		last.value == next.value; /*  && last.rowExpanded == next.rowExpanded; */
+	return x;
+};
+
+export default React.memo(ExpandableCell);
