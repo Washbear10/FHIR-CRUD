@@ -2,13 +2,22 @@ import CustomAppBar from "./components/CustomAppBar";
 import Home from "./pages/Home/Home";
 import "./App.css";
 import { useState, useEffect } from "react";
-import { medplum } from "./index";
 
 import { createTheme } from "@mui/material/styles";
 import * as colors from "@mui/material/colors";
 import { ThemeProvider } from "@emotion/react";
-import { CssBaseline } from "@mui/material";
+import { createContext } from "react";
+import React from "react";
+import { LoginContext } from "./utilities/LoginContext";
 import dayjs from "dayjs";
+import {
+	BrowserRouter as Router,
+	Routes,
+	Route,
+	Link,
+	BrowserRouter,
+} from "react-router-dom";
+import AuthenticationPrompt from "./components/AuthenticationPrompt";
 const theme = createTheme({
 	components: {
 		MuiDataGrid: {
@@ -92,11 +101,22 @@ dayjs.locale("de");
 window.DEFAULTDATETABSWIDTH = "300px";
 
 function App() {
-	const [authorized, setAuthorized] = useState(true);
+	const [authenticationPromptOpen, setAuthenticationPromptOpen] =
+		useState(false);
 
 	return (
 		<ThemeProvider theme={theme}>
-			<CustomAppBar content={<Home />} />
+			<LoginContext.Provider
+				value={{ authenticationPromptOpen, setAuthenticationPromptOpen }}
+			>
+				<AuthenticationPrompt />
+				<Router>
+					<Routes>
+						<Route path="/" element={<CustomAppBar content={<Home />} />} />
+						<Route path="/test" elemen={<CustomAppBar content={<Home />} />} />
+					</Routes>
+				</Router>
+			</LoginContext.Provider>
 		</ThemeProvider>
 	);
 }

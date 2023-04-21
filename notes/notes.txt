@@ -40,3 +40,6 @@ Implementation:
 		- performance will suffer on very big Datasets (all rows saved in client memory)
 			- if time -> implement server side pagination on datagrid
 		- 
+
+Other:
+	- maxresults not recognized in either ibm nor medplum

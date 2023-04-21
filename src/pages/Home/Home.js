@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Box } from "@mui/system";
 import {
 	AlertTitle,
@@ -41,7 +41,12 @@ import SmallTextField from "../../components/styledComponents/SmallTextField";
 import dayjs from "dayjs";
 import DateTabs from "../../components/common/DateTabs";
 import removeInternalReactID from "../../utilities/fhirify";
-import { queryError, timeoutError, updateError } from "../../utilities/errors";
+import {
+	authenticationError,
+	queryError,
+	timeoutError,
+	updateError,
+} from "../../utilities/errors";
 import { Snackbar, Alert } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import { Dialog, DialogTitle, DialogActions } from "@mui/material";
@@ -50,6 +55,7 @@ import ExpandableCell from "../../utilities/renderCellExpand";
 import { constructList } from "../../utilities/helpConstructInstances";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import { LoginContext } from "../../utilities/LoginContext";
 
 const Home = () => {
 	// state for Search Component
@@ -74,12 +80,21 @@ const Home = () => {
 	const [deleteCandidates, setDeleteCandidates] = useState([]);
 	const [deleteCandidatType, setDeleteCandidatType] = useState(null);
 
+	const { authenticationPromptOpen, setAuthenticationPromptOpen } =
+		React.useContext(LoginContext);
+
 	const handleCatchError = (error) => {
 		if (error instanceof timeoutError) {
 			setSnackbarColor("warning");
 			setSnackbarMessage(error.message);
 			setSnackbarOpen(true);
 			setSnackbarTitle("Warning");
+		} else if (error instanceof authenticationError) {
+			setSnackbarColor("error");
+			setSnackbarMessage(error.message);
+			setSnackbarOpen(true);
+			setSnackbarTitle("Error");
+			setAuthenticationPromptOpen(true);
 		} else {
 			setSnackbarColor("error");
 			setSnackbarMessage(error.message);

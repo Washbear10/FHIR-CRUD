@@ -18,12 +18,24 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import { useNavigate } from "react-router-dom";
-
+import AuthenticationPrompt from "./AuthenticationPrompt";
+import { LoginContext } from "../utilities/LoginContext";
+import { useState } from "react";
 const drawerWidth = 240;
 const titleBarHeight = 60;
 
 function CustomAppBar({ window, content }) {
 	const [mobileOpen, setMobileOpen] = React.useState(false);
+
+	const { authenticationPromptOpen, setAuthenticationPromptOpen } =
+		React.useContext(LoginContext);
+
+	const handleLoginOpen = () => {
+		setAuthenticationPromptOpen(true);
+	};
+	const handleLoginClose = () => {
+		setAuthenticationPromptOpen(false);
+	};
 
 	const navigate = useNavigate();
 
@@ -49,20 +61,18 @@ function CustomAppBar({ window, content }) {
 			</List>
 			<Divider />
 			<List>
-				{["Help", "Login"].map((text, index) => (
-					<ListItem key={text} disablePadding>
-						<ListItemButton
-							onClick={() => {
-								return text == "Login" ? navigate("/") : null;
-							}}
-						>
-							<ListItemIcon>
-								{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-							</ListItemIcon>
-							<ListItemText primary={text} />
-						</ListItemButton>
-					</ListItem>
-				))}
+				<ListItem key={"Login"} disablePadding>
+					<ListItemButton
+						onClick={(e) => {
+							handleLoginOpen();
+						}}
+					>
+						<ListItemIcon>
+							<InboxIcon />
+						</ListItemIcon>
+						<ListItemText primary={"Login"} />
+					</ListItemButton>
+				</ListItem>
 			</List>
 		</Box>
 	);

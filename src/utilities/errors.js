@@ -12,6 +12,12 @@ export class tokenError extends Error {
 		this.name = "TokenError";
 	}
 }
+export class authenticationError extends Error {
+	constructor(message) {
+		super(message);
+		this.name = "AuthenticationError";
+	}
+}
 export class updateError extends Error {
 	constructor(message) {
 		super(message);

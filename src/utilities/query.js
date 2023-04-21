@@ -2,14 +2,47 @@ import { medplum } from "../index";
 import { Buffer } from "buffer";
 import { v4 as uuidv4 } from "uuid";
 import { Patient } from "../classes/resourceTypes/Patient";
-import { queryError, timeoutError, tokenError, updateError } from "./errors";
+import {
+	authenticationError,
+	queryError,
+	timeoutError,
+	tokenError,
+	updateError,
+} from "./errors";
+import { getBasicAuthCreds } from "./basicAuth";
 
-const getResultCount = async (url) => {
+export async function testBasicAuth(authenticationValue) {
+	async function innerTestBasicAuth() {
+		const headers = new Headers();
+		const searchUrl = `${process.env.REACT_APP_FHIR_BASE}`;
+		headers.set("Authorization", "Basic " + authenticationValue);
+		return await fetch(searchUrl, { method: "GET", headers: headers }).then(
+			(response) => {
+				if (response.status === 401) {
+					return "Unauthenticated";
+				} else if (!response.ok) {
+					return "Error";
+				} else {
+					return "Ok";
+				}
+			}
+		);
+	}
+	let r = apiTimeout(innerTestBasicAuth, 5000);
+	return r;
+}
+
+async function getResultCount(url) {
 	// Preflight method to get number of results (without actual resources). Can be used for better pagination handling.
 	const headers = new Headers();
-	/* headers.set("Authorization", "Bearer " + token); */
+	const authenticationValue = getBasicAuthCreds();
+	headers.set("Authorization", "Basic " + authenticationValue);
 	return await fetch(url, { method: "GET", headers: headers })
 		.then((response) => {
+			if (response.status == 401)
+				throw new authenticationError(
+					"Authentication failed. You might need to login again."
+				);
 			if (!response.ok) {
 				return null;
 			}
@@ -18,23 +51,25 @@ const getResultCount = async (url) => {
 		.then((data) => {
 			return data.total ? data.total : null;
 		});
-};
+}
 
 export default async function queryFHIR(resources, searchString, limit) {
 	let r = apiTimeout(async () => {
-		/* let token;
-		token = await getToken(); */
-
 		var results = {};
 		resources.forEach((r) => {
 			results[r] = [];
 		});
 
 		for (const resource of [Patient]) {
+			const headers = new Headers();
+			const authenticationValue = getBasicAuthCreds();
+			headers.set("Authorization", "Basic " + authenticationValue);
 			let resultCountPreflight = await getResultCount(
-				`${process.env.REACT_APP_FHIR_BASE}/${resource.name}?_content=${searchString}&_summary=count`
+				`${process.env.REACT_APP_FHIR_BASE}/${resource.name}?_text=${searchString}&_summary=count`
 			);
+			let maxResults = limit ? (limit > 1000 ? 1000 : limit) : 1000;
 			let count;
+			if (!limit) count = 1000;
 			if (!resultCountPreflight) count = limit;
 			else if (resultCountPreflight > 3000) {
 				count = Math.floor(resultCountPreflight / 4);
@@ -53,14 +88,19 @@ export default async function queryFHIR(resources, searchString, limit) {
 					? nextPageLink
 					: `${process.env.REACT_APP_FHIR_BASE}/${
 							resource.name
-					  }?_content=${searchString}&_count=${
+					  }?_text=${searchString}&_count=${
 							!isNaN(count) && count > 0 ? count : ""
 					  }`;
-				const headers = new Headers();
 				var errorMessages;
 				/* headers.set("Authorization", "Bearer " + token); */
 				await fetch(searchUrl, { method: "GET", headers: headers })
 					.then((response) => {
+						if (response.status == 401) {
+							alert("here query ");
+							throw new authenticationError(
+								"Authentication failed. You might need to login again."
+							);
+						}
 						if (!response.ok) {
 							//handleErrorResponse(response)
 						}
@@ -101,22 +141,15 @@ export default async function queryFHIR(resources, searchString, limit) {
 				results[resource.name] = results[resource.name].slice(0, limit);
 		}
 		return results;
-	});
+	}, 40000);
 	return r;
 }
 export async function createFHIRResource(resourceType, newResource) {
 	let r = apiTimeout(async () => {
-		/* let token;
-		try {
-			token = await getToken();
-		} catch (e) {
-			throw new tokenError(
-				"Failed to update FHIR resource because of token error"
-			);
-		} */
 		const searchUrl = `${process.env.REACT_APP_FHIR_BASE}/${resourceType}`;
 		const headers = new Headers();
-		/* headers.set("Authorization", "Bearer " + token); */
+		const authenticationValue = getBasicAuthCreds();
+		headers.set("Authorization", "Basic " + authenticationValue);
 		headers.set("Content-Type", "application/fhir+json");
 		let errorMessages;
 		const updateResult = await fetch(searchUrl, {
@@ -124,7 +157,13 @@ export async function createFHIRResource(resourceType, newResource) {
 			headers: headers,
 			body: newResource.toFHIRJson(),
 		})
-			.then((response) => response.json())
+			.then((response) => {
+				if (response.status == 401)
+					throw new authenticationError(
+						"Authentication failed. You might need to login again."
+					);
+				return response.json();
+			})
 			.then((data) => {
 				if (data["resourceType"] == "OperationOutcome") {
 					alert("OPoutcome");
@@ -154,18 +193,10 @@ export async function updateFHIRResource(
 	console.log("updating resource: ", updatedResource);
 	console.log("fhirified resource: ", updatedResource.toFHIRJson());
 	let r = apiTimeout(async () => {
-		/* let token;
-		try {
-			token = await getToken();
-		} catch (e) {
-			alert("caught tokenerror");
-			throw new tokenError(
-				"Failed to update FHIR resource because of token error"
-			);
-		} */
 		const searchUrl = `${process.env.REACT_APP_FHIR_BASE}/${resourceType}?${oldResource.id}`;
 		const headers = new Headers();
-		/* headers.set("Authorization", "Bearer " + token); */
+		const authenticationValue = getBasicAuthCreds();
+		headers.set("Authorization", "Basic " + authenticationValue);
 		headers.set("Content-Type", "application/fhir+json");
 		let errorMessages;
 		const updateResult = await fetch(searchUrl, {
@@ -180,8 +211,8 @@ export async function updateFHIRResource(
 							"Resource could not be parsed or failed FHIR validation rules."
 						);
 					if (response.status == 401)
-						throw new updateError(
-							"Authorization failed. You might need to login again."
+						throw new authenticationError(
+							"Authentication failed. You might need to login again."
 						);
 					if (response.status == 404)
 						throw new updateError(
@@ -224,21 +255,15 @@ export async function updateFHIRResource(
 	return r;
 }
 
-export const deleteResources = async (ids, resourceType) => {
+export async function deleteResources(ids, resourceType) {
 	let r = apiTimeout(async () => {
-		/* let token;
-		try {
-			token = await getToken();
-		} catch (e) {
-			throw new tokenError(
-				"Failed to update FHIR resource because of token error. Is the server online?"
-			);
-		} */
+		const headers = new Headers();
+		const authenticationValue = getBasicAuthCreds();
+		headers.set("Authorization", "Basic " + authenticationValue);
 		const results = await Promise.all(
 			ids.map(async (id) => {
 				const searchUrl = `${process.env.REACT_APP_FHIR_BASE}/${resourceType}/${id}`;
-				const headers = new Headers();
-				/* headers.set("Authorization", "Bearer " + token); */
+
 				headers.set("Content-Type", "application/fhir+json");
 
 				await fetch(searchUrl, {
@@ -247,6 +272,10 @@ export const deleteResources = async (ids, resourceType) => {
 				})
 					.then((response) => {
 						if (!response.ok) {
+							if (response.status == 401)
+								throw new authenticationError(
+									"Authentication failed. You might need to login again."
+								);
 							if (response.status === 405)
 								throw new updateError(
 									"Deleting for resource " +
@@ -297,31 +326,7 @@ export const deleteResources = async (ids, resourceType) => {
 		);
 	});
 	return r;
-};
-
-export const getToken = () => {
-	const tokenHeaders = new Headers();
-	tokenHeaders.set("Content-Type", "application/x-www-form-urlencoded");
-	const urlParams = new URLSearchParams();
-	urlParams.append("grant_type", "client_credentials");
-	urlParams.append("client_id", "5b582c95-65f8-46d1-9ce4-0591846140b5");
-	urlParams.append("client_secret", process.env.REACT_APP_CLIENT_SECRET);
-	return fetch(`${process.env.REACT_APP_FHIR_BASE}/oauth2/token`, {
-		method: "POST",
-		headers: tokenHeaders,
-		body: urlParams,
-	})
-		.then((response) => {
-			if (!response.ok)
-				throw new tokenError(
-					"There was an authorization issue. Are you logged in?"
-				);
-			return response.json();
-		})
-		.then((data) => {
-			return data.access_token;
-		});
-};
+}
 
 export const allResources = [
 	"Binary",
@@ -337,7 +342,7 @@ export const allResources = [
 	"ValueSet",
 ];
 
-export const apiTimeout = async (apiCall) => {
+export const apiTimeout = async (apiCall, timeoutLength) => {
 	let timeoutId;
 	let timeoutPromise = new Promise(async (resolve, reject) => {
 		timeoutId = setTimeout(() => {
@@ -347,11 +352,15 @@ export const apiTimeout = async (apiCall) => {
 					"Request taking very long. Try limiting the input or check if the server is online."
 				)
 			);
-		}, 60000);
+		}, timeoutLength || 5000);
 	});
-
+	console.log(apiCall);
+	console.log(apiCall.name);
+	if (apiCall.name != "innerTestBasicAuth" && !getBasicAuthCreds()) {
+		clearTimeout(timeoutId);
+		throw new authenticationError("Session expired. You need to login first.");
+	}
 	const apiCallPromise = apiCall();
-
 	return Promise.race([apiCallPromise, timeoutPromise]).finally(() => {
 		clearTimeout(timeoutId);
 	});
@@ -369,11 +378,16 @@ export async function searchReference(resourcetype, paramsAndModifiers) {
 	const searchUrl = `${process.env.REACT_APP_FHIR_BASE}/${resourcetype}?`;
 
 	const headers = new Headers();
-	/* headers.set("Authorization", "Bearer " + token); */
+	const authenticationValue = getBasicAuthCreds();
+	headers.set("Authorization", "Basic " + authenticationValue);
 
 	var errorMessages;
 	let results = await fetch(searchUrl, { method: "GET", headers: headers })
 		.then((response) => {
+			if (response.status == 401)
+				throw new authenticationError(
+					"Authentication failed. You might need to login again."
+				);
 			if (!response.ok) {
 				console.log(response);
 			}
@@ -402,15 +416,12 @@ export async function searchReference(resourcetype, paramsAndModifiers) {
 }
 
 export async function getAttachment(url) {
-	// This function differs from the normal queryFHIR function in that it does deserialize the results, but keeps it in JSON. This is because
-	// the referenced types are not (yet) represented in this application (for now only "Patient").
-	let token;
-	token = await getToken();
 	// This functionality will be added if the IBM server supports the _filter option to allow logical OR on multiple element types, not only on the values
 	// of a single element Type.
 	//const searchUrl = `${process.env.REACT_APP_FHIR_BASE}/fhir/R4/${resourcetype}?${paramsAndModifiers}`;
 	const searchUrl = url;
 	const headers = new Headers();
-	/* headers.set("Authorization", "Bearer " + token); */
+	const authenticationValue = getBasicAuthCreds();
+	headers.set("Authorization", "Basic " + authenticationValue);
 	return fetch(searchUrl, { method: "GET", headers: headers });
 }
