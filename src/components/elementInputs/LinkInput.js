@@ -27,9 +27,11 @@ const LinkInput = ({ link, changeLink }) => {
 								let s = "";
 								if (jsonResource.name) {
 									jsonResource.name.forEach((singleName) => {
-										s +=
-											singleName.given.join(" ") +
-											+(singleName.family ? ", " + singleName.family : "");
+										s += singleName.family ? singleName.family : "";
+										s += singleName.given
+											? ", " + singleName.given.join(" ")
+											: "";
+
 										s += ";";
 									});
 								} else {

@@ -66,7 +66,7 @@ const ReferenceInput = ({ reference, changeReference, referenceOptions }) => {
 				}
 				return {
 					id: resource.id,
-					displayLabel: displayLabel, //TODO: generalize
+					displayLabel: displayLabel,
 					resourceType: resource.resourceType,
 				};
 			});

@@ -98,6 +98,7 @@ const Home = () => {
 			setAuthenticationPromptOpen(true);
 		} else {
 			setSnackbarColor("error");
+			console.log(error);
 			setSnackbarMessage(error.message);
 			setSnackbarOpen(true);
 			setSnackbarTitle("Error");
@@ -178,7 +179,7 @@ const Home = () => {
 				updateNewResources(newNewResources, resourceType);
 				created = true;
 			} else {
-				let r = await updateFHIRResource(
+				await updateFHIRResource(
 					resourceType,
 					originalResource,
 					editedResource
@@ -226,7 +227,10 @@ const Home = () => {
 			handleCatchError(error);
 			return error;
 		}
-		await handleSearch();
+		await handleSearch({
+			searchValue: inputValue,
+			limit: parseInt(limit) || 0,
+		});
 		setLoading(false);
 		setSnackbarColor("success");
 		setSnackbarMessage("Resources deleted");

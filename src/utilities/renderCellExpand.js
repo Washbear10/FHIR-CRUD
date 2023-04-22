@@ -12,12 +12,7 @@ const ExpandableCell = ({ value, lengthThreshhold, rowExpanded }) => {
 
 	React.useEffect(() => {
 		setSplitString(value.split("\n"));
-		console.log("rerendrng of expandl cell");
 	}, [value]);
-	React.useEffect(() => {
-		console.log("rerendrng of expandl cell");
-	}, []);
-
 	return (
 		<Stack
 			spacing={1}

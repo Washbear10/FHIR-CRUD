@@ -11,10 +11,8 @@ const AttachmentInput = ({ attachment, changeAttachment }) => {
 				setDisplayImage(image);
 			});
 		} else if (attachment.url) {
-			console.log("has url: ", attachment.url);
 			getAttachment(attachment.url)
 				.then((response) => {
-					console.log(response);
 					return response.blob();
 				})
 				.then((blob) => {
@@ -22,8 +20,8 @@ const AttachmentInput = ({ attachment, changeAttachment }) => {
 					reader.readAsDataURL(blob);
 
 					reader.onload = () => {
-						/* const parsedData = reader.result.replace(/data:.*\/.*;base64,/, ""); */
-						const parsedData = reader.result;
+						const parsedData = reader.result.replace(/data:.*\/.*;base64,/, "");
+						/* const parsedData = reader.result; */
 						makeImage(parsedData).then((image) => {
 							setDisplayImage(image);
 						});
@@ -34,64 +32,36 @@ const AttachmentInput = ({ attachment, changeAttachment }) => {
 
 	function makeImage(fileData) {
 		return new Promise(function (resolved, rejected) {
-			console.log(fileData);
 			var i = new Image();
 			i.onload = function (e) {
 				resolved(i);
 			};
-			i.src = fileData;
+			i.src = `data:image/jpeg;base64,${fileData}`;
 		});
 	}
 
 	const handleFileChange = (e) => {
 		if (e.target.files) {
 			const file = e.target.files[0];
-			console.log(file);
 			let reader = new FileReader();
 			reader.readAsDataURL(file);
 			reader.onload = () => {
 				if (reader.result.startsWith("data:")) {
-					/* const parsedData = reader.result.replace(/data:.*\/.*;base64,/, ""); */
-					const parsedData = reader.result;
+					const parsedData = reader.result.replace(/data:.*\/.*;base64,/, "");
+					/* const parsedData = reader.result; */
 
 					let newAttachment = new Attachment({
 						...attachment,
 						data: parsedData,
 						url: null,
+						contentType: "image/jpeg",
 					});
 					changeAttachment(newAttachment, attachment);
 				}
 			};
 		}
 	};
-	/* if (attachment.url) {
-		return (
-			<Box
-				sx={{
-					height: dimensions.heigh,
-					width: dimensions.width,
-					maxWidth: "100%",
-					maxHeight: "500px",
-				}}
-			>
-				<img src={`data:image/jpeg;base64,${attachment.data}`} />;
-			</Box>
-		);
-	} else if (attachment.data) {
-		/* const image = await getImageDimensions(attachment.data); 
-		return (
-			<Box
-				sx={{
-					height: dimensions.heigh,
-					width: dimensions.width,
-					maxWidth: "100%",
-					maxHeight: "500px",
-				}}
-			>
-				<img src={`data:image/jpeg;base64,${attachment.data}`} />;
-			</Box>
-		);
-	} */
+
 	if (displayImage) {
 		return (
 			<Box sx={{}}>

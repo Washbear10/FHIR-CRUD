@@ -37,12 +37,14 @@ async function getResultCount(url) {
 	const headers = new Headers();
 	const authenticationValue = getBasicAuthCreds();
 	headers.set("Authorization", "Basic " + authenticationValue);
+	let errorMessages;
 	return await fetch(url, { method: "GET", headers: headers })
-		.then((response) => {
+		.then(async (response) => {
 			if (response.status == 401)
 				throw new authenticationError(
 					"Authentication failed. You might need to login again."
 				);
+
 			if (!response.ok) {
 				return null;
 			}
@@ -60,6 +62,8 @@ export default async function queryFHIR(resources, searchString, limit) {
 			results[r] = [];
 		});
 
+		// Since this application only implements the Patient input, only Patient resources can be queried.
+		// When functionality for other Resources are added, some minor changes will have to be made to this function (mainly regarding search parameters.)
 		for (const resource of [Patient]) {
 			const headers = new Headers();
 			const authenticationValue = getBasicAuthCreds();
@@ -91,7 +95,7 @@ export default async function queryFHIR(resources, searchString, limit) {
 					  }?name:contains=${searchString}&_count=${
 							!isNaN(count) && count > 0 ? count : ""
 					  }`;
-				var errorMessages;
+				let errorMessages;
 				/* headers.set("Authorization", "Bearer " + token); */
 				await fetch(searchUrl, { method: "GET", headers: headers })
 					.then((response) => {
@@ -101,8 +105,20 @@ export default async function queryFHIR(resources, searchString, limit) {
 								"Authentication failed. You might need to login again."
 							);
 						}
-						if (!response.ok) {
-							//handleErrorResponse(response)
+
+						if (response.status == 400) {
+							try {
+								let jsonResponse = response.json();
+								errorMessages = jsonResponse.issue.map((issue) => {
+									let s = "";
+									if (issue.expression)
+										s += "Issue in " + issue.expression.join(",") + ": ";
+									if (issue.details) s += issue.details.text;
+								});
+							} catch (e) {
+								console.log("caught error trying to decode issues: ", e);
+							}
+							throw new updateError(errorMessages.join("\n"));
 						}
 						return response.json();
 					})
@@ -156,32 +172,26 @@ export async function createFHIRResource(resourceType, newResource) {
 			method: "POST",
 			headers: headers,
 			body: newResource.toFHIRJson(),
-		})
-			.then((response) => {
-				if (response.status == 401)
-					throw new authenticationError(
-						"Authentication failed. You might need to login again."
-					);
-				return response.json();
-			})
-			.then((data) => {
-				if (data["resourceType"] == "OperationOutcome") {
-					alert("OPoutcome");
-					errorMessages = data.issue.map((element) => {
-						return element.details.text;
+		}).then((response) => {
+			if (response.status == 401)
+				throw new authenticationError(
+					"Authentication failed. You might need to login again."
+				);
+			if (response.status == 400) {
+				try {
+					let jsonResponse = response.json();
+					errorMessages = jsonResponse.issue.map((issue) => {
+						let s = "";
+						if (issue.expression)
+							s += "Issue in " + issue.expression.join(",") + ": ";
+						if (issue.details) s += issue.details.text;
 					});
+				} catch (e) {
+					console.log("caught error trying to decode issues: ", e);
 				}
-				if (errorMessages) {
-					throw new queryError(
-						"There was an error updating data." +
-							"\nFHIR issues: " +
-							errorMessages,
-						errorMessages
-					);
-				}
-				return data;
-			});
-		return updateResult;
+				throw new updateError(errorMessages.join("\n"));
+			}
+		});
 	});
 	return r;
 }
@@ -193,64 +203,66 @@ export async function updateFHIRResource(
 	console.log("updating resource: ", updatedResource);
 	console.log("fhirified resource: ", updatedResource.toFHIRJson());
 	let r = apiTimeout(async () => {
-		const searchUrl = `${process.env.REACT_APP_FHIR_BASE}/${resourceType}?${oldResource.id}`;
+		const searchUrl = `${process.env.REACT_APP_FHIR_BASE}/${resourceType}/${oldResource.id}`;
 		const headers = new Headers();
 		const authenticationValue = getBasicAuthCreds();
 		headers.set("Authorization", "Basic " + authenticationValue);
 		headers.set("Content-Type", "application/fhir+json");
 		let errorMessages;
+
 		const updateResult = await fetch(searchUrl, {
 			method: "PUT",
 			headers: headers,
 			body: updatedResource.toFHIRJson(),
-		})
-			.then((response) => {
-				if (!response.ok) {
-					if (response.status == 400)
+		}).then(async (response) => {
+			if (!response.ok) {
+				if (response.status == 400) {
+					try {
+						const jsonResponse = await response.json();
+						console.log(jsonResponse);
+						errorMessages = jsonResponse.issue.map((issue) => {
+							console.log("issue is: ", issue);
+							let s = "";
+							if (issue.expression)
+								s += "Issue in " + issue["expression"].join(",") + ": ";
+							if (issue.details) s += issue.details.text;
+							console.log(s);
+							return decodeHtml(s);
+						});
+					} catch (e) {
+						console.log("caught error trying to decode issues: ", e);
 						throw new updateError(
-							"Resource could not be parsed or failed FHIR validation rules."
+							"There was an error updating this resource. Check if all input values follow the specified constraints."
 						);
-					if (response.status == 401)
-						throw new authenticationError(
-							"Authentication failed. You might need to login again."
-						);
-					if (response.status == 404)
+					}
+					if (errorMessages) throw new updateError(errorMessages.join("\n"));
+					else
 						throw new updateError(
-							"Resource not found on the server. Maybe it was deleted by someone else while you were editing it."
-						);
-					if (response.status == 405)
-						throw new updateError(
-							"The server does not allow client defined ids. Please contact the FHIR servers administrator to configure 'Update as Create'."
-						);
-					if (response.status == 409 || response.status == 412)
-						throw new updateError(
-							"Version Conflict. Someone else might have edited the resource in the meanwhile."
-						);
-					if (response.status == 422)
-						throw new updateError(
-							"The proposed resource violated applicable FHIR profiles or server business rules."
+							"There was an error updating this resource. Check if all input values follow the specified constraints."
 						);
 				}
-				return response.json();
-			})
-			.then((data) => {
-				if (data["resourceType"] == "OperationOutcome") {
-					alert("OPoutcome");
-					errorMessages = data.issue.map((element) => {
-						return element.details.text;
-					});
-				}
-				if (errorMessages) {
-					throw new queryError(
-						"There was an error updating data." +
-							"\nFHIR issues: " +
-							errorMessages,
-						errorMessages
+				if (response.status == 401)
+					throw new authenticationError(
+						"Authentication failed. You might need to login again."
 					);
-				}
-				return data;
-			});
-		return updateResult;
+				if (response.status == 404)
+					throw new updateError(
+						"Resource not found on the server. Maybe it was deleted by someone else while you were editing it."
+					);
+				if (response.status == 405)
+					throw new updateError(
+						"The server does not allow client defined ids. Please contact the FHIR servers administrator to configure 'Update as Create'."
+					);
+				if (response.status == 409 || response.status == 412)
+					throw new updateError(
+						"Version Conflict. Someone else might have edited the resource in the meanwhile."
+					);
+				if (response.status == 422)
+					throw new updateError(
+						"The proposed resource violated applicable FHIR profiles or server business rules."
+					);
+			}
+		});
 	});
 	return r;
 }
@@ -260,6 +272,8 @@ export async function deleteResources(ids, resourceType) {
 		const headers = new Headers();
 		const authenticationValue = getBasicAuthCreds();
 		headers.set("Authorization", "Basic " + authenticationValue);
+		let errorMessages;
+
 		const results = await Promise.all(
 			ids.map(async (id) => {
 				const searchUrl = `${process.env.REACT_APP_FHIR_BASE}/${resourceType}/${id}`;
@@ -269,59 +283,67 @@ export async function deleteResources(ids, resourceType) {
 				await fetch(searchUrl, {
 					method: "DELETE",
 					headers: headers,
-				})
-					.then((response) => {
-						if (!response.ok) {
-							if (response.status == 401)
-								throw new authenticationError(
-									"Authentication failed. You might need to login again."
-								);
-							if (response.status === 405)
+				}).then(async (response) => {
+					if (!response.ok) {
+						if (response.status == 400) {
+							try {
+								const jsonResponse = await response.json();
+								console.log(jsonResponse);
+								errorMessages = jsonResponse.issue.map((issue) => {
+									console.log("issue is: ", issue);
+									let s = "";
+									if (issue.expression)
+										s += "Issue in " + issue["expression"].join(",") + ": ";
+									if (issue.details) s += issue.details.text;
+									console.log(s);
+									return decodeHtml(s);
+								});
+							} catch (e) {
+								console.log("caught error trying to decode issues: ", e);
 								throw new updateError(
-									"Deleting for resource " +
-										String(id) +
-										" not allowed. Is there a server-side policy that prevents deletion of particular resources?"
-								);
-							else if (response.status === 409)
-								throw new updateError(
-									"Deleting for resource " +
-										String(id) +
-										" not allowed. There seems to be a conflict."
-								);
-							else if (response.status === 410)
-								throw new updateError(
-									"Deleting for resource " +
-										String(id) +
-										" not possible. It does not exist on the server. Maybe it was deleted by another user in the meantime."
-								);
-							else {
-								throw new updateError(
-									"Deleting for resource " +
-										String(id) +
-										" not allowed. Status code: " +
-										String(response.status) +
-										". Refer to the FHIR specification for what might have gone wrong."
+									"There was an unexpected error deleting this resource."
 								);
 							}
+							if (errorMessages)
+								throw new updateError(errorMessages.join("\n"));
+							else
+								throw new updateError(
+									"There was an unexpected error deleting this resource."
+								);
 						}
-						return response.json();
-					})
-					.then((data) => {
-						let badSeverities = ["fatal", "error", "warning"];
-						let errorMessages;
-						if (data["resourceType"] == "OperationOutcome") {
-							errorMessages = data.issue.filter((element) =>
-								badSeverities.includes(element.severity)
+						if (response.status == 401)
+							throw new authenticationError(
+								"Authentication failed. You might need to login again."
 							);
-							errorMessages = errorMessages.map(
-								(element) => element.details.text
+						if (response.status === 405)
+							throw new updateError(
+								"Deleting for resource " +
+									String(id) +
+									" not allowed. Is there a server-side policy that prevents deletion of particular resources?"
+							);
+						else if (response.status === 409)
+							throw new updateError(
+								"Deleting for resource " +
+									String(id) +
+									" not allowed. There seems to be a conflict."
+							);
+						else if (response.status === 410)
+							throw new updateError(
+								"Deleting for resource " +
+									String(id) +
+									" not possible. It does not exist on the server. Maybe it was deleted by another user in the meantime."
+							);
+						else {
+							throw new updateError(
+								"Deleting for resource " +
+									String(id) +
+									" not allowed. Status code: " +
+									String(response.status) +
+									". Refer to the FHIR specification for what might have gone wrong."
 							);
 						}
-						if (errorMessages.length > 0) {
-							throw new updateError("\nFHIR issues: " + errorMessages);
-						}
-						return data;
-					});
+					}
+				});
 			})
 		);
 	});
@@ -354,8 +376,6 @@ export const apiTimeout = async (apiCall, timeoutLength) => {
 			);
 		}, timeoutLength || 5000);
 	});
-	console.log(apiCall);
-	console.log(apiCall.name);
 	if (apiCall.name != "innerTestBasicAuth" && !getBasicAuthCreds()) {
 		clearTimeout(timeoutId);
 		throw new authenticationError("Session expired. You need to login first.");
@@ -408,9 +428,11 @@ export async function searchReference(resourcetype, paramsAndModifiers) {
 				);
 			}
 
-			return data.entry.map((element) => {
-				return { ...element.resource };
-			});
+			return data.entry
+				? data.entry.map((element) => {
+						return { ...element.resource };
+				  })
+				: [];
 		});
 	return results;
 }
@@ -424,4 +446,10 @@ export async function getAttachment(url) {
 	const authenticationValue = getBasicAuthCreds();
 	headers.set("Authorization", "Basic " + authenticationValue);
 	return fetch(searchUrl, { method: "GET", headers: headers });
+}
+
+function decodeHtml(html) {
+	var txt = document.createElement("textarea");
+	txt.innerHTML = html;
+	return txt.value;
 }
