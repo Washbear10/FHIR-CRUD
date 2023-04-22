@@ -56,6 +56,7 @@ import { constructList } from "../../utilities/helpConstructInstances";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { LoginContext } from "../../utilities/LoginContext";
+import { getBasicAuthCreds } from "../../utilities/basicAuth";
 
 const Home = () => {
 	// state for Search Component
@@ -292,7 +293,37 @@ const Home = () => {
 					setDeleteCandidates([]);
 				}}
 			/>
-			<Button onClick={async () => {}}>Test Error</Button>
+			<Button
+				onClick={async () => {
+					const headers = new Headers();
+
+					const authenticationValue = getBasicAuthCreds();
+					headers.set("Authorization", "Basic " + authenticationValue);
+					headers.set("Content-Type", "application/fhir+json");
+					const searchUrl = `${process.env.REACT_APP_FHIR_BASE}`;
+					let body = {
+						resourceType: "Bundle",
+						type: "batch",
+						entry: [
+							{
+								request: {
+									method: "GET",
+									url: "/Patient",
+								},
+							},
+						],
+					};
+					const updateResult = await fetch(searchUrl, {
+						method: "POST",
+						headers: headers,
+						body: JSON.stringify(body),
+					}).then((response) => {
+						console.log(response);
+					});
+				}}
+			>
+				Test Error
+			</Button>
 			<SearchForm
 				onSubmit={handleSubmit}
 				resourceList={resourceList}

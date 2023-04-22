@@ -65,7 +65,7 @@ export default async function queryFHIR(resources, searchString, limit) {
 			const authenticationValue = getBasicAuthCreds();
 			headers.set("Authorization", "Basic " + authenticationValue);
 			let resultCountPreflight = await getResultCount(
-				`${process.env.REACT_APP_FHIR_BASE}/${resource.name}?_text=${searchString}&_summary=count`
+				`${process.env.REACT_APP_FHIR_BASE}/${resource.name}?name:contains=${searchString}&_summary=count`
 			);
 			let maxResults = limit ? (limit > 1000 ? 1000 : limit) : 1000;
 			let count;
@@ -88,7 +88,7 @@ export default async function queryFHIR(resources, searchString, limit) {
 					? nextPageLink
 					: `${process.env.REACT_APP_FHIR_BASE}/${
 							resource.name
-					  }?_text=${searchString}&_count=${
+					  }?name:contains=${searchString}&_count=${
 							!isNaN(count) && count > 0 ? count : ""
 					  }`;
 				var errorMessages;

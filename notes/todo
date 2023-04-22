@@ -9,6 +9,7 @@ creat login functionality > avoid hardcoded credentials
 
 
 Resume :
+      find search parameters settings in docker
       implement cancel search button
       disable open close if copying
 
