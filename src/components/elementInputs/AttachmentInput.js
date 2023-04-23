@@ -1,9 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { Button, Box } from "@mui/material";
+import React, { useContext, useEffect, useState } from "react";
+import { Button, Box, Typography } from "@mui/material";
 import Attachment from "../../classes/dataTypes/Attachment";
 import { getAttachment } from "../../utilities/query";
-const AttachmentInput = ({ attachment, changeAttachment }) => {
+import { AttributeBlockErrorContext } from "../../utilities/AttributeBlockErrorContext";
+const AttachmentInput = ({ attachment, changeAttachment, photoSizeSum }) => {
 	const [displayImage, setDisplayImage] = useState(null);
+
+	const {
+		attributeBlockError,
+		setAttributeBlockError,
+		attributeBlockErrorMessage,
+		setAttributeBlockErrorMessage,
+	} = useContext(AttributeBlockErrorContext);
+	const [errorMessage, setErrorMessage] = useState("");
 
 	useEffect(() => {
 		if (attachment.data) {
@@ -43,21 +52,51 @@ const AttachmentInput = ({ attachment, changeAttachment }) => {
 	const handleFileChange = (e) => {
 		if (e.target.files) {
 			const file = e.target.files[0];
+			if (!file.type.match("image.*")) {
+				setAttributeBlockError(true);
+				setErrorMessage("Only images are allowed.");
+				return;
+			}
+			if (file.size + photoSizeSum > 10000000) {
+				setAttributeBlockError(true);
+				setAttributeBlockErrorMessage(
+					"Files exceed maximum size (10MB in total). Please remove or compress files."
+				);
+				setErrorMessage(
+					"Files exceed maximum size (10MB in total). Please remove or compress some files."
+				);
+
+				return;
+			}
 			let reader = new FileReader();
 			reader.readAsDataURL(file);
 			reader.onload = () => {
+				console.log("in Onload");
+				console.log(reader);
+				let parsedData;
 				if (reader.result.startsWith("data:")) {
-					const parsedData = reader.result.replace(/data:.*\/.*;base64,/, "");
-					/* const parsedData = reader.result; */
+					console.log("in if check");
+					console.log(reader.result);
+					const match = reader.result
+						.slice(0, 100)
+						.match(/data:.*\/.*;base64,/);
+					parsedData = match ? reader.result.slice(match[0].length) : "";
+					console.log(parsedData);
 
-					let newAttachment = new Attachment({
-						...attachment,
-						data: parsedData,
-						url: null,
-						contentType: "image/jpeg",
-					});
-					changeAttachment(newAttachment, attachment);
+					/* const parsedData = reader.result; */
 				}
+				console.log("parsed: ", parsedData);
+				console.log("rr: ", reader.result);
+				let newAttachment = new Attachment({
+					...attachment,
+					data: parsedData || reader.result,
+					url: null,
+					contentType: "image/jpeg",
+				});
+				console.log("newAtta: ", newAttachment);
+				setAttributeBlockError(false);
+				setAttributeBlockErrorMessage("");
+				changeAttachment(newAttachment, attachment);
 			};
 		}
 	};
@@ -78,16 +117,21 @@ const AttachmentInput = ({ attachment, changeAttachment }) => {
 		);
 	} else {
 		return (
-			<Button variant="contained" component="label" sx={{ width: "3rem" }}>
-				Upload
-				<input
-					hidden
-					accept="image/*"
-					multiple
-					type="file"
-					onChange={handleFileChange}
-				/>
-			</Button>
+			<Box sx={{ display: "flex", gap: "1rem" }}>
+				<Button variant="contained" component="label" sx={{ width: "3rem" }}>
+					Upload
+					<input
+						hidden
+						accept="image/*"
+						multiple
+						type="file"
+						onChange={handleFileChange}
+					/>
+				</Button>
+				{errorMessage ? (
+					<Typography color="error">{errorMessage}</Typography>
+				) : null}
+			</Box>
 		);
 	}
 };

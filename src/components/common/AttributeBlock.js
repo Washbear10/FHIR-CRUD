@@ -2,7 +2,7 @@ import React, { memo, useContext, useState } from "react";
 import { Box } from "@mui/system";
 import { useEffect } from "react";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { Button, IconButton } from "@mui/material";
+import { Button, IconButton, Typography } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { AttributeBlockErrorContext } from "../../utilities/AttributeBlockErrorContext";
 const AttributeBlock = ({
@@ -13,9 +13,17 @@ const AttributeBlock = ({
 }) => {
 	const [attributeBlockError, setAttributeBlockError] = useState(false);
 
+	const [attributeBlockErrorMessage, setAttributeBlockErrorMessage] =
+		useState("");
+
 	return (
 		<AttributeBlockErrorContext.Provider
-			value={{ attributeBlockError, setAttributeBlockError }}
+			value={{
+				attributeBlockError,
+				setAttributeBlockError,
+				attributeBlockErrorMessage,
+				setAttributeBlockErrorMessage,
+			}}
 		>
 			<Box
 				sx={{
@@ -36,10 +44,15 @@ const AttributeBlock = ({
 					<h3 style={{ margin: "0px", display: "inline" }}>
 						{attributeName}
 						{attributeBlockError ? (
-							<ErrorOutlineIcon
-								color="error"
-								sx={{ marginLeft: "1rem", marginBottom: "-5px" }}
-							/>
+							<>
+								<Typography color="error">
+									{attributeBlockErrorMessage}
+								</Typography>
+								<ErrorOutlineIcon
+									color="error"
+									sx={{ marginLeft: "1rem", marginBottom: "-5px" }}
+								/>
+							</>
 						) : null}
 					</h3>
 

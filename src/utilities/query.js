@@ -71,10 +71,8 @@ export default async function queryFHIR(resources, searchString, limit) {
 			let resultCountPreflight = await getResultCount(
 				`${process.env.REACT_APP_FHIR_BASE}/${resource.name}?name:contains=${searchString}&_summary=count`
 			);
-			let maxResults = limit ? (limit > 1000 ? 1000 : limit) : 1000;
-			let count;
-			if (!limit) count = 1000;
-			if (!resultCountPreflight) count = limit;
+			let count = 100;
+			/* if (!resultCountPreflight) count = limit;
 			else if (resultCountPreflight > 3000) {
 				count = Math.floor(resultCountPreflight / 4);
 			} else if (resultCountPreflight > 900) {
@@ -83,7 +81,7 @@ export default async function queryFHIR(resources, searchString, limit) {
 				count = Math.floor(resultCountPreflight / 2);
 			} else {
 				count = resultCountPreflight;
-			}
+			} */
 			let nextPageLink = "";
 			do {
 				// hapi test server doesnt support maxresults, check in IBM
@@ -207,11 +205,11 @@ export async function updateFHIRResource(
 		const headers = new Headers();
 		const authenticationValue = getBasicAuthCreds();
 		headers.set("Authorization", "Basic " + authenticationValue);
-		headers.set("Content-Type", "application/fhir+json");
+		headers.set("Content-Type", "application/json-patch+json");
 		let errorMessages;
 
 		const updateResult = await fetch(searchUrl, {
-			method: "PUT",
+			method: "PATCH",
 			headers: headers,
 			body: updatedResource.toFHIRJson(),
 		}).then(async (response) => {
@@ -263,7 +261,7 @@ export async function updateFHIRResource(
 					);
 			}
 		});
-	});
+	}, 10000);
 	return r;
 }
 

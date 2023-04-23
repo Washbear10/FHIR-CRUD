@@ -16,6 +16,7 @@ export default class Attachment {
 		pages,
 		internalReactID,
 	}) {
+		console.log("in att constructor");
 		this.contentType = contentType;
 		this.language = language;
 		this.data = data;

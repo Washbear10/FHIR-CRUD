@@ -74,6 +74,24 @@ const PatientInput = ({ resource, modifyResource }) => {
 		return newElements;
 	};
 
+	const [totalPhotoSize, setTotalPhotoSize] = useState(0);
+	useEffect(() => {
+		setTotalPhotoSize(calcTotalPhotoSize());
+	}, [resource.photo]);
+
+	function calcTotalPhotoSize() {
+		if (resource && resource.photo) {
+			let sum = 0;
+			resource.photo.forEach((photo) => {
+				if (photo.data) {
+					const size = new TextEncoder().encode(photo.data).length;
+					sum += size ? size : 0;
+				}
+			});
+			return sum;
+		}
+		return 0;
+	}
 	const addName = () => {
 		/* let newNames = cloneElementList("name"); */
 		let newNames = [...resource.name];
@@ -942,6 +960,7 @@ const PatientInput = ({ resource, modifyResource }) => {
 															<AttachmentInput
 																attachment={singlePhoto.singlePhoto}
 																changeAttachment={changePhoto}
+																photoSizeSum={totalPhotoSize}
 															/>
 														</Subcomponent>
 													</DeleteableComponent>

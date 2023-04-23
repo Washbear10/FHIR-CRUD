@@ -9,6 +9,8 @@ creat login functionality > avoid hardcoded credentials
 
 
 Resume :
+      check if github issue answered
+            if not, keep using update instead of patch
       go through all Elements and implement constraints
       implement cancel search button
       disable open close if copying

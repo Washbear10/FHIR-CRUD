@@ -10,9 +10,12 @@ const codeValues = ["replaced-by", "replaces", "refer", "seealso"];
 const LinkInput = ({ link, changeLink }) => {
 	const [errorMessage, setErrorMessage] = useState("");
 
-	const { attributeBlockError, setAttributeBlockError } = useContext(
-		AttributeBlockErrorContext
-	);
+	const {
+		attributeBlockError,
+		setAttributeBlockError,
+		attributeBlockErrorMessage,
+		setAttributeBlockErrorMessage,
+	} = useContext(AttributeBlockErrorContext);
 
 	const wasMounted = useRef(false);
 	useEffect(() => {

@@ -15,6 +15,11 @@ import dayjs from "dayjs";
 import { Box } from "@mui/system";
 import { Backdrop, CircularProgress, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
+import { json } from "react-router-dom";
+import { clearObjectFromEmptyValues } from "../../utilities/fhirify";
+import { Patient } from "../../classes/resourceTypes/Patient";
+
+var equal = require("deep-equal");
 
 const InputDialog = ({
 	open,
@@ -72,32 +77,60 @@ const InputDialog = ({
 		switch (resourceType) {
 			case "Patient":
 				return (
-					<PatientInput
-						resource={resource}
-						originalResource={originalResource}
-						modifyResource={modifyResource}
-					/>
+					<PatientInput resource={resource} modifyResource={modifyResource} />
 				);
 		}
 	};
 
+	const makePatchFormat = () => {
+		let changedKeys = [];
+		Object.keys(editedResource).forEach((key) => {
+			if (editedResource[key] == originalResource[key]) {
+				console.log("key value is same reference -> wasnt changed:");
+			} else {
+				console.log("key value is NOT same:");
+				let same = equal(editedResource[key], originalResource[key]);
+				console.log(same);
+				if (!same) changedKeys.push(key);
+				/* let editedAttribute = JSON.parse(JSON.stringify(editedResource[key]));
+				clearObjectFromEmptyValues(editedAttribute);
+				let originalAttribute = JSON.parse(
+					JSON.stringify(originalResource[key])
+				);
+				clearObjectFromEmptyValues(originalAttribute);
+				console.log("o: ", originalAttribute);
+				console.log("x: ", editedAttribute); 
+				if (
+					JSON.stringify(originalAttribute) == JSON.stringify(editedAttribute)
+				) {
+					console.log("but json string is same");
+				} else {
+					console.log("and json string is also not same");
+					changedKeys.push(key);
+				} */
+			}
+		});
+		console.log(changedKeys);
+
+		let patchedResource = new Patient({ ...editedResource });
+		console.log(patchedResource);
+		Object.keys(patchedResource).forEach((key) => {
+			if (!changedKeys.includes(key) && key != "id")
+				delete patchedResource[key];
+		});
+
+		console.log(patchedResource.toFHIRJson());
+		return patchedResource;
+	};
+
 	const handleSave = async () => {
 		setBackDropOpen(true);
-		let success = await saveUpdates(editedResource);
+		/* let success = await saveUpdates(editedResource); */
+		let success = await saveUpdates(makePatchFormat());
 		setBackDropOpen(false);
 		if (success) handleClose();
 		else setinputDialogError(true);
 	};
-
-	const callback = (
-		id, // the "id" prop of the Profiler tree that has just committed
-		phase, // either "mount" (if the tree just mounted) or "update" (if it re-rendered)
-		actualDuration, // time spent rendering the committed update
-		baseDuration, // estimated time to render the entire subtree without memoization
-		startTime, // when React began rendering this update
-		commitTime, // when React committed this update
-		interactions
-	) => {};
 
 	return (
 		/* 		<InputDialogErrorContext.Provider
@@ -154,6 +187,9 @@ const InputDialog = ({
 				</Button>
 				<Button color="success" variant="contained" onClick={handleSave}>
 					Save
+				</Button>
+				<Button color="success" variant="contained" onClick={makePatchFormat}>
+					check patch
 				</Button>
 			</DialogActions>
 		</Dialog>
