@@ -35,14 +35,21 @@ const CodeInput = ({
 					color: "red",
 					backgroundColor: "rgba(250,250,250,0.9)",
 				},
-				".MuiAutocomplete-input": {
-					textOverflow: "clip",
-					overflow: "scroll",
-					padding: "0",
-				},
+				".MuiAutocomplete-input": Object.keys(rest).includes("textOverflow")
+					? {
+							textOverflow: rest["textOverflow"],
+							overflow: "scroll",
+							padding: "0",
+					  }
+					: {
+							textOverflow: "clip",
+							overflow: "scroll",
+							padding: "0",
+					  },
 				"& .MuiOutlinedInput-root": {
 					paddingRight: "5px !important",
 				},
+				"& .MuiFormHelperText-root": {},
 			}}
 			fullWidth
 			popupIcon={<ArrowDropDownIcon size="small" fontSize="16px" />}
@@ -57,6 +64,8 @@ const CodeInput = ({
 									textOverflow: "clip",
 									overflow: "visible",
 								}}
+								error={rest.error}
+								helperText={rest.helperText}
 							/>
 					  )
 					: (params) => {

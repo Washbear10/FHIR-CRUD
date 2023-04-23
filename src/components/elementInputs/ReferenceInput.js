@@ -8,7 +8,12 @@ import { Autocomplete, Typography } from "@mui/material";
 import { useEffect, useRef } from "react";
 import { isObjectEmptyRecursive } from "../../utilities/fhirify";
 import { TextField } from "@mui/material";
-const ReferenceInput = ({ reference, changeReference, referenceOptions }) => {
+const ReferenceInput = ({
+	reference,
+	changeReference,
+	referenceOptions,
+	...rest
+}) => {
 	const [selectedValue, setSelectedValue] = useState(null);
 	const [selectedResourceType, setSelectedResourceType] = useState(
 		reference
@@ -25,9 +30,15 @@ const ReferenceInput = ({ reference, changeReference, referenceOptions }) => {
 	}, [selectedResourceType]);
 
 	useEffect(() => {
+		if (!reference.reference) return;
 		if (searchResults) {
 			searchResults.map((item) => {
-				if (item.id == reference.reference) {
+				if (
+					item.id ==
+					reference.reference.substring(
+						reference.reference.lastIndexOf("/") + 1
+					)
+				) {
 					console.log(reference.display);
 					item.displayLabel = reference.display;
 					setSelectedValue(item);
@@ -80,12 +91,11 @@ const ReferenceInput = ({ reference, changeReference, referenceOptions }) => {
 			console.log("old ref: ", reference);
 			let newRef = new Reference({
 				type: newVal.resourceType,
-				reference: newVal.id,
+				reference: newVal.id ? `${newVal.resourceType}/` + newVal.id : null,
 				display: newVal.displayLabel,
 				internalReactID: reference.internalReactID,
 			});
 			console.log("new ref: ", newRef);
-
 			setSelectedValue(newVal);
 			changeReference(newRef, reference);
 		} else {
@@ -143,9 +153,13 @@ const ReferenceInput = ({ reference, changeReference, referenceOptions }) => {
 					</Box>
 				)}
 				getOptionLabel={(option) => {
-					return option.displayLabel || option.id;
+					if (option.displayLabel) return option.displayLabel;
+					return option.id ? option.id.slice(9) : "unknown ID";
 				}}
 				loading={loading}
+				width={"500px"}
+				error={rest.error}
+				helperText={rest.helperText}
 			/>
 		</Box>
 	);

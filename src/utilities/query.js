@@ -189,7 +189,7 @@ export async function createFHIRResource(resourceType, newResource) {
 				} catch (e) {
 					console.log("caught error trying to decode issues: ", e);
 				}
-				throw new updateError(errorMessages.join("\n"));
+				throw new updateError(errorMessages.join(".\n"));
 			}
 		});
 	});
