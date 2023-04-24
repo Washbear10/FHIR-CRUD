@@ -69,7 +69,10 @@ export default async function queryFHIR(resources, searchString, limit) {
 			const authenticationValue = getBasicAuthCreds();
 			headers.set("Authorization", "Basic " + authenticationValue);
 			let resultCountPreflight = await getResultCount(
-				`${process.env.REACT_APP_FHIR_BASE}/${resource.name}?name:contains=${searchString}&_summary=count`
+				/* `${process.env.REACT_APP_FHIR_BASE}/${resource.name}?name:contains=${searchString}&_summary=count` */
+				`${process.env.REACT_APP_FHIR_BASE}/${resource.name}?${
+					searchString ? "name:contains=" + searchString + "&" : ""
+				}_summary=count`
 			);
 			let count = 100;
 			/* if (!resultCountPreflight) count = limit;
@@ -88,11 +91,9 @@ export default async function queryFHIR(resources, searchString, limit) {
 				/* const searchUrl = `${process.env.REACT_APP_FHIR_BASE}/${resource.name}?_content=${searchString}&_maxresults=5`; */
 				const searchUrl = nextPageLink
 					? nextPageLink
-					: `${process.env.REACT_APP_FHIR_BASE}/${
-							resource.name
-					  }?name:contains=${searchString}&_count=${
-							!isNaN(count) && count > 0 ? count : ""
-					  }`;
+					: `${process.env.REACT_APP_FHIR_BASE}/${resource.name}?${
+							searchString ? "name:contains=" + searchString + "&" : ""
+					  }_count=${!isNaN(count) && count > 0 ? count : ""}`;
 				let errorMessages;
 				/* headers.set("Authorization", "Bearer " + token); */
 				await fetch(searchUrl, { method: "GET", headers: headers })
@@ -198,8 +199,6 @@ export async function updateFHIRResource(
 	oldResource,
 	updatedResource
 ) {
-	console.log("updating resource: ", updatedResource);
-	console.log("fhirified resource: ", updatedResource.toFHIRJson());
 	let r = apiTimeout(async () => {
 		const searchUrl = `${process.env.REACT_APP_FHIR_BASE}/${resourceType}/${oldResource.id}`;
 		const headers = new Headers();
@@ -211,7 +210,8 @@ export async function updateFHIRResource(
 		const updateResult = await fetch(searchUrl, {
 			method: "PATCH",
 			headers: headers,
-			body: updatedResource.toFHIRJson(),
+			/* body: updatedResource.toFHIRJson(), */
+			body: updatedResource,
 		}).then(async (response) => {
 			if (!response.ok) {
 				if (response.status == 400) {

@@ -299,31 +299,15 @@ const Home = () => {
 			/>
 			<Button
 				onClick={async () => {
-					const headers = new Headers();
-
-					const authenticationValue = getBasicAuthCreds();
-					headers.set("Authorization", "Basic " + authenticationValue);
-					headers.set("Content-Type", "application/fhir+json");
-					const searchUrl = `${process.env.REACT_APP_FHIR_BASE}`;
-					let body = {
-						resourceType: "Bundle",
-						type: "batch",
-						entry: [
-							{
-								request: {
-									method: "GET",
-									url: "/Patient",
-								},
-							},
-						],
-					};
-					const updateResult = await fetch(searchUrl, {
-						method: "POST",
-						headers: headers,
-						body: JSON.stringify(body),
-					}).then((response) => {
-						console.log(response);
-					});
+					let old = { id: "187b25ec1b2-cfc2a7ea-d78d-42b1-9921-cdddedbd361b" };
+					const p = [
+						{
+							op: "add",
+							path: `/name`,
+							value: [{ given: ["added"] }],
+						},
+					];
+					updateFHIRResource("Patient", old, JSON.stringify(p));
 				}}
 			>
 				Test Error

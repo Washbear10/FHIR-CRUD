@@ -57,13 +57,16 @@ const AttachmentInput = ({ attachment, changeAttachment, photoSizeSum }) => {
 				setErrorMessage("Only images are allowed.");
 				return;
 			}
-			if (file.size + photoSizeSum > 10000000) {
-				setAttributeBlockError(true);
+			if (
+				file.size + photoSizeSum >
+				process.env.REACT_APP_MAX_ATTACHMENT_SIZE
+			) {
+				/* setAttributeBlockError(true);
 				setAttributeBlockErrorMessage(
 					"Files exceed maximum size (10MB in total). Please remove or compress files."
-				);
+				); */
 				setErrorMessage(
-					"Files exceed maximum size (10MB in total). Please remove or compress some files."
+					"Files exceed maximum size (10MB in total). Please remove or compress some files in order to add more."
 				);
 
 				return;

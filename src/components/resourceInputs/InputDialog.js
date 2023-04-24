@@ -16,7 +16,10 @@ import { Box } from "@mui/system";
 import { Backdrop, CircularProgress, Typography } from "@mui/material";
 import { useTheme } from "@emotion/react";
 import { json } from "react-router-dom";
-import { clearObjectFromEmptyValues } from "../../utilities/fhirify";
+import {
+	clearObjectFromEmptyValues,
+	isObjectEmptyRecursive,
+} from "../../utilities/fhirify";
 import { Patient } from "../../classes/resourceTypes/Patient";
 
 var equal = require("deep-equal");
@@ -89,9 +92,30 @@ const InputDialog = ({
 				console.log("key value is same reference -> wasnt changed:");
 			} else {
 				console.log("key value is NOT same:");
-				let same = equal(editedResource[key], originalResource[key]);
-				console.log(same);
-				if (!same) changedKeys.push(key);
+				if (
+					isObjectEmptyRecursive(editedResource[key]) &&
+					!isObjectEmptyRecursive(originalResource[key])
+				) {
+					changedKeys.push({ op: "remove", path: `/${key}` });
+				} /* if (
+					!isObjectEmptyRecursive(editedResource[key]) &&
+					isObjectEmptyRecursive(originalResource[key])
+				) */ else {
+					let sp = JSON.parse(JSON.stringify(editedResource[key]));
+					clearObjectFromEmptyValues(sp);
+
+					changedKeys.push({
+						op: "add",
+						path: `/${key}`,
+						value: sp,
+					});
+				}
+				/* else {
+					
+				} */
+				/*let same = equal(editedResource[key], originalResource[key]);
+				console.log(same); */
+
 				/* let editedAttribute = JSON.parse(JSON.stringify(editedResource[key]));
 				clearObjectFromEmptyValues(editedAttribute);
 				let originalAttribute = JSON.parse(
@@ -110,9 +134,10 @@ const InputDialog = ({
 				} */
 			}
 		});
-		console.log(changedKeys);
 
-		let patchedResource = new Patient({ ...editedResource });
+		console.log(JSON.stringify(changedKeys));
+		return JSON.stringify(changedKeys);
+		/* let patchedResource = new Patient({ ...editedResource });
 		console.log(patchedResource);
 		Object.keys(patchedResource).forEach((key) => {
 			if (!changedKeys.includes(key) && key != "id")
@@ -120,7 +145,7 @@ const InputDialog = ({
 		});
 
 		console.log(patchedResource.toFHIRJson());
-		return patchedResource;
+		return patchedResource; */
 	};
 
 	const handleSave = async () => {
