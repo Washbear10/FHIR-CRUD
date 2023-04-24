@@ -12,10 +12,24 @@ import DeleteableComponent from "../common/DeleteableComponent";
 import ExtendableComponent from "../common/ExtendableComponent";
 import { isObjectEmptyRecursive } from "../../utilities/fhirify";
 import { Button } from "@mui/material";
-const CodeableConeptInput = ({ codeableConcept, changeCodeableConcept }) => {
+import CodeInput from "../primitiveInputs/CodeInput";
+import { commonLanguages } from "../../utilities/valueSets/commonLanguages";
+const CodeableConeptInput = ({
+	codeableConcept,
+	changeCodeableConcept,
+	...rest
+}) => {
 	useEffect(() => {}, []);
 
 	const handleChangeText = (newValue) => {
+		let newCodeableConcept = new CodeableConcept({
+			...codeableConcept,
+			text: newValue ? newValue : null,
+		});
+		changeCodeableConcept(newCodeableConcept);
+	};
+
+	const handleChangeTextCode = (newValue) => {
 		let newCodeableConcept = new CodeableConcept({
 			...codeableConcept,
 			text: newValue ? newValue : null,
@@ -72,21 +86,70 @@ const CodeableConeptInput = ({ codeableConcept, changeCodeableConcept }) => {
 		changeCodeableConcept(newCodeableConcept);
 	};
 
+	const filterOptions = createFilterOptions({
+		limit: 5,
+	});
 	return (
 		<Box sx={{ display: "flex", rowGap: "10px", flexDirection: "column" }}>
-			<SmallTextField
-				value={
-					codeableConcept
-						? codeableConcept.text
+			{Object.keys(rest).includes("textValueSet") ? (
+				<CodeInput
+					v={codeableConcept.text}
+					values={Object.keys(rest["textValueSet"])}
+					changeInput={(newValue) => {
+						/* handleChangeTextCode(rest["textValueSet"][newValue]); */
+						handleChangeTextCode(newValue);
+					}}
+					label={"Text"}
+					clearOnBlur={true}
+					renderOption={(props, option) => (
+						<Box
+							component="li"
+							{...props}
+							sx={{ display: "flex", justifyContent: "start", gap: "1rem" }}
+							key={option}
+						>
+							<Typography variant="subtitle1">{option}</Typography>
+							<Typography variant="subtitle2">
+								{rest["textValueSet"][option]}
+							</Typography>
+						</Box>
+					)}
+					/* filterOptions={(options, inputval) => {
+						let filtered = options.filter((option) => {
+							return (
+								option
+									.toLowerCase()
+									.includes(inputval.inputValue.toLowerCase()) ||
+								rest["textValueSet"][option]
+									.toLowerCase()
+									.includes(inputval.inputValue.toLowerCase())
+							);
+						});
+						return filtered;
+					}} */
+					filter
+					getOptionLabel={(option) => {
+						return option + " (" + rest["textValueSet"][option] + ")";
+					}}
+					width={"500px"}
+					/* error={rest.error}
+					helperText={rest.helperText} */
+				/>
+			) : (
+				<SmallTextField
+					value={
+						codeableConcept
 							? codeableConcept.text
+								? codeableConcept.text
+								: ""
 							: ""
-						: ""
-				}
-				label="Text"
-				onChange={(e) => {
-					handleChangeText(e.target.value);
-				}}
-			/>
+					}
+					label="Text"
+					onChange={(e) => {
+						handleChangeText(e.target.value);
+					}}
+				/>
+			)}
 			<Subcomponent
 				title={"coding"}
 				description="Code defined by a terminology system"
