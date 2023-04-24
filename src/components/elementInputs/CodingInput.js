@@ -6,8 +6,42 @@ import { useEffect } from "react";
 import Coding from "../../classes/dataTypes/Coding";
 import { Button } from "@mui/material";
 import { useState } from "react";
-const CodingInput = ({ coding, changeCoding, focus }) => {
-	useEffect(() => {}, []);
+import CodeInput from "../primitiveInputs/CodeInput";
+import { AttributeBlockErrorContext } from "../../utilities/AttributeBlockErrorContext";
+import { useContext, useRef } from "react";
+import { isObjectEmptyRecursive } from "../../utilities/fhirify";
+const CodingInput = ({
+	coding,
+	changeCoding,
+	defaultSystem,
+	systemEditable,
+	bindingCodes,
+}) => {
+	const [errorMessage, setErrorMessage] = useState("");
+
+	const {
+		attributeBlockError,
+		setAttributeBlockError,
+		attributeBlockErrorMessage,
+		setAttributeBlockErrorMessage,
+	} = useContext(AttributeBlockErrorContext);
+
+	const wasMounted = useRef(false);
+	useEffect(() => {
+		if (!wasMounted) {
+			wasMounted.current = true;
+			return;
+		}
+		if (!coding.system && !coding.value && !isObjectEmptyRecursive(coding)) {
+			setAttributeBlockError(true);
+			setAttributeBlockErrorMessage("Both system and value must be supplied.");
+			setErrorMessage("Both type and Patient reference must be supplied.");
+		} else {
+			setAttributeBlockError(false);
+			setAttributeBlockErrorMessage("");
+			setErrorMessage("");
+		}
+	}, [coding]);
 
 	const handleChangeSystem = (newValue) => {
 		let newCoding = new Coding({ ...coding, system: newValue });
@@ -18,7 +52,20 @@ const CodingInput = ({ coding, changeCoding, focus }) => {
 		changeCoding(newCoding, coding);
 	};
 	const handleChangeCode = (newValue) => {
-		let newCoding = new Coding({ ...coding, code: newValue });
+		let newCoding;
+		if (!newValue) {
+			newCoding = new Coding({
+				...coding,
+				code: null,
+				system: null,
+			});
+		} else if (coding.system == null && defaultSystem) {
+			newCoding = new Coding({
+				...coding,
+				code: newValue,
+				system: defaultSystem,
+			});
+		} else newCoding = new Coding({ ...coding, code: newValue });
 		changeCoding(newCoding, coding);
 	};
 	const handleChangeDisplay = (newValue) => {
@@ -39,27 +86,73 @@ const CodingInput = ({ coding, changeCoding, focus }) => {
 
 	return (
 		<Box sx={{ display: "flex", columnGap: "5px" }}>
-			{coding ? (
-				<SmallTextField
-					value={coding.system ? coding.system : ""}
-					label="system"
-					onChange={(e) => {
-						handleChangeSystem(e.target.value);
+			<SmallTextField
+				value={
+					coding.system !== null && coding.system !== undefined
+						? coding.system
+						: defaultSystem
+						? defaultSystem
+						: ""
+				}
+				label="system"
+				disabled={!systemEditable}
+				onChange={(e) => {
+					handleChangeSystem(e.target.value);
+				}}
+				className="systemInput"
+				error={Boolean(errorMessage) && systemEditable}
+				helperText={
+					Boolean(errorMessage) && systemEditable ? errorMessage : null
+				}
+			/>
+
+			{bindingCodes ? (
+				<CodeInput
+					v={coding.code}
+					values={bindingCodes}
+					changeInput={(newValue) => {
+						/* handleChangeTextCode(rest["textValueSet"][newValue]); */
+						handleChangeCode(newValue);
 					}}
-					className="systemInput"
-				/>
-			) : null}
-			{coding ? (
-				<SmallTextField
-					value={coding.version ? coding.version : ""}
-					label="version"
-					onChange={(e) => {
-						handleChangeVersion(e.target.value);
+					label={"code"}
+					clearOnBlur={true}
+					width={"500px"}
+					error={Boolean(errorMessage)}
+					helperText={errorMessage}
+
+					/* renderOption={(props, option) => (
+						<Box
+							component="li"
+							{...props}
+							sx={{ display: "flex", justifyContent: "start", gap: "1rem" }}
+							key={option}
+						>
+							<Typography variant="subtitle1">{option}</Typography>
+							<Typography variant="subtitle2">
+								{rest["textValueSet"][option]}
+							</Typography>
+						</Box>
+					)}
+					filterOptions={(options, inputval) => {
+						let filtered = options.filter((option) => {
+							return (
+								option
+									.toLowerCase()
+									.includes(inputval.inputValue.toLowerCase()) ||
+								rest["textValueSet"][option]
+									.toLowerCase()
+									.includes(inputval.inputValue.toLowerCase())
+							);
+						});
+						return filtered;
 					}}
-					className="versionInput"
+					getOptionLabel={(option) => {
+						return option + " (" + rest["textValueSet"][option] + ")";
+					}} */
+					/* error={rest.error}
+					helperText={rest.helperText} */
 				/>
-			) : null}
-			{coding ? (
+			) : (
 				<SmallTextField
 					value={coding.code ? coding.code : ""}
 					label="code"
@@ -68,17 +161,24 @@ const CodingInput = ({ coding, changeCoding, focus }) => {
 					}}
 					className="codeInput"
 				/>
-			) : null}
-			{coding ? (
-				<SmallTextField
-					value={coding.display ? coding.display : ""}
-					label="display"
-					onChange={(e) => {
-						handleChangeDisplay(e.target.value);
-					}}
-					className="displayInput"
-				/>
-			) : null}
+			)}
+
+			<SmallTextField
+				value={coding.version ? coding.version : ""}
+				label="version"
+				onChange={(e) => {
+					handleChangeVersion(e.target.value);
+				}}
+				className="versionInput"
+			/>
+			<SmallTextField
+				value={coding.display ? coding.display : ""}
+				label="display"
+				onChange={(e) => {
+					handleChangeDisplay(e.target.value);
+				}}
+				className="displayInput"
+			/>
 			<BooleanInput
 				checked={
 					coding ? (coding.userSelected ? coding.userSelected : null) : null

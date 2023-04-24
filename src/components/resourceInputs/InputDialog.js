@@ -85,7 +85,7 @@ const InputDialog = ({
 		}
 	};
 
-	const makePatchFormat = () => {
+	/* 	const makePatchFormat = () => {
 		let changedKeys = [];
 		Object.keys(editedResource).forEach((key) => {
 			if (editedResource[key] == originalResource[key]) {
@@ -97,10 +97,7 @@ const InputDialog = ({
 					!isObjectEmptyRecursive(originalResource[key])
 				) {
 					changedKeys.push({ op: "remove", path: `/${key}` });
-				} /* if (
-					!isObjectEmptyRecursive(editedResource[key]) &&
-					isObjectEmptyRecursive(originalResource[key])
-				) */ else {
+				} else {
 					let sp = JSON.parse(JSON.stringify(editedResource[key]));
 					clearObjectFromEmptyValues(sp);
 
@@ -110,48 +107,17 @@ const InputDialog = ({
 						value: sp,
 					});
 				}
-				/* else {
-					
-				} */
-				/*let same = equal(editedResource[key], originalResource[key]);
-				console.log(same); */
 
-				/* let editedAttribute = JSON.parse(JSON.stringify(editedResource[key]));
-				clearObjectFromEmptyValues(editedAttribute);
-				let originalAttribute = JSON.parse(
-					JSON.stringify(originalResource[key])
-				);
-				clearObjectFromEmptyValues(originalAttribute);
-				console.log("o: ", originalAttribute);
-				console.log("x: ", editedAttribute); 
-				if (
-					JSON.stringify(originalAttribute) == JSON.stringify(editedAttribute)
-				) {
-					console.log("but json string is same");
-				} else {
-					console.log("and json string is also not same");
-					changedKeys.push(key);
-				} */
 			}
 		});
-
 		console.log(JSON.stringify(changedKeys));
 		return JSON.stringify(changedKeys);
-		/* let patchedResource = new Patient({ ...editedResource });
-		console.log(patchedResource);
-		Object.keys(patchedResource).forEach((key) => {
-			if (!changedKeys.includes(key) && key != "id")
-				delete patchedResource[key];
-		});
-
-		console.log(patchedResource.toFHIRJson());
-		return patchedResource; */
-	};
+	}; */
 
 	const handleSave = async () => {
 		setBackDropOpen(true);
-		/* let success = await saveUpdates(editedResource); */
-		let success = await saveUpdates(makePatchFormat());
+		let success = await saveUpdates(editedResource);
+		/* let success = await saveUpdates(makePatchFormat()); */
 		setBackDropOpen(false);
 		if (success) handleClose();
 		else setinputDialogError(true);
@@ -213,9 +179,9 @@ const InputDialog = ({
 				<Button color="success" variant="contained" onClick={handleSave}>
 					Save
 				</Button>
-				<Button color="success" variant="contained" onClick={makePatchFormat}>
+				{/* <Button color="success" variant="contained" onClick={makePatchFormat}>
 					check patch
-				</Button>
+				</Button> */}
 			</DialogActions>
 		</Dialog>
 		/* 		</InputDialogErrorContext.Provider> */

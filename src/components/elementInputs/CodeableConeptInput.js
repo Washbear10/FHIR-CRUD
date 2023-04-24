@@ -17,6 +17,9 @@ import { commonLanguages } from "../../utilities/valueSets/commonLanguages";
 const CodeableConeptInput = ({
 	codeableConcept,
 	changeCodeableConcept,
+	defaultSystem,
+	systemEditable,
+	bindingCodes,
 	...rest
 }) => {
 	useEffect(() => {}, []);
@@ -86,9 +89,9 @@ const CodeableConeptInput = ({
 		changeCodeableConcept(newCodeableConcept);
 	};
 
-	const filterOptions = createFilterOptions({
+	/* 	const filterOptions = createFilterOptions({
 		limit: 5,
-	});
+	}); */
 	return (
 		<Box sx={{ display: "flex", rowGap: "10px", flexDirection: "column" }}>
 			{Object.keys(rest).includes("textValueSet") ? (
@@ -114,7 +117,7 @@ const CodeableConeptInput = ({
 							</Typography>
 						</Box>
 					)}
-					/* filterOptions={(options, inputval) => {
+					filterOptions={(options, inputval) => {
 						let filtered = options.filter((option) => {
 							return (
 								option
@@ -126,8 +129,7 @@ const CodeableConeptInput = ({
 							);
 						});
 						return filtered;
-					}} */
-					filter
+					}}
 					getOptionLabel={(option) => {
 						return option + " (" + rest["textValueSet"][option] + ")";
 					}}
@@ -170,22 +172,25 @@ const CodeableConeptInput = ({
 											index: index,
 										};
 									})
-									.map((codeableConcept) => (
-										<Box key={codeableConcept.key}>
+									.map((coding) => (
+										<Box key={coding.key}>
 											<DeleteableComponent
 												title="Delete this coding"
 												handleDelete={() => {
-													handleDeleteCoding(codeableConcept.index);
+													handleDeleteCoding(coding.index);
 												}}
 												disabled={
 													codeableConcept.coding.length == 1 &&
-													isObjectEmptyRecursive(codeableConcept.coding)
+													isObjectEmptyRecursive(coding.coding)
 												}
 											>
 												<CodingInput
-													coding={codeableConcept.coding}
+													coding={coding.coding}
 													changeCoding={handleChangeCoding}
-													key={codeableConcept.key}
+													defaultSystem={defaultSystem}
+													bindingCodes={bindingCodes}
+													key={coding.key}
+													systemEditable={systemEditable}
 												/>
 											</DeleteableComponent>
 										</Box>

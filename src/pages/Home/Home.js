@@ -57,7 +57,8 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { LoginContext } from "../../utilities/LoginContext";
 import { getBasicAuthCreds } from "../../utilities/basicAuth";
-
+import { isObjectEmptyRecursive } from "../../utilities/fhirify";
+import { clearObjectFromEmptyValues } from "../../utilities/fhirify";
 const Home = () => {
 	// state for Search Component
 	const [resourceList, setResourceList] = useState(["Patient"]);
@@ -159,6 +160,34 @@ const Home = () => {
 			draft[resourceType] = newRows;
 		});
 	};
+
+	const makePatchFormat = (originalResource, editedResource) => {
+		let changedKeys = [];
+		Object.keys(editedResource).forEach((key) => {
+			if (editedResource[key] == originalResource[key]) {
+				console.log("key value is same reference -> wasnt changed:");
+			} else {
+				console.log("key value is NOT same:");
+				if (
+					isObjectEmptyRecursive(editedResource[key]) &&
+					!isObjectEmptyRecursive(originalResource[key])
+				) {
+					changedKeys.push({ op: "remove", path: `/${key}` });
+				} else {
+					let sp = JSON.parse(JSON.stringify(editedResource[key]));
+					clearObjectFromEmptyValues(sp);
+
+					changedKeys.push({
+						op: "add",
+						path: `/${key}`,
+						value: sp,
+					});
+				}
+			}
+		});
+		console.log(JSON.stringify(changedKeys));
+		return JSON.stringify(changedKeys);
+	};
 	const saveUpdates = async (
 		resourceType,
 		originalResource,
@@ -179,11 +208,8 @@ const Home = () => {
 				updateNewResources(newNewResources, resourceType);
 				created = true;
 			} else {
-				await updateFHIRResource(
-					resourceType,
-					originalResource,
-					editedResource
-				);
+				let patchFormat = makePatchFormat(originalResource, editedResource);
+				await updateFHIRResource(resourceType, originalResource, patchFormat);
 				updated = true;
 			}
 		} catch (error) {

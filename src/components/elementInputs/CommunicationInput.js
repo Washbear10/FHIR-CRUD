@@ -1,12 +1,47 @@
 import { Box } from "@mui/system";
-import React from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Communication from "../../classes/dataTypes/Communication";
+import { AttributeBlockErrorContext } from "../../utilities/AttributeBlockErrorContext";
+import { isObjectEmptyRecursive } from "../../utilities/fhirify";
 import { commonLanguages } from "../../utilities/valueSets/commonLanguages";
 import Subcomponent from "../common/Subcomponent";
 import BooleanInput from "../primitiveInputs/BooleanInput";
 import CodeableConeptInput from "./CodeableConeptInput";
 
 const CommunicationInput = ({ communication, changeCommunication }) => {
+	const [errorMessage, setErrorMessage] = useState("");
+
+	const {
+		attributeBlockError,
+		setAttributeBlockError,
+		attributeBlockErrorMessage,
+		setAttributeBlockErrorMessage,
+	} = useContext(AttributeBlockErrorContext);
+
+	const wasMounted = useRef(false);
+
+	useEffect(() => {
+		if (!wasMounted) {
+			wasMounted.current = true;
+			return;
+		}
+		if (!isObjectEmptyRecursive(communication)) {
+			if (
+				communication.language.coding.some((item) => !item.system || !item.code)
+			) {
+				setAttributeBlockError(true);
+				setAttributeBlockErrorMessage(
+					"Both system and value must be supplied."
+				);
+				setErrorMessage("Both type and Patient reference must be supplied.");
+			} else {
+				setAttributeBlockError(false);
+				setAttributeBlockErrorMessage("");
+				setErrorMessage("");
+			}
+		}
+	}, [communication]);
+
 	const handleChangePreferred = (newChecked) => {
 		let newCom = new Communication({ ...communication, preferred: newChecked });
 		changeCommunication(newCom, communication);
@@ -23,7 +58,10 @@ const CommunicationInput = ({ communication, changeCommunication }) => {
 				<CodeableConeptInput
 					codeableConcept={communication.language}
 					changeCodeableConcept={handleChangeLanguage}
-					textValueSet={commonLanguages}
+					defaultSystem="urn:ietf:bcp:47"
+					bindingCodes={Object.keys(commonLanguages)}
+					systemEditable={false}
+					//textValueSet={commonLanguages}
 				/>
 			</Subcomponent>
 			<BooleanInput
