@@ -24,11 +24,15 @@ const LinkInput = ({ link, changeLink }) => {
 	}, [link]);
 
 	const checkInputValidity = () => {
-		if (
-			(link.type && isObjectEmptyRecursive(link.other)) ||
-			(!isObjectEmptyRecursive(link.other) && !link.type)
-		) {
+		if (link.type && isObjectEmptyRecursive(link.other)) {
 			setAttributeBlockError(true);
+			setAttributeBlockErrorMessage(
+				"Choose a resource this reference refers to."
+			);
+			setErrorMessage("Both type and Patient reference must be supplied.");
+		} else if (!isObjectEmptyRecursive(link.other) && !link.type) {
+			setAttributeBlockError(true);
+			setAttributeBlockErrorMessage("Choose the type of this reference.");
 			setErrorMessage("Both type and Patient reference must be supplied.");
 		} else {
 			setAttributeBlockError(false);
@@ -41,7 +45,12 @@ const LinkInput = ({ link, changeLink }) => {
 		changeLink(newLink, link);
 	};
 	const handleChangeOther = (newValue) => {
+		setAttributeBlockError(false);
+		setAttributeBlockErrorMessage("");
+		setErrorMessage("");
 		let newLink = new Link({ ...link, other: newValue });
+		if (!newValue || !newValue.reference) newLink.type = null;
+
 		changeLink(newLink, link);
 	};
 	return (
@@ -118,7 +127,7 @@ const LinkInput = ({ link, changeLink }) => {
 				v={link.type}
 				label="Type"
 				changeInput={handleChangeType}
-				error={attributeBlockError}
+				error={errorMessage ? true : false}
 				helperText={errorMessage}
 			/>
 		</Box>

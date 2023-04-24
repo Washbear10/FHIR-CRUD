@@ -22,17 +22,38 @@ const ReferenceInput = ({
 				: Object.keys(referenceOptions)[0]
 			: Object.keys(referenceOptions)[0]
 	);
-	const [searchResults, setSearchResults] = useState([]);
+	const [searchResults, setSearchResults] = useState(() => {
+		let r = {};
+		Object.keys(referenceOptions).forEach((key) => {
+			r[key] = null;
+		});
+		return r;
+	});
 	const [loading, setLoading] = useState(false);
 
+	const wasMounted = useRef(false);
+
 	useEffect(() => {
-		fetchOptions("");
+		if (!searchResults || !selectedResourceType) return; //on first render, those are not initialized in state yet -> skip this time
+
+		if (searchResults[selectedResourceType] == null)
+			fetchOptions(selectedResourceType);
+		else if (searchResults[selectedResourceType].length == 0) {
+			handleSelectedValueChange(null);
+		}
 	}, [selectedResourceType]);
 
 	useEffect(() => {
+		/* if (!wasMounted) {
+			wasMounted.current = true;
+			return;
+		} */
+		if (!selectedResourceType || !searchResults[selectedResourceType]) return;
 		if (!reference.reference) return;
-		if (searchResults) {
-			searchResults.map((item) => {
+		if (searchResults[selectedResourceType].length > 0) {
+			console.log("searchresults: ", searchResults);
+			let foundValue = false;
+			searchResults[selectedResourceType].forEach((item) => {
 				if (
 					item.id ==
 					reference.reference.substring(
@@ -42,24 +63,23 @@ const ReferenceInput = ({
 					console.log(reference.display);
 					item.displayLabel = reference.display;
 					setSelectedValue(item);
+					foundValue = true;
 				}
 			});
+			if (!foundValue) {
+				handleSelectedValueChange(null);
+			}
 			//setLoading(false);
+		} else {
+			handleSelectedValueChange(null);
 		}
 	}, [searchResults]);
 
-	const fetchOptions = async (searchValue) => {
-		if (searchValue !== null) {
+	const fetchOptions = async () => {
+		console.log("fetching options");
+		if (selectedResourceType !== null) {
 			setLoading(true);
-			let valueInsertedToParams = referenceOptions[
-				selectedResourceType
-			].paramsAndModifiers
-				.map((item) => item + "=" + searchValue)
-				.join("&");
-			const response = await searchReference(
-				selectedResourceType,
-				valueInsertedToParams
-			);
+			const response = await searchReference(selectedResourceType);
 			let x = response.map((resource) => {
 				let displayLabel;
 				if (
@@ -81,7 +101,10 @@ const ReferenceInput = ({
 					resourceType: resource.resourceType,
 				};
 			});
-			setSearchResults(x);
+			console.log("x is: ", x);
+			setSearchResults((prev) => {
+				return { ...prev, [selectedResourceType]: x };
+			});
 			setLoading(false);
 		}
 	};
@@ -109,7 +132,6 @@ const ReferenceInput = ({
 
 	const handleTypeChange = (newVal) => {
 		//setLoading(true);
-		setSearchResults([]);
 		setSelectedResourceType(newVal);
 	};
 
@@ -127,7 +149,7 @@ const ReferenceInput = ({
 			/>
 			<CodeInput
 				v={selectedValue}
-				values={searchResults}
+				values={searchResults[selectedResourceType]}
 				changeInput={handleSelectedValueChange}
 				disabled={!selectedResourceType}
 				label={selectedResourceType}

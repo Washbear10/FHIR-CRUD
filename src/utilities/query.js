@@ -155,6 +155,7 @@ export default async function queryFHIR(resources, searchString, limit) {
 			if (limit)
 				results[resource.name] = results[resource.name].slice(0, limit);
 		}
+		console.log("Query: ", results);
 		return results;
 	}, 40000);
 	return r;

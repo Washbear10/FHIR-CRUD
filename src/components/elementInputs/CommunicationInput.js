@@ -1,6 +1,8 @@
 import { Box } from "@mui/system";
 import React from "react";
 import Communication from "../../classes/dataTypes/Communication";
+import { commonLanguages } from "../../utilities/valueSets/commonLanguages";
+import Subcomponent from "../common/Subcomponent";
 import BooleanInput from "../primitiveInputs/BooleanInput";
 import CodeableConeptInput from "./CodeableConeptInput";
 
@@ -17,10 +19,13 @@ const CommunicationInput = ({ communication, changeCommunication }) => {
 	};
 	return (
 		<Box>
-			<CodeableConeptInput
-				codeableConcept={communication.language}
-				changeCodeableConcept={handleChangeLanguage}
-			/>
+			<Subcomponent title="Language">
+				<CodeableConeptInput
+					codeableConcept={communication.language}
+					changeCodeableConcept={handleChangeLanguage}
+					textValueSet={commonLanguages}
+				/>
+			</Subcomponent>
 			<BooleanInput
 				title="preferred?"
 				checked={communication.preferred}

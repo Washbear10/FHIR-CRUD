@@ -41,18 +41,18 @@ const AttributeBlock = ({
 						flexDirection: "column",
 					}}
 				>
-					<h3 style={{ margin: "0px", display: "inline" }}>
+					<h3 style={{ margin: "0px", display: "flex" }}>
 						{attributeName}
 						{attributeBlockError ? (
-							<>
-								<Typography color="error">
-									{attributeBlockErrorMessage}
-								</Typography>
+							<Box sx={{ display: "flex" }}>
 								<ErrorOutlineIcon
 									color="error"
 									sx={{ marginLeft: "1rem", marginBottom: "-5px" }}
 								/>
-							</>
+								<Typography color="error" sx={{ marginLeft: "5px" }}>
+									{attributeBlockErrorMessage}
+								</Typography>
+							</Box>
 						) : null}
 					</h3>
 

@@ -53,7 +53,6 @@ const AttachmentInput = ({ attachment, changeAttachment, photoSizeSum }) => {
 		if (e.target.files) {
 			const file = e.target.files[0];
 			if (!file.type.match("image.*")) {
-				setAttributeBlockError(true);
 				setErrorMessage("Only images are allowed.");
 				return;
 			}
