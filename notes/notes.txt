@@ -46,4 +46,4 @@ Other:
 	- IBM does not support _content or _text which is a bummer for general searching
 	- IBM seems to have issues with batch requests
 	- IBM does not implement name search properly (see search parameter name for patient => is string, so should allow modifier :text)
-	- IBM PATCH doesnt work
+	- IBM Patching multipleBirthInteger not updating properly

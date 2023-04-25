@@ -350,61 +350,6 @@ const PatientInput = ({ resource, modifyResource }) => {
 			>
 				click
 			</Button>
-			<AttributeBlock
-				attributeName="Contact"
-				attributeDescription="Contact parties (e.g. guardian, partner, friend) for the patient"
-				renderKey={resource ? resource.contact : null}
-				inputComponents={
-					<>
-						<ExtendableComponent
-							title="Add Contact"
-							handleExtend={() => {
-								modifyResource("contact", [
-									...resource.contact,
-									new Contact({}),
-								]);
-							}}
-							gap="5rem"
-						>
-							{resource
-								? resource.contact
-									? resource.contact
-											.map((singleContact, index) => {
-												return {
-													singleContact: singleContact,
-													key: singleContact.internalReactID,
-													index: index,
-												};
-											})
-											.map((singleContact) => {
-												return (
-													<Box key={singleContact.key}>
-														<DeleteableComponent
-															title="Delete this contact"
-															handleDelete={() => {
-																handleDeleteContact(singleContact.index);
-															}}
-															disabled={
-																resource.contact.length == 1 &&
-																isObjectEmptyRecursive(resource.contact)
-															}
-														>
-															<Subcomponent>
-																<ContactInput
-																	contact={singleContact.singleContact}
-																	changeContact={changeContact}
-																/>
-															</Subcomponent>
-														</DeleteableComponent>
-													</Box>
-												);
-											})
-									: null
-								: null}
-						</ExtendableComponent>
-					</>
-				}
-			/>
 
 			<AttributeBlock
 				attributeName="Identifier"
@@ -971,6 +916,61 @@ const PatientInput = ({ resource, modifyResource }) => {
 								: null
 							: null}
 					</ExtendableComponent>
+				}
+			/>
+			<AttributeBlock
+				attributeName="Contact"
+				attributeDescription="Contact parties (e.g. guardian, partner, friend) for the patient"
+				renderKey={resource ? resource.contact : null}
+				inputComponents={
+					<>
+						<ExtendableComponent
+							title="Add Contact"
+							handleExtend={() => {
+								modifyResource("contact", [
+									...resource.contact,
+									new Contact({}),
+								]);
+							}}
+							gap="5rem"
+						>
+							{resource
+								? resource.contact
+									? resource.contact
+											.map((singleContact, index) => {
+												return {
+													singleContact: singleContact,
+													key: singleContact.internalReactID,
+													index: index,
+												};
+											})
+											.map((singleContact) => {
+												return (
+													<Box key={singleContact.key}>
+														<DeleteableComponent
+															title="Delete this contact"
+															handleDelete={() => {
+																handleDeleteContact(singleContact.index);
+															}}
+															disabled={
+																resource.contact.length == 1 &&
+																isObjectEmptyRecursive(resource.contact)
+															}
+														>
+															<Subcomponent>
+																<ContactInput
+																	contact={singleContact.singleContact}
+																	changeContact={changeContact}
+																/>
+															</Subcomponent>
+														</DeleteableComponent>
+													</Box>
+												);
+											})
+									: null
+								: null}
+						</ExtendableComponent>
+					</>
 				}
 			/>
 		</Box>

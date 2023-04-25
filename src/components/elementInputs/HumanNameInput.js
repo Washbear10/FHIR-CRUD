@@ -1,5 +1,5 @@
 import { TextField, Tooltip, Typography } from "@mui/material";
-import React, { memo, useRef } from "react";
+import React, { memo, useContext, useRef } from "react";
 import { Box } from "@mui/material";
 import { Autocomplete } from "@mui/material";
 import { useState } from "react";
@@ -11,6 +11,7 @@ import Period from "../../classes/dataTypes/Period";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { Button, IconButton } from "@mui/material";
 import { HumanName } from "../../classes/dataTypes/HumanName";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
 import dayjs from "dayjs";
 import DateTabs from "../common/DateTabs";
@@ -22,13 +23,58 @@ import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import Subcomponent from "../common/Subcomponent";
 import { Stack } from "@mui/system";
 import PeriodInput from "../primitiveInputs/PeriodInput";
+import { AttributeBlockWarningContext } from "../../utilities/AttributeBlockErrorContext";
 
 const HumanNameInput = ({ name, changeSingleName }) => {
 	const initiallyRendered = useRef(false);
-
 	useEffect(() => {
 		initiallyRendered.current = true;
 	}, []);
+
+	const [errorMessage, setErrorMessage] = useState("");
+	/* const {
+		attributeBlockWarning,
+		setAttributeBlockWarning,
+		attributeBlockWarningMessage,
+		setAttributeBlockWarningMessage,
+	} = useContext(AttributeBlockWarningContext); */
+	const wasMounted = useRef(false);
+	useEffect(() => {
+		if (wasMounted) checkInputValidity();
+		else wasMounted.current = true;
+	}, [name]);
+
+	const checkInputValidity = () => {
+		console.log("checking valdity for name: ", name);
+		if (name.text == "") {
+			setErrorMessage("");
+		}
+		if (name.text) {
+			let notIncludingText = false;
+			let textSplit = name.text.replace(/[^a-zA-Z0-9]/g, " ").split(" ");
+			console.log(textSplit);
+			let arr = [];
+			arr.push(name.use);
+			arr.push(name.family);
+			arr.push(...name.given);
+			arr.push(...name.prefix);
+			arr.push(...name.suffix);
+			const stringified = String(arr);
+			textSplit.forEach((word) => {
+				console.log(stringified);
+				if (!stringified.toLowerCase().includes(word.toLowerCase())) {
+					notIncludingText = true;
+				}
+			});
+			if (notIncludingText) {
+				setErrorMessage(
+					"It is recommended that the text representation should contain no information that is not also found in the single parts of the name."
+				);
+			} else {
+				setErrorMessage("");
+			}
+		}
+	};
 
 	const changeSingleGiven = (oldGivenIndex, newGiven) => {
 		let newGivens = [...name.given];
@@ -174,6 +220,19 @@ const HumanNameInput = ({ name, changeSingleName }) => {
 					justifyContent: "center",
 				}}
 			>
+				<Box>
+					{errorMessage ? (
+						<Box sx={{ display: "flex", maxWidth: "100%", height: "20%" }}>
+							<ErrorOutlineIcon
+								color="warning"
+								sx={{ marginLeft: "1rem", marginBottom: "-5px" }}
+							/>
+							<Typography color="warning.main" sx={{ marginLeft: "1rem" }}>
+								{errorMessage}
+							</Typography>
+						</Box>
+					) : null}
+				</Box>
 				<Box
 					sx={{
 						display: "flex",

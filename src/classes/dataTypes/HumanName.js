@@ -26,6 +26,9 @@ export class HumanName {
 	}
 
 	calcDisplayString = () => {
+		if (this.text) {
+			return this.text;
+		}
 		let s1 = "";
 		this.prefix.forEach((pf) => {
 			s1 += pf + " ";

@@ -6,3 +6,10 @@ export const AttributeBlockErrorContext = createContext({
 	attributeBlockErrorMessage: "",
 	setAttributeBlockErrorMessage: () => {},
 });
+
+export const AttributeBlockWarningContext = createContext({
+	attributeBlockWarning: false,
+	setAttributeBlockWarning: () => {},
+	attributeBlockWarningMessage: "",
+	setAttributeWarningErrorMessage: () => {},
+});

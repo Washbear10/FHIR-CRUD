@@ -197,8 +197,8 @@ export default function CustomDataGrid({
 				getRowHeight={() => "auto"}
 				rows={rows}
 				columns={columns}
-				//pageSize={10}
-				//rowsPerPageOptions={[5, 10, 20]}
+				pageSize={10}
+				rowsPerPageOptions={[10, 20, 50]}
 				checkboxSelection
 				disableSelectionOnClick
 				onSelectionModelChange={(newSelection) => {
