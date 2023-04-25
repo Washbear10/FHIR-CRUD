@@ -25,25 +25,32 @@ const CommunicationInput = ({ communication, changeCommunication }) => {
 			wasMounted.current = true;
 			return;
 		}
+		checkValidity();
+	}, [communication]);
+
+	const checkValidity = () => {
 		if (!isObjectEmptyRecursive(communication)) {
 			if (
 				communication.language.coding.some((item) => !item.system || !item.code)
 			) {
 				setAttributeBlockError(true);
 				setAttributeBlockErrorMessage(
-					"If a language is supplied, a language code must be selected."
+					"If a communication is supplied, a language code must be selected."
 				);
 				setErrorMessage(
-					"If a language is supplied, a language code must be selected."
+					"If a communication is supplied, a language code must be selected."
 				);
 			} else {
 				setAttributeBlockError(false);
 				setAttributeBlockErrorMessage("");
 				setErrorMessage("");
 			}
+		} else {
+			setAttributeBlockError(false);
+			setAttributeBlockErrorMessage("");
+			setErrorMessage("");
 		}
-	}, [communication]);
-
+	};
 	const handleChangePreferred = (newChecked) => {
 		let newCom = new Communication({ ...communication, preferred: newChecked });
 		changeCommunication(newCom, communication);
@@ -62,7 +69,8 @@ const CommunicationInput = ({ communication, changeCommunication }) => {
 					changeCodeableConcept={handleChangeLanguage}
 					defaultSystem="urn:ietf:bcp:47"
 					bindingCodes={Object.keys(commonLanguages)}
-					systemEditable={false}
+					systemUneditable={true}
+					systemValueCombinationRequired={true}
 				/>
 			</Subcomponent>
 			<BooleanInput

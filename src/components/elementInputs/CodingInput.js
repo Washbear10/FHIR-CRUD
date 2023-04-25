@@ -14,7 +14,8 @@ const CodingInput = ({
 	coding,
 	changeCoding,
 	defaultSystem,
-	systemEditable,
+	systemUneditable,
+	systemValueCombinationRequired,
 	bindingCodes,
 }) => {
 	const [errorMessage, setErrorMessage] = useState("");
@@ -32,13 +33,14 @@ const CodingInput = ({
 			wasMounted.current = true;
 			return;
 		}
-		if (!coding.system && !coding.value && !isObjectEmptyRecursive(coding)) {
-			setAttributeBlockError(true);
-			setAttributeBlockErrorMessage("Both system and value must be supplied.");
+		if (
+			systemValueCombinationRequired &&
+			!coding.system &&
+			!coding.value &&
+			!isObjectEmptyRecursive(coding)
+		) {
 			setErrorMessage("System and value must be supplied together.");
 		} else {
-			setAttributeBlockError(false);
-			setAttributeBlockErrorMessage("");
 			setErrorMessage("");
 		}
 	}, [coding]);
@@ -95,13 +97,13 @@ const CodingInput = ({
 						: ""
 				}
 				label="system"
-				disabled={!systemEditable}
+				disabled={systemUneditable}
 				onChange={(e) => {
 					handleChangeSystem(e.target.value);
 				}}
 				className="systemInput"
-				error={errorMessage && systemEditable ? 1 : 0}
-				helperText={errorMessage && systemEditable ? errorMessage : null}
+				error={errorMessage && !systemUneditable ? 1 : 0}
+				helperText={errorMessage && !systemUneditable ? errorMessage : null}
 			/>
 
 			{bindingCodes ? (
@@ -114,7 +116,6 @@ const CodingInput = ({
 					}}
 					label={"code"}
 					clearOnBlur={true}
-					width={"500px"}
 					error={errorMessage ? 1 : 0}
 					helpertext={errorMessage}
 
@@ -158,6 +159,8 @@ const CodingInput = ({
 						handleChangeCode(e.target.value);
 					}}
 					className="codeInput"
+					error={errorMessage ? 1 : 0}
+					helpertext={errorMessage}
 				/>
 			)}
 

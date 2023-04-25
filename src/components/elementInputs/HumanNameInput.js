@@ -203,221 +203,232 @@ const HumanNameInput = ({ name, changeSingleName }) => {
 	};
 
 	return (
-		<Grid
-			container
-			spacing="15px"
-			justifyContent={"space-between"}
-			sx={{ width: "100%" }}
-		>
-			<Grid
-				item
-				xs={6}
-				sx={{
-					display: "flex",
-					flexDirection: "column",
-					gap: "10px",
-					alignItems: "start",
-					justifyContent: "center",
-				}}
-			>
-				<Box>
-					{errorMessage ? (
-						<Box sx={{ display: "flex", maxWidth: "100%", height: "20%" }}>
-							<ErrorOutlineIcon
-								color="warning"
-								sx={{ marginLeft: "1rem", marginBottom: "-5px" }}
-							/>
-							<Typography color="warning.main" sx={{ marginLeft: "1rem" }}>
-								{errorMessage}
-							</Typography>
-						</Box>
-					) : null}
-				</Box>
-				<Box
-					sx={{
-						display: "flex",
-						flexDirection: "row",
-						gap: "10px",
-						alignItems: "center",
-						justifyContent: "start",
-						maxWidth: "100%",
-					}}
-				>
-					<CodeInput
-						values={[
-							"usual",
-							"official",
-							"temp",
-							"nickname",
-							"anonymous",
-							"old",
-							"maiden",
-						]}
-						v={name ? name.use || null : null}
-						label="use"
-						changeInput={handleChangeUse}
-						width="150px"
-					/>
-					<Box sx={{ display: "flex", flexDirection: "row", maxWidth: "50%" }}>
-						{name.given
-							? name.given
-									.map((given, index) => {
-										return { given: given, index: index };
-									})
-									.map((g) => {
-										return (
-											<SmallTextField
-												className="givenInput"
-												value={g.given}
-												label="Given Name"
-												/* autoFocus={!g.given && g.key === name.given.length - 1} */
-												onChange={(event) => {
-													changeSingleGiven(g.index, event.target.value);
-												}}
-												key={g.index}
-												onBlur={(e) => {
-													if (
-														g.given == "" ||
-														e.relatedTarget == null ||
-														!e.relatedTarget.closest(".givenInput")
-													)
-														removeEmptyGivens();
-												}}
-												width="250px"
-											/>
-										);
-									})
-							: null}
-						<IconButton
-							variant="outlined"
-							color="primary"
-							onClick={addGiven}
-							sx={{ marginY: "5px" }}
-							size="small"
-							disabled={!name.given || name.given.includes("")}
-						>
-							<AddCircleOutlineIcon fontSize="small" />
-						</IconButton>{" "}
+		<>
+			<Box>
+				{errorMessage ? (
+					<Box sx={{ display: "flex", maxWidth: "100%", height: "20%" }}>
+						<ErrorOutlineIcon
+							color="warning"
+							sx={{ marginLeft: "1rem", marginBottom: "-5px" }}
+						/>
+						<Typography color="warning.main" sx={{ marginLeft: "1rem" }}>
+							{errorMessage}
+						</Typography>
 					</Box>
-					<SmallTextField
-						value={name.family || ""}
-						label="family name"
-						onChange={handleChangeFamily}
-						width="250px"
-					/>
-				</Box>
-
-				<Box
+				) : null}
+			</Box>
+			<Grid
+				container
+				spacing="15px"
+				justifyContent={"space-between"}
+				sx={{ width: "100%" }}
+			>
+				<Grid
+					item
+					xs={6}
 					sx={{
 						display: "flex",
-						flexDirection: "row",
+						flexDirection: "column",
 						gap: "10px",
-						alignItems: "center",
-						maxWidth: "100%",
+						alignItems: "start",
+						justifyContent: "center",
 					}}
 				>
-					<Box sx={{ display: "flex", flexDirection: "row", maxWidth: "50%" }}>
-						{name.prefix
-							? name.prefix
-									.map((prefix, index) => {
-										return { prefix: prefix, key: index };
-									})
-									.map((pf) => (
-										<SmallTextField
-											className="prefixInput"
-											value={pf.prefix}
-											key={pf.key}
-											label="Prefix"
-											/* autoFocus={
+					<Box
+						sx={{
+							display: "flex",
+							flexDirection: "row",
+							gap: "10px",
+							alignItems: "center",
+							justifyContent: "start",
+							maxWidth: "100%",
+						}}
+					>
+						<CodeInput
+							values={[
+								"usual",
+								"official",
+								"temp",
+								"nickname",
+								"anonymous",
+								"old",
+								"maiden",
+							]}
+							v={name ? name.use || null : null}
+							label="use"
+							changeInput={handleChangeUse}
+							width="150px"
+						/>
+						<Box
+							sx={{ display: "flex", flexDirection: "row", maxWidth: "50%" }}
+						>
+							{name.given
+								? name.given
+										.map((given, index) => {
+											return { given: given, index: index };
+										})
+										.map((g) => {
+											return (
+												<SmallTextField
+													className="givenInput"
+													value={g.given}
+													label="Given Name"
+													/* autoFocus={!g.given && g.key === name.given.length - 1} */
+													onChange={(event) => {
+														changeSingleGiven(g.index, event.target.value);
+													}}
+													key={g.index}
+													onBlur={(e) => {
+														if (
+															g.given == "" ||
+															e.relatedTarget == null ||
+															!e.relatedTarget.closest(".givenInput")
+														)
+															removeEmptyGivens();
+													}}
+													width="250px"
+												/>
+											);
+										})
+								: null}
+							<IconButton
+								variant="outlined"
+								color="primary"
+								onClick={addGiven}
+								sx={{ marginY: "5px" }}
+								size="small"
+								disabled={!name.given || name.given.includes("")}
+							>
+								<AddCircleOutlineIcon fontSize="small" />
+							</IconButton>{" "}
+						</Box>
+						<SmallTextField
+							value={name.family || ""}
+							label="family name"
+							onChange={handleChangeFamily}
+							width="250px"
+						/>
+					</Box>
+
+					<Box
+						sx={{
+							display: "flex",
+							flexDirection: "row",
+							gap: "10px",
+							alignItems: "center",
+							maxWidth: "100%",
+						}}
+					>
+						<Box
+							sx={{ display: "flex", flexDirection: "row", maxWidth: "50%" }}
+						>
+							{name.prefix
+								? name.prefix
+										.map((prefix, index) => {
+											return { prefix: prefix, key: index };
+										})
+										.map((pf) => (
+											<SmallTextField
+												className="prefixInput"
+												value={pf.prefix}
+												key={pf.key}
+												label="Prefix"
+												/* autoFocus={
 												!pf.prefix && pf.key === name.prefix.length - 1
 											} */
-											onChange={(event) => {
-												changeSinglePrefix(pf.key, event.target.value);
-											}}
-											onBlur={(e) => {
-												if (
-													pf.prefix == "" ||
-													e.relatedTarget == null ||
-													!e.relatedTarget.closest(".prefixInput")
-												)
-													removeEmptyPrefixes();
-											}}
-											width="100px"
-										/>
-									))
-							: null}
-						<IconButton
-							variant="outlined"
-							color="primary"
-							sx={{ marginY: "5px" }}
-							size="small"
-							onClick={addPrefix}
-							disabled={!name.prefix || name.prefix.includes("")}
-						>
-							<AddCircleOutlineIcon fontSize="small" />
-						</IconButton>{" "}
-					</Box>
+												onChange={(event) => {
+													changeSinglePrefix(pf.key, event.target.value);
+												}}
+												onBlur={(e) => {
+													if (
+														pf.prefix == "" ||
+														e.relatedTarget == null ||
+														!e.relatedTarget.closest(".prefixInput")
+													)
+														removeEmptyPrefixes();
+												}}
+												width="100px"
+											/>
+										))
+								: null}
+							<IconButton
+								variant="outlined"
+								color="primary"
+								sx={{ marginY: "5px" }}
+								size="small"
+								onClick={addPrefix}
+								disabled={!name.prefix || name.prefix.includes("")}
+							>
+								<AddCircleOutlineIcon fontSize="small" />
+							</IconButton>{" "}
+						</Box>
 
-					<Box sx={{ display: "flex", flexDirection: "row", maxWidth: "50%" }}>
-						{name.suffix
-							? name.suffix
-									.map((suffix, index) => {
-										return { suffix: suffix, key: index };
-									})
-									.map((sf) => (
-										<SmallTextField
-											className="suffixInput"
-											value={sf.suffix}
-											key={sf.key}
-											/* autoFocus={
+						<Box
+							sx={{ display: "flex", flexDirection: "row", maxWidth: "50%" }}
+						>
+							{name.suffix
+								? name.suffix
+										.map((suffix, index) => {
+											return { suffix: suffix, key: index };
+										})
+										.map((sf) => (
+											<SmallTextField
+												className="suffixInput"
+												value={sf.suffix}
+												key={sf.key}
+												/* autoFocus={
 												!sf.suffix &&
 												sf.key === name.suffix.length - 1 &&
 												initiallyRendered
 											} */
-											label="Suffix"
-											onChange={(event) => {
-												changeSingleSuffix(sf.key, event.target.value);
-											}}
-											onBlur={(e) => {
-												if (
-													sf.suffix == "" ||
-													e.relatedTarget == null ||
-													!e.relatedTarget.closest(".suffixInput")
-												)
-													removeEmptySuffixes();
-											}}
-											width="100px"
-										/>
-									))
-							: null}
-						<IconButton
-							variant="outlined"
-							color="primary"
-							onClick={addSuffix}
-							sx={{ marginY: "5px" }}
-							size="small"
-							disabled={!name.suffix || name.suffix.includes("")}
-						>
-							<AddCircleOutlineIcon fontSize="small" />
-						</IconButton>
+												label="Suffix"
+												onChange={(event) => {
+													changeSingleSuffix(sf.key, event.target.value);
+												}}
+												onBlur={(e) => {
+													if (
+														sf.suffix == "" ||
+														e.relatedTarget == null ||
+														!e.relatedTarget.closest(".suffixInput")
+													)
+														removeEmptySuffixes();
+												}}
+												width="100px"
+											/>
+										))
+								: null}
+							<IconButton
+								variant="outlined"
+								color="primary"
+								onClick={addSuffix}
+								sx={{ marginY: "5px" }}
+								size="small"
+								disabled={!name.suffix || name.suffix.includes("")}
+							>
+								<AddCircleOutlineIcon fontSize="small" />
+							</IconButton>
+						</Box>
+						<SmallTextField
+							value={name.text || ""}
+							label="Text"
+							onChange={handleChangeText}
+							width="400px"
+						/>
 					</Box>
-					<SmallTextField
-						value={name.text || ""}
-						label="Text"
-						onChange={handleChangeText}
-						width="400px"
-					/>
-				</Box>
+				</Grid>
+				<Grid item xs={6} sx={{ maxWidth: "100%" }}>
+					<Subcomponent
+						title="Period"
+						description={"(from when to when this name was/is active)"}
+					>
+						<PeriodInput
+							period={name.period}
+							changePeriod={handleChangePeriod}
+						/>
+					</Subcomponent>
+				</Grid>
 			</Grid>
-			<Grid item xs={6} sx={{ maxWidth: "100%" }}>
-				<Subcomponent
-					title="Period"
-					description={"(from when to when this name was/is active)"}
-				>
-					<PeriodInput period={name.period} changePeriod={handleChangePeriod} />
-				</Subcomponent>
-			</Grid>
-		</Grid>
+		</>
 	);
 };
 

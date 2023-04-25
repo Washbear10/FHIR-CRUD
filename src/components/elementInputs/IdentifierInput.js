@@ -1,4 +1,4 @@
-import React, { memo, useRef } from "react";
+import React, { memo, useContext, useRef, useState } from "react";
 import CodeInput from "../primitiveInputs/CodeInput";
 import SmallTextField from "../styledComponents/SmallTextField";
 import { Box } from "@mui/system";
@@ -15,8 +15,39 @@ import CodeableConeptInput from "./CodeableConeptInput";
 import Subcomponent from "../common/Subcomponent";
 import Period from "../../classes/dataTypes/Period";
 import PeriodInput from "../primitiveInputs/PeriodInput";
+import { AttributeBlockWarningContext } from "../../utilities/AttributeBlockErrorContext";
+import { isObjectEmptyRecursive } from "../../utilities/fhirify";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+
 const validCodes = ["usual", "official", "temp", "secondary", "old"];
 const IdentifierInput = ({ identifier, changeIdentifier }) => {
+	const [errorMessage, setErrorMessage] = useState("");
+	/* const {
+		attributeBlockWarning,
+		setAttributeBlockWarning,
+		attributeBlockWarningMessage,
+		setAttributeBlockWarningMessage,
+	} = useContext(AttributeBlockWarningContext); */
+	const wasMounted = useRef(false);
+	useEffect(() => {
+		if (wasMounted) checkInputValidity();
+		else wasMounted.current = true;
+	}, [identifier]);
+
+	const checkInputValidity = () => {
+		console.log("checking valdity for ident: ", identifier);
+		if (
+			(!identifier.value || identifier.value == "") &&
+			!isObjectEmptyRecursive(identifier)
+		) {
+			setErrorMessage(
+				"Warning: Identifier with no value has limited utility. If communicating that an identifier value has been suppressed or missing, the value element SHOULD be present with an extension indicating the missing semantic - e.g. data-absent-reason."
+			);
+		} else {
+			setErrorMessage("");
+		}
+	};
+
 	const handleChangeSystem = (e) => {
 		let newIdentifier = new Identifier({
 			...identifier,
@@ -57,6 +88,19 @@ const IdentifierInput = ({ identifier, changeIdentifier }) => {
 
 	return (
 		<>
+			<Box>
+				{errorMessage ? (
+					<Box sx={{ display: "flex", maxWidth: "100%", height: "20%" }}>
+						<ErrorOutlineIcon
+							color="warning"
+							sx={{ marginLeft: "1rem", marginBottom: "-5px" }}
+						/>
+						<Typography color="warning.main" sx={{ marginLeft: "1rem" }}>
+							{errorMessage}
+						</Typography>
+					</Box>
+				) : null}
+			</Box>
 			<Grid
 				container
 				columnSpacing="10px"

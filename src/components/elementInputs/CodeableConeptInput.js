@@ -18,9 +18,9 @@ const CodeableConeptInput = ({
 	codeableConcept,
 	changeCodeableConcept,
 	defaultSystem,
-	systemEditable,
+	systemUneditable,
 	bindingCodes,
-
+	systemValueCombinationRequired,
 	...rest
 }) => {
 	useEffect(() => {}, []);
@@ -191,7 +191,10 @@ const CodeableConeptInput = ({
 													defaultSystem={defaultSystem}
 													bindingCodes={bindingCodes}
 													key={coding.key}
-													systemEditable={systemEditable}
+													systemUneditable={systemUneditable}
+													systemValueCombinationRequired={
+														systemValueCombinationRequired
+													}
 												/>
 											</DeleteableComponent>
 										</Box>
