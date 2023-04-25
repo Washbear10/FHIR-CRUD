@@ -49,7 +49,7 @@ const AttributeBlock = ({
 									color="error"
 									sx={{ marginLeft: "1rem", marginBottom: "-5px" }}
 								/>
-								<Typography color="error" sx={{ marginLeft: "5px" }}>
+								<Typography color="error" sx={{ marginLeft: "1rem" }}>
 									{attributeBlockErrorMessage}
 								</Typography>
 							</Box>

@@ -1,5 +1,5 @@
 import { Box } from "@mui/system";
-import React from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import CodeableConcept from "../../classes/dataTypes/CodeableConcept";
 import Contact from "../../classes/dataTypes/Contact";
 import DateTabs from "../common/DateTabs";
@@ -17,10 +17,49 @@ import PeriodInput from "../primitiveInputs/PeriodInput";
 import ReferenceInput from "./ReferenceInput";
 import Reference from "../../classes/specialTypes/Reference";
 import GenderInput from "./GenderInput";
+import { AttributeBlockErrorContext } from "../../utilities/AttributeBlockErrorContext";
 
 const genderValues = ["male", "female", "other", "unknown"];
 
 const ContactInput = ({ contact, changeContact }) => {
+	const [errorMessage, setErrorMessage] = useState("");
+
+	const {
+		attributeBlockError,
+		setAttributeBlockError,
+		attributeBlockErrorMessage,
+		setAttributeBlockErrorMessage,
+	} = useContext(AttributeBlockErrorContext);
+
+	const wasMounted = useRef(false);
+	useEffect(() => {
+		if (wasMounted) checkInputValidity();
+		else wasMounted.current = true;
+	}, [contact]);
+
+	const checkInputValidity = () => {
+		console.log("checking valdity for contact: ", contact);
+		if (
+			isObjectEmptyRecursive(contact.name) &&
+			isObjectEmptyRecursive(contact.address) &&
+			isObjectEmptyRecursive(contact.telecom) &&
+			isObjectEmptyRecursive(contact.organization) &&
+			(!isObjectEmptyRecursive(contact.gender) ||
+				!isObjectEmptyRecursive(contact.period) ||
+				!isObjectEmptyRecursive(contact.relationship))
+		) {
+			setAttributeBlockError(true);
+			setAttributeBlockErrorMessage(
+				"At least on of name, address, telecom or organization must be supplied."
+			);
+			setErrorMessage("Todo");
+		} else {
+			setAttributeBlockError(false);
+			setAttributeBlockErrorMessage("");
+			setErrorMessage("");
+		}
+	};
+
 	const handleChangeRelationship = (changedRelationship) => {
 		let i = contact.relationship
 			.map((item) => item.internalReactID)
@@ -144,6 +183,8 @@ const ContactInput = ({ contact, changeContact }) => {
 										<CodeableConeptInput
 											codeableConcept={singleRelationship.singleRelationship}
 											changeCodeableConcept={handleChangeRelationship}
+											systemEditable={false}
+											defaultSystem="http://terminology.hl7.org/CodeSystem/v2-01312"
 										/>
 									</Subcomponent>
 								</DeleteableComponent>

@@ -35,7 +35,7 @@ const CodingInput = ({
 		if (!coding.system && !coding.value && !isObjectEmptyRecursive(coding)) {
 			setAttributeBlockError(true);
 			setAttributeBlockErrorMessage("Both system and value must be supplied.");
-			setErrorMessage("Both type and Patient reference must be supplied.");
+			setErrorMessage("System and value must be supplied together.");
 		} else {
 			setAttributeBlockError(false);
 			setAttributeBlockErrorMessage("");
@@ -100,10 +100,8 @@ const CodingInput = ({
 					handleChangeSystem(e.target.value);
 				}}
 				className="systemInput"
-				error={Boolean(errorMessage) && systemEditable}
-				helperText={
-					Boolean(errorMessage) && systemEditable ? errorMessage : null
-				}
+				error={errorMessage && systemEditable ? 1 : 0}
+				helperText={errorMessage && systemEditable ? errorMessage : null}
 			/>
 
 			{bindingCodes ? (
@@ -117,8 +115,8 @@ const CodingInput = ({
 					label={"code"}
 					clearOnBlur={true}
 					width={"500px"}
-					error={Boolean(errorMessage)}
-					helperText={errorMessage}
+					error={errorMessage ? 1 : 0}
+					helpertext={errorMessage}
 
 					/* renderOption={(props, option) => (
 						<Box

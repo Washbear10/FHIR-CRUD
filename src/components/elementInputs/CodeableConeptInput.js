@@ -20,6 +20,7 @@ const CodeableConeptInput = ({
 	defaultSystem,
 	systemEditable,
 	bindingCodes,
+
 	...rest
 }) => {
 	useEffect(() => {}, []);

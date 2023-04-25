@@ -108,12 +108,14 @@ export default async function queryFHIR(resources, searchString, limit) {
 						if (response.status == 400) {
 							try {
 								let jsonResponse = response.json();
-								errorMessages = jsonResponse.issue.map((issue) => {
-									let s = "";
-									if (issue.expression)
-										s += "Issue in " + issue.expression.join(",") + ": ";
-									if (issue.details) s += issue.details.text;
-								});
+								errorMessages = jsonResponse.issue
+									.filter((issue) => issue["severity"] == "error")
+									.map((issue) => {
+										let s = "";
+										if (issue.expression)
+											s += "Issue in " + issue.expression.join(",") + ": ";
+										if (issue.details) s += issue.details.text;
+									});
 							} catch (e) {
 								console.log("caught error trying to decode issues: ", e);
 							}
@@ -123,9 +125,11 @@ export default async function queryFHIR(resources, searchString, limit) {
 					})
 					.then((data) => {
 						if (data["resourceType"] == "OperationOutcome") {
-							errorMessages = data.issue.map((element) => {
-								return element.details.text;
-							});
+							errorMessages = data.issue
+								.filter((issue) => issue["severity"] == "error")
+								.map((element) => {
+									return element.details.text;
+								});
 						}
 						if (errorMessages) {
 							throw new queryError(
@@ -180,12 +184,14 @@ export async function createFHIRResource(resourceType, newResource) {
 			if (response.status == 400) {
 				try {
 					let jsonResponse = response.json();
-					errorMessages = jsonResponse.issue.map((issue) => {
-						let s = "";
-						if (issue.expression)
-							s += "Issue in " + issue.expression.join(",") + ": ";
-						if (issue.details) s += issue.details.text;
-					});
+					errorMessages = jsonResponse.issue
+						.filter((issue) => issue["severity"] == "error")
+						.map((issue) => {
+							let s = "";
+							if (issue.expression)
+								s += "Issue in " + issue.expression.join(",") + ": ";
+							if (issue.details) s += issue.details.text;
+						});
 				} catch (e) {
 					console.log("caught error trying to decode issues: ", e);
 				}
@@ -219,15 +225,17 @@ export async function updateFHIRResource(
 					try {
 						const jsonResponse = await response.json();
 						console.log(jsonResponse);
-						errorMessages = jsonResponse.issue.map((issue) => {
-							console.log("issue is: ", issue);
-							let s = "";
-							if (issue.expression)
-								s += "Issue in " + issue["expression"].join(",") + ": ";
-							if (issue.details) s += issue.details.text;
-							console.log(s);
-							return decodeHtml(s);
-						});
+						errorMessages = jsonResponse.issue
+							.filter((issue) => issue["severity"] == "error")
+							.map((issue) => {
+								console.log("issue is: ", issue);
+								let s = "";
+								if (issue.expression)
+									s += "Issue in " + issue["expression"].join(",") + ": ";
+								if (issue.details) s += issue.details.text;
+								console.log(s);
+								return decodeHtml(s);
+							});
 					} catch (e) {
 						console.log("caught error trying to decode issues: ", e);
 						throw new updateError(
@@ -288,15 +296,17 @@ export async function deleteResources(ids, resourceType) {
 							try {
 								const jsonResponse = await response.json();
 								console.log(jsonResponse);
-								errorMessages = jsonResponse.issue.map((issue) => {
-									console.log("issue is: ", issue);
-									let s = "";
-									if (issue.expression)
-										s += "Issue in " + issue["expression"].join(",") + ": ";
-									if (issue.details) s += issue.details.text;
-									console.log(s);
-									return decodeHtml(s);
-								});
+								errorMessages = jsonResponse.issue
+									.filter((issue) => issue["severity"] == "error")
+									.map((issue) => {
+										console.log("issue is: ", issue);
+										let s = "";
+										if (issue.expression)
+											s += "Issue in " + issue["expression"].join(",") + ": ";
+										if (issue.details) s += issue.details.text;
+										console.log(s);
+										return decodeHtml(s);
+									});
 							} catch (e) {
 								console.log("caught error trying to decode issues: ", e);
 								throw new updateError(
@@ -414,9 +424,11 @@ export async function searchReference(resourcetype, paramsAndModifiers) {
 		})
 		.then((data) => {
 			if (data["resourceType"] == "OperationOutcome") {
-				errorMessages = data.issue.map((element) => {
-					return element.details.text;
-				});
+				errorMessages = data.issue
+					.filter((issue) => issue["severity"] == "error")
+					.map((element) => {
+						return element.details.text;
+					});
 			}
 			if (errorMessages) {
 				throw new queryError(

@@ -180,8 +180,8 @@ const ReferenceInput = ({
 				}}
 				loading={loading}
 				width={"500px"}
-				error={rest.error}
-				helperText={rest.helperText}
+				error={rest.error ? 1 : 0}
+				helpertext={rest.helpertext}
 			/>
 		</Box>
 	);

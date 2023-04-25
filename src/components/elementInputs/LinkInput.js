@@ -36,6 +36,8 @@ const LinkInput = ({ link, changeLink }) => {
 			setErrorMessage("Both type and Patient reference must be supplied.");
 		} else {
 			setAttributeBlockError(false);
+			setAttributeBlockErrorMessage("");
+
 			setErrorMessage("");
 		}
 	};
@@ -118,8 +120,8 @@ const LinkInput = ({ link, changeLink }) => {
 							paramsAndModifiers: ["name:contains"],
 						},
 					}}
-					error={attributeBlockError}
-					helperText={errorMessage}
+					error={attributeBlockError ? 1 : 0}
+					helpertext={errorMessage}
 				/>
 			</Box>
 			<CodeInput
@@ -127,8 +129,8 @@ const LinkInput = ({ link, changeLink }) => {
 				v={link.type}
 				label="Type"
 				changeInput={handleChangeType}
-				error={errorMessage ? true : false}
-				helperText={errorMessage}
+				error={errorMessage ? 1 : 0}
+				helpertext={errorMessage}
 			/>
 		</Box>
 	);

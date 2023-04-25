@@ -31,9 +31,11 @@ const CommunicationInput = ({ communication, changeCommunication }) => {
 			) {
 				setAttributeBlockError(true);
 				setAttributeBlockErrorMessage(
-					"Both system and value must be supplied."
+					"If a language is supplied, a language code must be selected."
 				);
-				setErrorMessage("Both type and Patient reference must be supplied.");
+				setErrorMessage(
+					"If a language is supplied, a language code must be selected."
+				);
 			} else {
 				setAttributeBlockError(false);
 				setAttributeBlockErrorMessage("");
@@ -61,7 +63,6 @@ const CommunicationInput = ({ communication, changeCommunication }) => {
 					defaultSystem="urn:ietf:bcp:47"
 					bindingCodes={Object.keys(commonLanguages)}
 					systemEditable={false}
-					//textValueSet={commonLanguages}
 				/>
 			</Subcomponent>
 			<BooleanInput
