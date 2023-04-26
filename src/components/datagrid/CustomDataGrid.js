@@ -4,8 +4,10 @@ import {
 	Button,
 	CircularProgress,
 	LinearProgress,
+	Typography,
 } from "@mui/material";
 import Box from "@mui/material/Box";
+import { display } from "@mui/system";
 import { DataGrid, GridFooter, GridHeader } from "@mui/x-data-grid";
 import * as React from "react";
 import { useEffect, useState } from "react";
@@ -147,8 +149,13 @@ export default function CustomDataGrid({
 		return (
 			<>
 				<GridHeader></GridHeader>
-				<Box sx={{ paddingLeft: "15px" }}>
-					<h2>{resourceType}</h2>
+				<Box sx={{ paddingLeft: "15px", display: "flex" }}>
+					<h2>
+						{resourceType}
+						<Typography variant="subtitle2">
+							{rows.length} resources found
+						</Typography>
+					</h2>
 				</Box>
 			</>
 		);
@@ -192,8 +199,10 @@ export default function CustomDataGrid({
 				getRowHeight={() => "auto"}
 				rows={rows}
 				columns={columns}
-				pageSize={10}
-				rowsPerPageOptions={[10, 20, 50]}
+				rowsPerPageOptions={[20, 50, 80]}
+				initialState={{
+					pagination: { paginationModel: { pageSize: 5 } },
+				}}
 				checkboxSelection
 				disableSelectionOnClick
 				onSelectionModelChange={(newSelection) => {

@@ -12,6 +12,7 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import AuthenticationPrompt from "./components/general/AuthenticationPrompt";
 import { LoginContext, SnackbarContext } from "./utilities/other/Contexts";
+import About from "./pages/About/About";
 const theme = createTheme({
 	components: {
 		MuiDataGrid: {
@@ -146,8 +147,8 @@ function App() {
 						<Routes>
 							<Route path="/" element={<CustomAppBar content={<Home />} />} />
 							<Route
-								path="/test"
-								elemen={<CustomAppBar content={<Home />} />}
+								path="/about"
+								element={<CustomAppBar content={<About />} />}
 							/>
 						</Routes>
 					</Router>

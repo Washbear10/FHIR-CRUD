@@ -1,13 +1,16 @@
 import MailIcon from "@mui/icons-material/Mail";
 import MenuIcon from "@mui/icons-material/Menu";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
+import VpnKeyIcon from "@mui/icons-material/VpnKey";
+import SearchIcon from "@mui/icons-material/Search";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
+import SettingsIcon from "@mui/icons-material/Settings";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
+import HelpIcon from "@mui/icons-material/Help";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
@@ -17,6 +20,7 @@ import Typography from "@mui/material/Typography";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { LoginContext } from "../../utilities/other/Contexts";
+import { Link } from "react-router-dom";
 const drawerWidth = 240;
 const titleBarHeight = 60;
 
@@ -44,16 +48,42 @@ function CustomAppBar({ window, content }) {
 			<Toolbar />
 			<Divider />
 			<List>
-				{["Search", "Create resources", "Configuration"].map((text, index) => (
-					<ListItem key={text} disablePadding>
-						<ListItemButton>
-							<ListItemIcon>
-								{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-							</ListItemIcon>
-							<ListItemText primary={text} />
-						</ListItemButton>
-					</ListItem>
-				))}
+				<ListItem key={"Search"} disablePadding>
+					<ListItemButton
+						onClick={(e) => {
+							navigate("/");
+						}}
+					>
+						<ListItemIcon>
+							<SearchIcon />
+						</ListItemIcon>
+						<ListItemText primary={"Search"} />
+					</ListItemButton>
+				</ListItem>
+				<ListItem key={"Settings"} disablePadding>
+					<ListItemButton
+						onClick={(e) => {
+							alert("TODO");
+						}}
+					>
+						<ListItemIcon>
+							<SettingsIcon />
+						</ListItemIcon>
+						<ListItemText primary={"Settings"} />
+					</ListItemButton>
+				</ListItem>
+				<ListItem key={"About"} disablePadding>
+					<ListItemButton
+						onClick={(e) => {
+							navigate("/about");
+						}}
+					>
+						<ListItemIcon>
+							<HelpIcon />
+						</ListItemIcon>
+						<ListItemText primary={"About"} />
+					</ListItemButton>
+				</ListItem>
 			</List>
 			<Divider />
 			<List>
@@ -64,7 +94,7 @@ function CustomAppBar({ window, content }) {
 						}}
 					>
 						<ListItemIcon>
-							<InboxIcon />
+							<VpnKeyIcon />
 						</ListItemIcon>
 						<ListItemText primary={"Login"} />
 					</ListItemButton>
