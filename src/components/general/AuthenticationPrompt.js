@@ -1,18 +1,18 @@
-import * as React from "react";
+import { Typography } from "@mui/material";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { LoginContext, SnackbarContext } from "../utilities/Contexts";
+import TextField from "@mui/material/TextField";
+import * as React from "react";
 import {
 	createAuthHeaderValue,
 	saveBasicAuthCreds,
-} from "../utilities/basicAuth";
-import { testBasicAuth } from "../utilities/query";
-import { Typography } from "@mui/material";
+} from "../../utilities/authentication/basicAuth";
+import { LoginContext, SnackbarContext } from "../../utilities/other/Contexts";
+import { testBasicAuth } from "../../utilities/querying/query";
 
 export default function AuthenticationPrompt() {
 	const { authenticationPromptOpen, setAuthenticationPromptOpen } =

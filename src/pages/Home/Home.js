@@ -1,64 +1,30 @@
-import React, { useContext } from "react";
+import { Button, CircularProgress, IconButton, Tooltip } from "@mui/material";
 import { Box } from "@mui/system";
-import {
-	AlertTitle,
-	Button,
-	CircularProgress,
-	DialogContent,
-	IconButton,
-	Skeleton,
-	Tooltip,
-} from "@mui/material";
-import CustomAppBar from "../../components/CustomAppBar";
-import CustomDataGrid from "../../components/CustomDataGrid";
-import SearchForm from "../../components/SearchForm";
-import ResourceView from "../../components/ResourceView";
-import { medplum } from "../../index";
+import React, { useState } from "react";
+import CustomDataGrid from "../../components/datagrid/CustomDataGrid";
 import queryFHIR, {
-	allResources,
-	testCreate,
+	createFHIRResource,
 	deleteResources,
 	updateFHIRResource,
-	testError,
-	getToken,
-	createFHIRResource,
-	apiTimeout,
-	testsearch,
-	searchReference,
-} from "../../utilities/query";
-import { useState, useEffect } from "react";
-import {
-	createResourceInstance,
-	resourcesAttributes,
-} from "../../utilities/resourceAttributes";
+} from "../../utilities/querying/query";
+import SearchForm from "./SearchForm";
+
 import { useImmer } from "use-immer";
-import { getRenderCellComponent } from "./renderCell";
-import { HumanName } from "../../classes/dataTypes/HumanName";
-import { Patient } from "../../classes/resourceTypes/Patient";
-import Testpicker from "../../components/Testpicker";
-import { getDateTimeParts } from "../../utilities/parseDateTime";
-import SmallTextField from "../../components/styledComponents/SmallTextField";
-import dayjs from "dayjs";
-import DateTabs from "../../components/common/DateTabs";
-import removeInternalReactID from "../../utilities/fhirify";
-import {
-	authenticationError,
-	queryError,
-	timeoutError,
-	updateError,
-} from "../../utilities/errors";
-import { Snackbar, Alert } from "@mui/material";
+
 import EditIcon from "@mui/icons-material/Edit";
-import { Dialog, DialogTitle, DialogActions } from "@mui/material";
-import ConfirmDeleteDialog from "../../components/ConfirmDeleteDialog";
-import ExpandableCell from "../../utilities/renderCellExpand";
-import { constructList } from "../../utilities/helpConstructInstances";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { LoginContext, SnackbarContext } from "../../utilities/Contexts";
-import { getBasicAuthCreds } from "../../utilities/basicAuth";
-import { isObjectEmptyRecursive } from "../../utilities/fhirify";
-import { clearObjectFromEmptyValues } from "../../utilities/fhirify";
+import ConfirmDeleteDialog from "../../components/datagrid/ConfirmDeleteDialog";
+import {
+	clearObjectFromEmptyValues,
+	isObjectEmptyRecursive,
+} from "../../utilities/formatting/fhirify";
+import { constructList } from "../../utilities/formatting/helpConstructInstances";
+import { LoginContext, SnackbarContext } from "../../utilities/other/Contexts";
+import {
+	authenticationError,
+	timeoutError,
+} from "../../utilities/querying/errors";
 const Home = () => {
 	// state for Search Component
 	const [resourceList, setResourceList] = useState(["Patient"]);
@@ -280,10 +246,6 @@ const Home = () => {
 		
 		
 	}; */
-
-	const getRenderCell = (resourcesType, element, params) => {
-		return getRenderCellComponent(resourcesType, element, params.value);
-	};
 
 	const handleSubmit = ({ event, searchValue, limit }) => {
 		handleSearch({ event: event, searchValue: searchValue, limit: limit });

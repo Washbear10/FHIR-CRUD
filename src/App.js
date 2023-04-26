@@ -1,25 +1,17 @@
-import CustomAppBar from "./components/CustomAppBar";
-import Home from "./pages/Home/Home";
+import { useState } from "react";
 import "./App.css";
-import { useState, useEffect } from "react";
+import CustomAppBar from "./components/general/CustomAppBar";
+import Home from "./pages/Home/Home";
 
-import { createTheme } from "@mui/material/styles";
-import * as colors from "@mui/material/colors";
 import { ThemeProvider } from "@emotion/react";
-import { createContext } from "react";
-import React from "react";
-import { LoginContext, SnackbarContext } from "./utilities/Contexts";
-import AuthenticationPrompt from "./components/AuthenticationPrompt";
+import { Alert, AlertTitle, Snackbar } from "@mui/material";
+import * as colors from "@mui/material/colors";
+import { createTheme } from "@mui/material/styles";
 import dayjs from "dayjs";
-import {
-	BrowserRouter as Router,
-	Routes,
-	Route,
-	Link,
-	BrowserRouter,
-} from "react-router-dom";
-import { Snackbar, Alert } from "@mui/material";
-import { AlertTitle } from "@mui/material";
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import AuthenticationPrompt from "./components/general/AuthenticationPrompt";
+import { LoginContext, SnackbarContext } from "./utilities/other/Contexts";
 const theme = createTheme({
 	components: {
 		MuiDataGrid: {

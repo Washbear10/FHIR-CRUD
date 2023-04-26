@@ -1,16 +1,8 @@
-import React from "react";
-import TextField from "@mui/material/TextField";
-import Autocomplete from "@mui/material/Autocomplete";
-import { Box } from "@mui/system";
-import { useState } from "react";
-import { IconButton } from "@mui/material";
 import { Button, FormControl } from "@mui/material";
-import CloseTwoToneIcon from "@mui/icons-material/CloseTwoTone";
-import { CssBaseline } from "@mui/material";
-import Checkbox from "@mui/material/Checkbox";
-import { FormControlLabel } from "@mui/material";
-import { FormGroup } from "@mui/material";
-import { allResources, getToken } from "../utilities/query";
+import Autocomplete from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
+import { Box } from "@mui/system";
+import React, { useState } from "react";
 
 const searchBarWidth = 600;
 const SearchForm = ({

@@ -1,10 +1,6 @@
 export function clearObjectFromEmptyValues(obj) {
 	if (obj instanceof Object) {
 		if (Array.isArray(obj)) {
-			/* obj.forEach((item, index) => {
-				let empty = clearObjectFromEmptyValues(item);
-				if (empty) obj.splice(index, 1);
-			}); */
 			for (let i = obj.length - 1; i >= 0; i--) {
 				let empty = clearObjectFromEmptyValues(obj[i]);
 				if (empty) obj.splice(i, 1);
@@ -25,7 +21,6 @@ export function clearObjectFromEmptyValues(obj) {
 				if (empty) delete obj[key];
 			}
 		}
-		/* if (isObjectEmpty(obj)) return true; */
 		if (isObjectEmptyRecursive(obj)) return true;
 		else return false;
 	} else {
