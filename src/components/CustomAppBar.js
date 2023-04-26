@@ -19,7 +19,7 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import { useNavigate } from "react-router-dom";
 import AuthenticationPrompt from "./AuthenticationPrompt";
-import { LoginContext } from "../utilities/LoginContext";
+import { LoginContext } from "../utilities/Contexts";
 import { useState } from "react";
 const drawerWidth = 240;
 const titleBarHeight = 60;

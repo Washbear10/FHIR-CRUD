@@ -13,3 +13,19 @@ export const AttributeBlockWarningContext = createContext({
 	attributeBlockWarningMessage: "",
 	setAttributeWarningErrorMessage: () => {},
 });
+
+export const LoginContext = createContext({
+	authenticationPromptOpen: false,
+	setAuthenticationPromptOpen: () => {},
+});
+
+export const SnackbarContext = createContext({
+	snackbarOpen: false,
+	setSnackbarOpen: () => {},
+	snackbarColor: "",
+	setSnackbarColor: () => {},
+	snackbarMessage: "",
+	setSnackbarMessage: () => {},
+	snackbarTitle: "",
+	setSnackbarTitle: () => {},
+});

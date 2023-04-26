@@ -1,7 +1,7 @@
 import { Box } from "@mui/system";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Communication from "../../classes/dataTypes/Communication";
-import { AttributeBlockErrorContext } from "../../utilities/AttributeBlockErrorContext";
+import { AttributeBlockErrorContext } from "../../utilities/Contexts";
 import { isObjectEmptyRecursive } from "../../utilities/fhirify";
 import { commonLanguages } from "../../utilities/valueSets/commonLanguages";
 import Subcomponent from "../common/Subcomponent";

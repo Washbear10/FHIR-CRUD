@@ -17,7 +17,7 @@ import PeriodInput from "../primitiveInputs/PeriodInput";
 import ReferenceInput from "./ReferenceInput";
 import Reference from "../../classes/specialTypes/Reference";
 import GenderInput from "./GenderInput";
-import { AttributeBlockErrorContext } from "../../utilities/AttributeBlockErrorContext";
+import { AttributeBlockErrorContext } from "../../utilities/Contexts";
 
 const genderValues = ["male", "female", "other", "unknown"];
 

@@ -55,7 +55,7 @@ import ExpandableCell from "../../utilities/renderCellExpand";
 import { constructList } from "../../utilities/helpConstructInstances";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { LoginContext } from "../../utilities/LoginContext";
+import { LoginContext, SnackbarContext } from "../../utilities/Contexts";
 import { getBasicAuthCreds } from "../../utilities/basicAuth";
 import { isObjectEmptyRecursive } from "../../utilities/fhirify";
 import { clearObjectFromEmptyValues } from "../../utilities/fhirify";
@@ -72,11 +72,6 @@ const Home = () => {
 	const [newResources, setNewResources] = useImmer({});
 
 	const [loading, setLoading] = useState(false);
-	const [snackbarOpen, setSnackbarOpen] = useState(false);
-	const [snackbarColor, setSnackbarColor] = useState("");
-	const [snackbarMessage, setSnackbarMessage] = useState("");
-	const [snackbarTitle, setSnackbarTitle] = useState("");
-
 	const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
 	const [deleteCandidates, setDeleteCandidates] = useState([]);
@@ -84,6 +79,17 @@ const Home = () => {
 
 	const { authenticationPromptOpen, setAuthenticationPromptOpen } =
 		React.useContext(LoginContext);
+
+	const {
+		snackbarOpen,
+		setSnackbarOpen,
+		snackbarColor,
+		setSnackbarColor,
+		snackbarMessage,
+		setSnackbarMessage,
+		snackbarTitle,
+		setSnackbarTitle,
+	} = React.useContext(SnackbarContext);
 
 	const handleCatchError = (error) => {
 		if (error instanceof timeoutError) {
@@ -293,25 +299,6 @@ const Home = () => {
 				gap: "1rem",
 			}}
 		>
-			<Snackbar
-				autoHideDuration={snackbarColor == "success" ? 3000 : null}
-				open={snackbarOpen}
-				onClose={() => {
-					setSnackbarOpen(false);
-				}}
-				message="Note archived"
-				anchorOrigin={{ vertical: "top", horizontal: "right" }}
-			>
-				<Alert
-					color={snackbarColor}
-					sx={{ width: "40vw", minHeight: "5rem", alignItems: "flex-start" }}
-					severity={snackbarColor || "success"}
-					variant="filled"
-				>
-					<AlertTitle>{snackbarTitle}</AlertTitle>
-					{snackbarMessage}
-				</Alert>
-			</Snackbar>
 			<ConfirmDeleteDialog
 				open={confirmDeleteOpen}
 				confirm={() => {

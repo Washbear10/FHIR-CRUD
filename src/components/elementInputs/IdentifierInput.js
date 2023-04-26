@@ -15,7 +15,7 @@ import CodeableConeptInput from "./CodeableConeptInput";
 import Subcomponent from "../common/Subcomponent";
 import Period from "../../classes/dataTypes/Period";
 import PeriodInput from "../primitiveInputs/PeriodInput";
-import { AttributeBlockWarningContext } from "../../utilities/AttributeBlockErrorContext";
+import { AttributeBlockWarningContext } from "../../utilities/Contexts";
 import { isObjectEmptyRecursive } from "../../utilities/fhirify";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 

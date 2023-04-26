@@ -74,7 +74,7 @@ const SearchForm = ({
 						renderInput={(params) => (
 							<TextField
 								{...params}
-								label="Search"
+								label="Search Patients by name"
 								value={inputValue}
 								onChange={(event) => {
 									setInputValue(event.target.value);

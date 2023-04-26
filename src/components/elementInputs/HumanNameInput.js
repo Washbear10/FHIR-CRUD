@@ -23,7 +23,7 @@ import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import Subcomponent from "../common/Subcomponent";
 import { Stack } from "@mui/system";
 import PeriodInput from "../primitiveInputs/PeriodInput";
-import { AttributeBlockWarningContext } from "../../utilities/AttributeBlockErrorContext";
+import { AttributeBlockWarningContext } from "../../utilities/Contexts";
 
 const HumanNameInput = ({ name, changeSingleName }) => {
 	const initiallyRendered = useRef(false);

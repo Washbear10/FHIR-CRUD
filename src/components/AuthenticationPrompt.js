@@ -6,7 +6,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { LoginContext } from "../utilities/LoginContext";
+import { LoginContext, SnackbarContext } from "../utilities/Contexts";
 import {
 	createAuthHeaderValue,
 	saveBasicAuthCreds,
@@ -20,6 +20,16 @@ export default function AuthenticationPrompt() {
 	const [userNameInput, setUserNameInput] = React.useState("");
 	const [passwordInput, setPasswordInput] = React.useState("");
 	const [error, setError] = React.useState(false);
+	const {
+		snackbarOpen,
+		setSnackbarOpen,
+		snackbarColor,
+		setSnackbarColor,
+		snackbarMessage,
+		setSnackbarMessage,
+		snackbarTitle,
+		setSnackbarTitle,
+	} = React.useContext(SnackbarContext);
 
 	const handleClose = () => {
 		setAuthenticationPromptOpen(false);
@@ -35,9 +45,17 @@ export default function AuthenticationPrompt() {
 			setPasswordInput("");
 			setUserNameInput("");
 			setAuthenticationPromptOpen(false);
+			setSnackbarOpen(true);
+			setSnackbarColor("success");
+			setSnackbarMessage("Authenticated.");
+			setSnackbarTitle("Success");
 		} else {
 			setError(true);
 			setPasswordInput("");
+			setSnackbarOpen(true);
+			setSnackbarColor("error");
+			setSnackbarMessage("Authentication unsuccessfull");
+			setSnackbarTitle("Error");
 		}
 	};
 
@@ -57,7 +75,7 @@ export default function AuthenticationPrompt() {
 						autoFocus
 						margin="dense"
 						id="username"
-						label="Password"
+						label="Username"
 						fullWidth
 						variant="standard"
 						error={error}

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Button, Box, Typography } from "@mui/material";
 import Attachment from "../../classes/dataTypes/Attachment";
 import { getAttachment } from "../../utilities/query";
-import { AttributeBlockErrorContext } from "../../utilities/AttributeBlockErrorContext";
+import { AttributeBlockErrorContext } from "../../utilities/Contexts";
 const AttachmentInput = ({ attachment, changeAttachment, photoSizeSum }) => {
 	const [displayImage, setDisplayImage] = useState(null);
 

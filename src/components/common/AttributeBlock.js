@@ -7,7 +7,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import {
 	AttributeBlockErrorContext,
 	AttributeBlockWarningContext,
-} from "../../utilities/AttributeBlockErrorContext";
+} from "../../utilities/Contexts";
 const AttributeBlock = ({
 	attributeName,
 	attributeDescription,

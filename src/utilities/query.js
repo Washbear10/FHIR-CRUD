@@ -15,6 +15,8 @@ export async function testBasicAuth(authenticationValue) {
 	async function innerTestBasicAuth() {
 		const headers = new Headers();
 		const searchUrl = `${process.env.REACT_APP_FHIR_BASE}`;
+		//192.168.1.96:9443/fhir-server/api/v4
+		/* const searchUrl = "http://192.168.1.96:9443/fhir-server/api/v4"; */
 		headers.set("Authorization", "Basic " + authenticationValue);
 		return await fetch(searchUrl, { method: "GET", headers: headers }).then(
 			(response) => {
