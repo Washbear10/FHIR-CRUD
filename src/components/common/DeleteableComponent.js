@@ -1,7 +1,7 @@
-import React from "react";
-import { Box } from "@mui/system";
-import { Tooltip, IconButton } from "@mui/material";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
+import { IconButton, Tooltip } from "@mui/material";
+import { Box } from "@mui/system";
+import React from "react";
 
 const DeleteableComponent = ({ title, handleDelete, children, ...rest }) => {
 	return (
@@ -9,7 +9,7 @@ const DeleteableComponent = ({ title, handleDelete, children, ...rest }) => {
 			sx={{
 				display: "flex",
 				flexDirection: "row",
-				alignItems: "center",
+				alignItems: "center" /*  */,
 			}}
 		>
 			<Tooltip title={title} sx={{}}>

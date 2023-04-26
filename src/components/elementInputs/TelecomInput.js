@@ -1,20 +1,13 @@
-import React, { memo } from "react";
-import CodeInput from "../primitiveInputs/CodeInput";
-import SmallTextField from "../styledComponents/SmallTextField";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import { Grid, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import { useState, useEffect } from "react";
-import { Grid, InputAdornment, TextField, Typography } from "@mui/material";
-import DateTabs from "../common/DateTabs";
-import Subcomponent from "../common/Subcomponent";
+import React, { useEffect, useRef, useState } from "react";
 import { ContactPoint } from "../../classes/dataTypes/ContactPoint";
-import dayjs from "dayjs";
-import Period from "../../classes/dataTypes/Period";
-import Test from "../../pages/Home/Test";
-import { useCallback } from "react";
-import { useRef } from "react";
+import Subcomponent from "../common/Subcomponent";
+import CodeInput from "../primitiveInputs/CodeInput";
 import IntegerInput from "../primitiveInputs/IntegerInput";
 import PeriodInput from "../primitiveInputs/PeriodInput";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import SmallTextField from "../styledComponents/SmallTextField";
 
 const systemValues = ["phone", "fax", "email", "pager", "url", "sms", "other"];
 const useValues = ["home", "work", "temp", "old", "mobile"];

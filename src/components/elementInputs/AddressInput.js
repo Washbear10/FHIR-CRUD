@@ -1,10 +1,10 @@
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { IconButton } from "@mui/material";
+import { Box } from "@mui/system";
 import React from "react";
 import Address from "../../classes/dataTypes/Address";
-import { Box } from "@mui/system";
 import CodeInput from "../primitiveInputs/CodeInput";
 import SmallTextField from "../styledComponents/SmallTextField";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { Button, IconButton } from "@mui/material";
 
 const useValues = ["home", "work", "temp", "old", "billing"];
 const typeValues = ["postal", "physical", "both"];

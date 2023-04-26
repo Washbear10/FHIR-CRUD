@@ -1,8 +1,6 @@
-import { Typography } from "@mui/material";
-import { Box } from "@mui/system";
 import { v4 as uuidv4 } from "uuid";
-import CodeableConcept from "./CodeableConcept";
 import Period from "../../classes/dataTypes/Period";
+import CodeableConcept from "./CodeableConcept";
 
 export class Identifier {
 	constructor({ use, type, system, value, period, assigner, internalReactID }) {

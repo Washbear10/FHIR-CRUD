@@ -1,24 +1,17 @@
-import { Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import { HumanName } from "../dataTypes/HumanName";
 import { immerable } from "immer";
-import removeInternalReactID, {
-	clearObjectFromEmptyValues,
-} from "../../utilities/fhirify";
-import { Identifier } from "../dataTypes/Identifier";
-import { ContactPoint } from "../dataTypes/ContactPoint";
+import ExpandableCell from "../../components/datagrid/renderCellExpand";
+import { clearObjectFromEmptyValues } from "../../utilities/formatting/fhirify";
 import Address from "../dataTypes/Address";
-import CodeableConcept from "../dataTypes/CodeableConcept";
-import Contact from "../dataTypes/Contact";
-import Communication from "../dataTypes/Communication";
-import Reference from "../specialTypes/Reference";
-import Link from "../dataTypes/Link";
-import IdentifierDisplay from "../../components/elementDataGridDisplays.js/IdentifierDisplay";
-import HumanNameDisplay from "../../components/elementDataGridDisplays.js/HumanNameDisplay";
-import ContactPointDisplay from "../../components/elementDataGridDisplays.js/ContactPointDisplay";
-import { Stack } from "@mui/system";
-import ExpandableCell from "../../utilities/renderCellExpand";
 import Attachment from "../dataTypes/Attachment";
+import CodeableConcept from "../dataTypes/CodeableConcept";
+import Communication from "../dataTypes/Communication";
+import Contact from "../dataTypes/Contact";
+import { ContactPoint } from "../dataTypes/ContactPoint";
+import { HumanName } from "../dataTypes/HumanName";
+import { Identifier } from "../dataTypes/Identifier";
+import Link from "../dataTypes/Link";
+import Reference from "../specialTypes/Reference";
 
 export class Patient {
 	[immerable] = true;

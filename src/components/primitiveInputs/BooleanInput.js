@@ -1,8 +1,8 @@
-import React, { memo } from "react";
-import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormGroup from "@mui/material/FormGroup";
 import { Box } from "@mui/system";
+import React from "react";
 const BooleanInput = ({ title, checked, changeChecked, disabled }) => {
 	return (
 		<Box

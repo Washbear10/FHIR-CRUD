@@ -1,5 +1,5 @@
-import Coding from "./Coding";
 import { v4 as uuidv4 } from "uuid";
+import Coding from "./Coding";
 
 export default class CodeableConcept {
 	constructor({ coding, text, internalReactID }) {

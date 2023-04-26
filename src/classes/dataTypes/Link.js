@@ -1,5 +1,5 @@
-import Reference from "../specialTypes/Reference";
 import { v4 as uuidv4 } from "uuid";
+import Reference from "../specialTypes/Reference";
 
 export default class Link {
 	constructor({ other, type, internalReactID }) {

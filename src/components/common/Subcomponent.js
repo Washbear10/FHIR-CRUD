@@ -1,6 +1,5 @@
-import React from "react";
-import { Box } from "@mui/system";
 import { Stack, Typography } from "@mui/material";
+import React from "react";
 const Subcomponent = ({ children, title, description, ...rest }) => {
 	return (
 		<Stack

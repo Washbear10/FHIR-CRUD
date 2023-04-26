@@ -1,11 +1,7 @@
-import React from "react";
-import { useState } from "react";
-import { Box } from "@mui/system";
-import { Autocomplete } from "@mui/material";
-import { TextField } from "@mui/material";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ClearIcon from "@mui/icons-material/Clear";
-import { useEffect } from "react";
+import { Autocomplete, TextField } from "@mui/material";
+import React from "react";
 import { DisabledTextField } from "../styledComponents/DisabledTextfield";
 const CodeInput = ({
 	values,

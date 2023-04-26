@@ -1,10 +1,9 @@
+import { Typography } from "@mui/material";
+import { Box } from "@mui/system";
+import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import Period from "../../classes/dataTypes/Period";
-import dayjs from "dayjs";
-import { Box } from "@mui/system";
 import DateTabs from "../common/DateTabs";
-import { getDateTimeParts } from "../../utilities/parseDateTime";
-import { Typography } from "@mui/material";
 
 const PeriodInput = ({ period, changePeriod, ...rest }) => {
 	const [error, setError] = useState(false);

@@ -1,6 +1,5 @@
-import React, { memo, useEffect } from "react";
-import { useState } from "react";
 import { Box } from "@mui/system";
+import React, { useEffect } from "react";
 import CodeInput from "../primitiveInputs/CodeInput";
 
 const GenderInput = ({ gender, changeGender }) => {

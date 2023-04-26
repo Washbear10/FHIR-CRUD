@@ -1,10 +1,10 @@
+import { Box } from "@mui/system";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Link from "../../classes/dataTypes/Link";
+import { isObjectEmptyRecursive } from "../../utilities/formatting/fhirify";
+import { AttributeBlockErrorContext } from "../../utilities/other/Contexts";
 import CodeInput from "../primitiveInputs/CodeInput";
 import ReferenceInput from "./ReferenceInput";
-import { Box } from "@mui/system";
-import { isObjectEmptyRecursive } from "../../utilities/fhirify";
-import { AttributeBlockErrorContext } from "../../utilities/Contexts";
 
 const codeValues = ["replaced-by", "replaces", "refer", "seealso"];
 const LinkInput = ({ link, changeLink }) => {

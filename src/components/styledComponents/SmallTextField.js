@@ -1,7 +1,6 @@
-import { keyframes, TextField } from "@mui/material";
-import React, { memo } from "react";
+import { TextField } from "@mui/material";
 import * as colors from "@mui/material/colors";
-import { useEffect } from "react";
+import React from "react";
 
 const SmallTextField = React.forwardRef((props, ref) => {
 	return (

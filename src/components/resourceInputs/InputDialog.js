@@ -1,26 +1,14 @@
-import * as React from "react";
+import { useTheme } from "@emotion/react";
+import { Backdrop, CircularProgress, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { dialogList } from "../../utilities/helpConstructInstances";
-import PatientInput from "./PatientInput";
+import * as React from "react";
 import { useState } from "react";
-import { useEffect } from "react";
 import { useImmer } from "use-immer";
-import dayjs from "dayjs";
-import { Box } from "@mui/system";
-import { Backdrop, CircularProgress, Typography } from "@mui/material";
-import { useTheme } from "@emotion/react";
-import { json } from "react-router-dom";
-import {
-	clearObjectFromEmptyValues,
-	isObjectEmptyRecursive,
-} from "../../utilities/fhirify";
-import { Patient } from "../../classes/resourceTypes/Patient";
+import PatientInput from "./PatientInput";
 
 var equal = require("deep-equal");
 
@@ -37,18 +25,6 @@ const InputDialog = ({
 	const [inputDialogError, setinputDialogError] = useState(false);
 
 	const theme = useTheme();
-	/* useEffect(() => {
-		alert("here");
-
-		//I don't actually know why, but the condition causes two seperate valid Patient Objects to be created, whereas without the condition the first object created is null, which
-		// will be received by the Patientinput which causes bugs in there because Patientinput expects a fully valid Patient Object.
-		if (resource) {
-			setEditedResource(resource);
-		}
-	}, [resource]); */
-	/* useEffect(() => {
-		console.acg("IPD received: ", resource);
-	}, [resource]); */
 
 	const modifyResource = (field, value) => {
 		//The following 2 conditionals are there because deceasedBoolean and deceasedDateTime have custom setters. TODO: figure out how to avoid those checks

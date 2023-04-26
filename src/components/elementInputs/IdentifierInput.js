@@ -1,23 +1,16 @@
-import React, { memo, useContext, useRef, useState } from "react";
+import { Stack, Typography } from "@mui/material";
+import { Box } from "@mui/system";
+import React, { useEffect, useRef, useState } from "react";
+import { Identifier } from "../../classes/dataTypes/Identifier";
 import CodeInput from "../primitiveInputs/CodeInput";
 import SmallTextField from "../styledComponents/SmallTextField";
-import { Box } from "@mui/system";
-import DateTabs from "../common/DateTabs";
-import { useEffect } from "react";
-import { Button, Stack } from "@mui/material";
-import { Identifier } from "../../classes/dataTypes/Identifier";
-import dayjs from "dayjs";
-import { Typography } from "@mui/material";
 
-import { Grid } from "@mui/material";
-import CodeableConcept from "../../classes/dataTypes/CodeableConcept";
-import CodeableConeptInput from "./CodeableConeptInput";
-import Subcomponent from "../common/Subcomponent";
-import Period from "../../classes/dataTypes/Period";
-import PeriodInput from "../primitiveInputs/PeriodInput";
-import { AttributeBlockWarningContext } from "../../utilities/Contexts";
-import { isObjectEmptyRecursive } from "../../utilities/fhirify";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import { Grid } from "@mui/material";
+import { isObjectEmptyRecursive } from "../../utilities/formatting/fhirify";
+import Subcomponent from "../common/Subcomponent";
+import PeriodInput from "../primitiveInputs/PeriodInput";
+import CodeableConeptInput from "./CodeableConeptInput";
 
 const validCodes = ["usual", "official", "temp", "secondary", "old"];
 const IdentifierInput = ({ identifier, changeIdentifier }) => {

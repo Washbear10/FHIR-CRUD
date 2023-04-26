@@ -1,29 +1,14 @@
-import { TextField, Tooltip, Typography } from "@mui/material";
-import React, { memo, useContext, useRef } from "react";
-import { Box } from "@mui/material";
-import { Autocomplete } from "@mui/material";
-import { useState } from "react";
-import { useEffect } from "react";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import Period from "../../classes/dataTypes/Period";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { Button, IconButton } from "@mui/material";
-import { HumanName } from "../../classes/dataTypes/HumanName";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import { Box, IconButton, Typography } from "@mui/material";
+import React, { useEffect, useRef, useState } from "react";
+import { HumanName } from "../../classes/dataTypes/HumanName";
 
-import dayjs from "dayjs";
-import DateTabs from "../common/DateTabs";
-import { getDateTimeParts } from "../../utilities/parseDateTime";
-import CodeInput from "../primitiveInputs/CodeInput";
-import SmallTextField from "../styledComponents/SmallTextField";
 import { Grid } from "@mui/material";
-import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import Subcomponent from "../common/Subcomponent";
-import { Stack } from "@mui/system";
+import CodeInput from "../primitiveInputs/CodeInput";
 import PeriodInput from "../primitiveInputs/PeriodInput";
-import { AttributeBlockWarningContext } from "../../utilities/Contexts";
+import SmallTextField from "../styledComponents/SmallTextField";
 
 const HumanNameInput = ({ name, changeSingleName }) => {
 	const initiallyRendered = useRef(false);

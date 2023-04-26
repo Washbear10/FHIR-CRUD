@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
-import { Box } from "@mui/system";
-import BooleanInput from "../primitiveInputs/BooleanInput";
 import { Typography } from "@mui/material";
-import DateTabs from "../common/DateTabs";
+import { Box } from "@mui/system";
+import React, { useEffect } from "react";
+import BooleanInput from "../primitiveInputs/BooleanInput";
 import IntegerInput from "../primitiveInputs/IntegerInput";
 const MultipleBirthInput = ({
 	multipleBirthBoolean,

@@ -1,8 +1,8 @@
+import { Box, Button, Typography } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
-import { Button, Box, Typography } from "@mui/material";
 import Attachment from "../../classes/dataTypes/Attachment";
-import { getAttachment } from "../../utilities/query";
-import { AttributeBlockErrorContext } from "../../utilities/Contexts";
+import { AttributeBlockErrorContext } from "../../utilities/other/Contexts";
+import { getAttachment } from "../../utilities/querying/query";
 const AttachmentInput = ({ attachment, changeAttachment, photoSizeSum }) => {
 	const [displayImage, setDisplayImage] = useState(null);
 

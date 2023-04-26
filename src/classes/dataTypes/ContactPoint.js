@@ -1,6 +1,3 @@
-import { Typography } from "@mui/material";
-import { Box } from "@mui/system";
-import { TextField } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 import Period from "../../classes/dataTypes/Period";
 export class ContactPoint {

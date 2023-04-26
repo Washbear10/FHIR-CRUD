@@ -1,8 +1,8 @@
 import { Box } from "@mui/system";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import Communication from "../../classes/dataTypes/Communication";
-import { AttributeBlockErrorContext } from "../../utilities/Contexts";
-import { isObjectEmptyRecursive } from "../../utilities/fhirify";
+import { isObjectEmptyRecursive } from "../../utilities/formatting/fhirify";
+import { AttributeBlockErrorContext } from "../../utilities/other/Contexts";
 import { commonLanguages } from "../../utilities/valueSets/commonLanguages";
 import Subcomponent from "../common/Subcomponent";
 import BooleanInput from "../primitiveInputs/BooleanInput";

@@ -1,13 +1,9 @@
-import React, { useState } from "react";
-import { searchReference } from "../../utilities/query";
-import CodeInput from "../primitiveInputs/CodeInput";
-import SmallTextField from "../styledComponents/SmallTextField";
+import { Typography } from "@mui/material";
 import { Box } from "@mui/system";
+import React, { useEffect, useRef, useState } from "react";
 import Reference from "../../classes/specialTypes/Reference";
-import { Autocomplete, Typography } from "@mui/material";
-import { useEffect, useRef } from "react";
-import { isObjectEmptyRecursive } from "../../utilities/fhirify";
-import { TextField } from "@mui/material";
+import { searchReference } from "../../utilities/querying/query";
+import CodeInput from "../primitiveInputs/CodeInput";
 const ReferenceInput = ({
 	reference,
 	changeReference,

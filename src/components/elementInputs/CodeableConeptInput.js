@@ -1,19 +1,15 @@
-import React, { memo } from "react";
-import SmallTextField from "../styledComponents/SmallTextField";
-import { Box } from "@mui/system";
 import { Typography } from "@mui/material";
-import CodingInput from "./CodingInput";
-import { useEffect } from "react";
-import { useState } from "react";
+import { Box } from "@mui/system";
+import React, { useEffect } from "react";
 import CodeableConcept from "../../classes/dataTypes/CodeableConcept";
 import Coding from "../../classes/dataTypes/Coding";
-import Subcomponent from "../common/Subcomponent";
+import { isObjectEmptyRecursive } from "../../utilities/formatting/fhirify";
 import DeleteableComponent from "../common/DeleteableComponent";
 import ExtendableComponent from "../common/ExtendableComponent";
-import { isObjectEmptyRecursive } from "../../utilities/fhirify";
-import { Button } from "@mui/material";
+import Subcomponent from "../common/Subcomponent";
 import CodeInput from "../primitiveInputs/CodeInput";
-import { commonLanguages } from "../../utilities/valueSets/commonLanguages";
+import SmallTextField from "../styledComponents/SmallTextField";
+import CodingInput from "./CodingInput";
 const CodeableConeptInput = ({
 	codeableConcept,
 	changeCodeableConcept,

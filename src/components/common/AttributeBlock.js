@@ -1,13 +1,11 @@
-import React, { memo, useContext, useState } from "react";
-import { Box } from "@mui/system";
-import { useEffect } from "react";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { Button, IconButton, Typography } from "@mui/material";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import { Typography } from "@mui/material";
+import { Box } from "@mui/system";
+import React, { memo, useState } from "react";
 import {
 	AttributeBlockErrorContext,
 	AttributeBlockWarningContext,
-} from "../../utilities/Contexts";
+} from "../../utilities/other/Contexts";
 const AttributeBlock = ({
 	attributeName,
 	attributeDescription,

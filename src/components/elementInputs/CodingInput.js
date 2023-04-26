@@ -1,15 +1,11 @@
-import React, { memo } from "react";
 import { Box } from "@mui/system";
-import SmallTextField from "../styledComponents/SmallTextField";
-import BooleanInput from "../primitiveInputs/BooleanInput";
-import { useEffect } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Coding from "../../classes/dataTypes/Coding";
-import { Button } from "@mui/material";
-import { useState } from "react";
+import { isObjectEmptyRecursive } from "../../utilities/formatting/fhirify";
+import { AttributeBlockErrorContext } from "../../utilities/other/Contexts";
+import BooleanInput from "../primitiveInputs/BooleanInput";
 import CodeInput from "../primitiveInputs/CodeInput";
-import { AttributeBlockErrorContext } from "../../utilities/Contexts";
-import { useContext, useRef } from "react";
-import { isObjectEmptyRecursive } from "../../utilities/fhirify";
+import SmallTextField from "../styledComponents/SmallTextField";
 const CodingInput = ({
 	coding,
 	changeCoding,

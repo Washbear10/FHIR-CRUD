@@ -1,10 +1,10 @@
+import { v4 as uuidv4 } from "uuid";
+import Period from "../../classes/dataTypes/Period";
 import Reference from "../specialTypes/Reference";
 import Address from "./Address";
 import CodeableConcept from "./CodeableConcept";
 import { ContactPoint } from "./ContactPoint";
 import { HumanName } from "./HumanName";
-import Period from "../../classes/dataTypes/Period";
-import { v4 as uuidv4 } from "uuid";
 export default class Contact {
 	constructor({
 		internalReactID,

@@ -1,5 +1,5 @@
-import { Identifier } from "../dataTypes/Identifier";
 import { v4 as uuidv4 } from "uuid";
+import { Identifier } from "../dataTypes/Identifier";
 
 export default class Reference {
 	constructor({ reference, type, identifier, display, internalReactID }) {

@@ -1,8 +1,8 @@
-import React from "react";
-import { Box } from "@mui/system";
-import BooleanInput from "../primitiveInputs/BooleanInput";
 import { Typography } from "@mui/material";
+import { Box } from "@mui/system";
+import React from "react";
 import DateTabs from "../common/DateTabs";
+import BooleanInput from "../primitiveInputs/BooleanInput";
 
 const DeceasedInput = ({
 	deceasedBoolean,
