@@ -99,18 +99,73 @@ const About = () => {
 								Main features include
 								<List sx={{ listStyleType: "disc", pl: 4 }}>
 									<ListItem sx={{ display: "list-item" }}>
-										searching Patients by name
+										Searching Patients by name
 									</ListItem>
 									<ListItem sx={{ display: "list-item" }}>
-										deleting (multiple) resources
+										Creating new resources
 									</ListItem>
 									<ListItem sx={{ display: "list-item" }}>
-										editing any value of a resource
+										Deleting (multiple) resources
 									</ListItem>
 									<ListItem sx={{ display: "list-item" }}>
-										limiting the number of records returned
+										Editing any value of a resource
 									</ListItem>
 								</List>
+							</ListItem>
+						</List>
+						<Typography variant="subtitle1">
+							Requirements and Limitations
+						</Typography>
+						<List sx={{ listStyleType: "disc", pl: 4 }}>
+							As mentioned before, this application only works out-of-the-box
+							with IBM's LinuxForHealth FHIR implementation. When switching to
+							another implementation of the API, certain things have to be taken
+							note of:
+							<ListItem sx={{ display: "list-item" }} disablePadding>
+								Due to performance aspects, editing a resource works by issueing
+								a single HTTP PATCH request with a list of change operations, so
+								the API must support PATCH methods.
+							</ListItem>
+							<ListItem sx={{ display: "list-item" }} disablePadding>
+								The IBM version by default does not allow the PATCH operation on
+								any resource (allthough it should, according to it's
+								documentation), so it will have to be activated by editing the{" "}
+								<i>server.xml</i> configuration file (see{" "}
+								<a href="https://linuxforhealth.github.io/FHIR/guides/FHIRServerUsersGuide#31-liberty-server-configuration">
+									https://linuxforhealth.github.io/FHIR/guides/FHIRServerUsersGuide#31-liberty-server-configuration
+								</a>
+								)
+							</ListItem>
+							<ListItem sx={{ display: "list-item" }} disablePadding>
+								The search functionality works by applying the{" "}
+								<a href="https://build.fhir.org/search.html#modifiers">
+									search parameter modifier
+								</a>{" "}
+								"contains" on the name attribute of "Patient". Other parameters
+								can be added in the source code that fit the resources searched
+								to improve effectivenes of this feature. However, at the time of
+								writing the IBM server does not support a lot of basic
+								parameters defined by the R4 standard (like _filter, text),
+								which is why searching will (for now) be restricted to patients'
+								names.
+							</ListItem>
+							<ListItem sx={{ display: "list-item" }} disablePadding>
+								Changing authentication credentials on the server does not
+								change the behavior of the application. Changing the method of
+								authentication (e.g. from Basic Auth to OAuth2) will require
+								some changes to the code base.
+							</ListItem>
+							<ListItem sx={{ display: "list-item" }} disablePadding>
+								The interface is optimized for larger screens
+								(Desktop/Laptop/Tablet). It is not intended to be used on
+								devices with small screens.
+							</ListItem>
+							<ListItem sx={{ display: "list-item" }} disablePadding>
+								As the aim for this application is to serve as an interface for
+								making smaller changes for the chair's FHIR server and not to be
+								used in a clinical setting with thousands of records,
+								performance issues might be experienced when working with large
+								datasets.
 							</ListItem>
 						</List>
 					</Box>
