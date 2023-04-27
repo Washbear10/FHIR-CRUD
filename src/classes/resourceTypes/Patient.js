@@ -85,6 +85,10 @@ export class Patient {
 		this.internalReactExpanded = false;
 	}
 
+	static get getResourceName() {
+		return "Patient";
+	}
+
 	setDeceasedBoolean(newValue) {
 		this.deceasedBoolean = newValue;
 		this.deceasedDateTime = null;

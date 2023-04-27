@@ -149,13 +149,13 @@ export default function CustomDataGrid({
 		return (
 			<>
 				<GridHeader></GridHeader>
-				<Box sx={{ paddingLeft: "15px", display: "flex" }}>
-					<h2>
-						{resourceType}
-						<Typography variant="subtitle2">
-							{rows.length} resources found
-						</Typography>
-					</h2>
+				<Box
+					sx={{ paddingLeft: "15px", display: "flex", flexDirection: "column" }}
+				>
+					<h2>{resourceType}</h2>
+					<Typography variant="subtitle2">
+						{rows.length} resources found
+					</Typography>
 				</Box>
 			</>
 		);
@@ -199,9 +199,9 @@ export default function CustomDataGrid({
 				getRowHeight={() => "auto"}
 				rows={rows}
 				columns={columns}
-				rowsPerPageOptions={[20, 50, 80]}
+				rowsPerPageOptions={[20, 50, 100]}
 				initialState={{
-					pagination: { paginationModel: { pageSize: 5 } },
+					pagination: { paginationModel: { pageSize: 50 } },
 				}}
 				checkboxSelection
 				disableSelectionOnClick

@@ -63,7 +63,7 @@ function CustomAppBar({ window, content }) {
 				<ListItem key={"Settings"} disablePadding>
 					<ListItemButton
 						onClick={(e) => {
-							alert("TODO");
+							alert("TODO?");
 						}}
 					>
 						<ListItemIcon>

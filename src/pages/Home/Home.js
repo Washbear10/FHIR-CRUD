@@ -25,9 +25,10 @@ import {
 	authenticationError,
 	timeoutError,
 } from "../../utilities/querying/errors";
+import { Patient } from "../../classes/resourceTypes/Patient";
 const Home = () => {
 	// state for Search Component
-	const [resourceList, setResourceList] = useState(["Patient"]);
+	const [resourceList, setResourceList] = useState(["Patient"]); // Hardcoded, can be used when the resource type selector in the search bar component is reenabled.
 	const [inputValue, setInputValue] = useState("");
 	const [limit, setLimit] = useState("-");
 	const [filterResource, setFilterResource] = useState(false);
@@ -37,15 +38,19 @@ const Home = () => {
 	const [changedResources, setChangedResources] = useImmer({});
 	const [newResources, setNewResources] = useImmer({});
 
+	// states for ui elements
 	const [loading, setLoading] = useState(false);
 	const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
+	// states for deleting of resources
 	const [deleteCandidates, setDeleteCandidates] = useState([]);
 	const [deleteCandidatType, setDeleteCandidatType] = useState(null);
 
+	// needed to open Login prompt up the hirarchy
 	const { authenticationPromptOpen, setAuthenticationPromptOpen } =
 		React.useContext(LoginContext);
 
+	// needed for Snackbar display up the hirarchy
 	const {
 		snackbarOpen,
 		setSnackbarOpen,
@@ -56,6 +61,25 @@ const Home = () => {
 		snackbarTitle,
 		setSnackbarTitle,
 	} = React.useContext(SnackbarContext);
+
+	const handleSearch = async ({ event, searchValue, limit }) => {
+		if (event) event.preventDefault();
+		setLoading(true);
+		try {
+			const queryResult = await queryFHIR(
+				resourceList,
+				searchValue,
+				parseInt(limit) || 0
+			);
+			console.log(queryResult);
+			setResults(queryResult);
+			setLoading(false);
+		} catch (error) {
+			handleCatchError(error);
+			setLoading(false);
+			return error;
+		}
+	};
 
 	const handleCatchError = (error) => {
 		if (error instanceof timeoutError) {
@@ -77,32 +101,6 @@ const Home = () => {
 			setSnackbarTitle("Error");
 		}
 	};
-
-	const handleSearch = async ({ event, searchValue, limit }) => {
-		if (event) event.preventDefault();
-		setLoading(true);
-		try {
-			/* const queryResult = await queryFHIR({
-				resources: filterResource ? resourceList : allResources,
-				limit: limit,
-				searchString: "Agnes",
-			}); */
-			const queryResult = await queryFHIR(
-				resourceList,
-				searchValue,
-				parseInt(limit) || 0
-			);
-			console.log(queryResult);
-			setResults(queryResult);
-			//setInitialResources(queryResult);
-			setLoading(false);
-		} catch (error) {
-			handleCatchError(error);
-			setLoading(false);
-			return error;
-		}
-	};
-
 	// methods passed down to Search Component
 	const updateResourceList = (updatedResourceList) => {
 		setResourceList(updatedResourceList);
@@ -274,15 +272,12 @@ const Home = () => {
 			/>
 			<Button
 				onClick={async () => {
-					let old = { id: "187b25ec1b2-cfc2a7ea-d78d-42b1-9921-cdddedbd361b" };
-					const p = [
-						{
-							op: "add",
-							path: `/name`,
-							value: [{ given: ["added"] }],
-						},
-					];
-					updateFHIRResource("Patient", old, JSON.stringify(p));
+					console.log(process.env.REACT_APP_MAX_ATTACHMENT_SIZE);
+					console.log(process.env.REACT_APP_FHIRBASE);
+					alert("asd");
+					for (const resource of [Patient]) {
+						console.log(resource.getResourceName);
+					}
 				}}
 			>
 				Test Error

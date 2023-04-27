@@ -10,7 +10,7 @@ import {
 export async function testBasicAuth(authenticationValue) {
 	async function innerTestBasicAuth() {
 		const headers = new Headers();
-		const searchUrl = `${process.env.REACT_APP_FHIR_BASE}`;
+		const searchUrl = `${process.env.REACT_APP_FHIRBASE}`;
 		headers.set("Authorization", "Basic " + authenticationValue);
 		return await fetch(searchUrl, { method: "GET", headers: headers }).then(
 			(response) => {
@@ -64,32 +64,15 @@ export default async function queryFHIR(resources, searchString, limit) {
 			const headers = new Headers();
 			const authenticationValue = getBasicAuthCreds();
 			headers.set("Authorization", "Basic " + authenticationValue);
-			let resultCountPreflight = await getResultCount(
-				/* `${process.env.REACT_APP_FHIR_BASE}/${resource.name}?name:contains=${searchString}&_summary=count` */
-				`${process.env.REACT_APP_FHIR_BASE}/${resource.name}?${
-					searchString ? "name:contains=" + searchString + "&" : ""
-				}_summary=count`
-			);
 			let count = 100;
-			/* if (!resultCountPreflight) count = limit;
-			else if (resultCountPreflight > 3000) {
-				count = Math.floor(resultCountPreflight / 4);
-			} else if (resultCountPreflight > 900) {
-				count = Math.floor(resultCountPreflight / 3);
-			} else if (resultCountPreflight > 400) {
-				count = Math.floor(resultCountPreflight / 2);
-			} else {
-				count = resultCountPreflight;
-			} */
+
 			let nextPageLink = "";
 			do {
-				// hapi test server doesnt support maxresults, check in IBM
-				/* const searchUrl = `${process.env.REACT_APP_FHIR_BASE}/${resource.name}?_content=${searchString}&_maxresults=5`; */
 				const searchUrl = nextPageLink
 					? nextPageLink
-					: `${process.env.REACT_APP_FHIR_BASE}/${resource.name}?${
+					: `${process.env.REACT_APP_FHIRBASE}/${resource.getResourceName}?${
 							searchString ? "name:contains=" + searchString + "&" : ""
-					  }_count=${!isNaN(count) && count > 0 ? count : ""}`;
+					  }_count=${count}`;
 				let errorMessages;
 				/* headers.set("Authorization", "Bearer " + token); */
 				await fetch(searchUrl, { method: "GET", headers: headers })
@@ -162,7 +145,7 @@ export default async function queryFHIR(resources, searchString, limit) {
 }
 export async function createFHIRResource(resourceType, newResource) {
 	let r = apiTimeout(async () => {
-		const searchUrl = `${process.env.REACT_APP_FHIR_BASE}/${resourceType}`;
+		const searchUrl = `${process.env.REACT_APP_FHIRBASE}/${resourceType}`;
 		const headers = new Headers();
 		const authenticationValue = getBasicAuthCreds();
 		headers.set("Authorization", "Basic " + authenticationValue);
@@ -203,7 +186,7 @@ export async function updateFHIRResource(
 	updatedResource
 ) {
 	let r = apiTimeout(async () => {
-		const searchUrl = `${process.env.REACT_APP_FHIR_BASE}/${resourceType}/${oldResource.id}`;
+		const searchUrl = `${process.env.REACT_APP_FHIRBASE}/${resourceType}/${oldResource.id}`;
 		const headers = new Headers();
 		const authenticationValue = getBasicAuthCreds();
 		headers.set("Authorization", "Basic " + authenticationValue);
@@ -279,7 +262,7 @@ export async function deleteResources(ids, resourceType) {
 
 		const results = await Promise.all(
 			ids.map(async (id) => {
-				const searchUrl = `${process.env.REACT_APP_FHIR_BASE}/${resourceType}/${id}`;
+				const searchUrl = `${process.env.REACT_APP_FHIRBASE}/${resourceType}/${id}`;
 
 				headers.set("Content-Type", "application/fhir+json");
 
@@ -399,8 +382,8 @@ export async function searchReference(resourcetype, paramsAndModifiers) {
 
 	// This functionality will be added if the IBM server supports the _filter option to allow logical OR on multiple element types, not only on the values
 	// of a single element Type.
-	//const searchUrl = `${process.env.REACT_APP_FHIR_BASE}/fhir/R4/${resourcetype}?${paramsAndModifiers}`;
-	const searchUrl = `${process.env.REACT_APP_FHIR_BASE}/${resourcetype}?`;
+	//const searchUrl = `${process.env.REACT_APP_FHIRBASE}/fhir/R4/${resourcetype}?${paramsAndModifiers}`;
+	const searchUrl = `${process.env.REACT_APP_FHIRBASE}/${resourcetype}?`;
 
 	const headers = new Headers();
 	const authenticationValue = getBasicAuthCreds();
@@ -447,7 +430,7 @@ export async function searchReference(resourcetype, paramsAndModifiers) {
 export async function getAttachment(url) {
 	// This functionality will be added if the IBM server supports the _filter option to allow logical OR on multiple element types, not only on the values
 	// of a single element Type.
-	//const searchUrl = `${process.env.REACT_APP_FHIR_BASE}/fhir/R4/${resourcetype}?${paramsAndModifiers}`;
+	//const searchUrl = `${process.env.REACT_APP_FHIRBASE}/fhir/R4/${resourcetype}?${paramsAndModifiers}`;
 	const searchUrl = url;
 	const headers = new Headers();
 	const authenticationValue = getBasicAuthCreds();
