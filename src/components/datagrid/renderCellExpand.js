@@ -3,6 +3,12 @@ import Box from "@mui/material/Box";
 import { Stack } from "@mui/system";
 import PropTypes from "prop-types";
 import * as React from "react";
+
+/**
+ * Component to insert into Datagrid cells
+ * @param {*} value A string representation of the value, seperated by newlines if cardinality > 0
+ * @param {*} rowExpanded display all values in field?
+ */
 const ExpandableCell = ({ value, rowExpanded }) => {
 	const [splitString, setSplitString] = React.useState(value.split("\n"));
 

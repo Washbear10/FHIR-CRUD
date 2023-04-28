@@ -4,13 +4,23 @@ import React, { useEffect, useRef, useState } from "react";
 import Reference from "../../classes/specialTypes/Reference";
 import { searchReference } from "../../utilities/querying/query";
 import CodeInput from "../primitiveInputs/CodeInput";
+
+/**
+ * Input Component for a reference. Will fetch resources to be proposed as options in an Autocomplete input.
+ * @param {*} referenceOptions Object of the form {'resourceType1': {...options}, 'resourceType2': {...options}, .....}
+ * with options including displayAttribute (name of element which to use to display the reference in the Autompletelist), calculateDisplayAttribute (callback function if displayAttribute not given), paramsAndModifiers (List of strings of searchparameters and modifiers).
+ * Refer to the Linkinput Component for an example.
+ */
 const ReferenceInput = ({
 	reference,
 	changeReference,
 	referenceOptions,
 	...rest
 }) => {
+	// which resource is selected as a reference
 	const [selectedValue, setSelectedValue] = useState(null);
+
+	// of which type selected the reference is
 	const [selectedResourceType, setSelectedResourceType] = useState(
 		reference
 			? reference.type
@@ -18,6 +28,8 @@ const ReferenceInput = ({
 				: Object.keys(referenceOptions)[0]
 			: Object.keys(referenceOptions)[0]
 	);
+
+	// Object storing the offered resources of the available resource types
 	const [searchResults, setSearchResults] = useState(() => {
 		let r = {};
 		Object.keys(referenceOptions).forEach((key) => {
@@ -25,25 +37,25 @@ const ReferenceInput = ({
 		});
 		return r;
 	});
+
 	const [loading, setLoading] = useState(false);
 
-	const wasMounted = useRef(false);
-
 	useEffect(() => {
+		// every time the resourcetype of which to choose a reference from is changed,
+		// fetch the options to choose from
 		if (!searchResults || !selectedResourceType) return; //on first render, those are not initialized in state yet -> skip this time
-
 		if (searchResults[selectedResourceType] == null)
+			// if still in initial state => fetch options for this type
 			fetchOptions(selectedResourceType);
 		else if (searchResults[selectedResourceType].length == 0) {
+			// no matches -> no value selected.
 			handleSelectedValueChange(null);
 		}
 	}, [selectedResourceType]);
 
 	useEffect(() => {
-		/* if (!wasMounted) {
-			wasMounted.current = true;
-			return;
-		} */
+		// every time the list of options to choose from changes (after being fetched)
+		// check if the reference value supplied by the resource is in that list and if so, select it.
 		if (!selectedResourceType || !searchResults[selectedResourceType]) return;
 		if (!reference.reference) return;
 		if (searchResults[selectedResourceType].length > 0) {
@@ -65,14 +77,13 @@ const ReferenceInput = ({
 			if (!foundValue) {
 				handleSelectedValueChange(null);
 			}
-			//setLoading(false);
 		} else {
 			handleSelectedValueChange(null);
 		}
 	}, [searchResults]);
 
 	const fetchOptions = async () => {
-		console.log("fetching options");
+		// helperfunction to fetch the resources that can serve as a reference.
 		if (selectedResourceType !== null) {
 			setLoading(true);
 			const response = await searchReference(selectedResourceType);
@@ -97,7 +108,6 @@ const ReferenceInput = ({
 					resourceType: resource.resourceType,
 				};
 			});
-			console.log("x is: ", x);
 			setSearchResults((prev) => {
 				return { ...prev, [selectedResourceType]: x };
 			});
@@ -106,15 +116,14 @@ const ReferenceInput = ({
 	};
 
 	const handleSelectedValueChange = (newVal) => {
+		// function to set the state of the selected resource to a deserialized object of type "Reference"
 		if (newVal) {
-			console.log("old ref: ", reference);
 			let newRef = new Reference({
 				type: newVal.resourceType,
 				reference: newVal.id ? `${newVal.resourceType}/` + newVal.id : null,
 				display: newVal.displayLabel,
 				internalReactID: reference.internalReactID,
 			});
-			console.log("new ref: ", newRef);
 			setSelectedValue(newVal);
 			changeReference(newRef, reference);
 		} else {
@@ -127,9 +136,10 @@ const ReferenceInput = ({
 	};
 
 	const handleTypeChange = (newVal) => {
-		//setLoading(true);
 		setSelectedResourceType(newVal);
 	};
+
+	// render section
 
 	return (
 		<Box sx={{ display: "flex" }}>
@@ -137,7 +147,6 @@ const ReferenceInput = ({
 				values={Object.keys(referenceOptions)}
 				v={selectedResourceType}
 				changeInput={handleTypeChange}
-				/* readOnly={Object.keys(referenceOptions).length <= 1} */
 				label="Resource type"
 				mycursordisabled={Object.keys(referenceOptions).length <= 1}
 				disabled={Object.keys(referenceOptions).length <= 1}
@@ -172,7 +181,7 @@ const ReferenceInput = ({
 				)}
 				getOptionLabel={(option) => {
 					if (option.displayLabel) return option.displayLabel;
-					return option.id ? option.id.slice(9) : "unknown ID";
+					return option.id ? option.id.slice(9) : "unknown ID"; // slicing 9 characters-> will result in display bug with non-uuid IDs
 				}}
 				loading={loading}
 				width={"500px"}

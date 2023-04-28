@@ -14,8 +14,8 @@ const CodingInput = ({
 	systemValueCombinationRequired,
 	bindingCodes,
 }) => {
+	// Error display section
 	const [errorMessage, setErrorMessage] = useState("");
-
 	const {
 		attributeBlockError,
 		setAttributeBlockError,
@@ -23,9 +23,12 @@ const CodingInput = ({
 		setAttributeBlockErrorMessage,
 	} = useContext(AttributeBlockErrorContext);
 
+	// Section for checking validity of inputs
+	//
 	const wasMounted = useRef(false);
 	useEffect(() => {
 		if (!wasMounted) {
+			// disable check on mounting
 			wasMounted.current = true;
 			return;
 		}
@@ -41,6 +44,8 @@ const CodingInput = ({
 		}
 	}, [coding]);
 
+	// Section for handling changing data
+	//
 	const handleChangeSystem = (newValue) => {
 		let newCoding = new Coding({ ...coding, system: newValue });
 		changeCoding(newCoding, coding);
@@ -82,6 +87,8 @@ const CodingInput = ({
 		changeCoding(newCoding, coding);
 	};
 
+	// render Section
+	//
 	return (
 		<Box sx={{ display: "flex", columnGap: "5px" }}>
 			<SmallTextField
@@ -103,49 +110,17 @@ const CodingInput = ({
 			/>
 
 			{bindingCodes ? (
+				// if codes from valueSet supplied, show Autocomplete, else freetext
 				<CodeInput
 					v={coding.code}
 					values={bindingCodes}
 					changeInput={(newValue) => {
-						/* handleChangeTextCode(rest["textValueSet"][newValue]); */
 						handleChangeCode(newValue);
 					}}
 					label={"code"}
 					clearOnBlur={true}
 					error={errorMessage ? 1 : 0}
 					helpertext={errorMessage}
-
-					/* renderOption={(props, option) => (
-						<Box
-							component="li"
-							{...props}
-							sx={{ display: "flex", justifyContent: "start", gap: "1rem" }}
-							key={option}
-						>
-							<Typography variant="subtitle1">{option}</Typography>
-							<Typography variant="subtitle2">
-								{rest["textValueSet"][option]}
-							</Typography>
-						</Box>
-					)}
-					filterOptions={(options, inputval) => {
-						let filtered = options.filter((option) => {
-							return (
-								option
-									.toLowerCase()
-									.includes(inputval.inputValue.toLowerCase()) ||
-								rest["textValueSet"][option]
-									.toLowerCase()
-									.includes(inputval.inputValue.toLowerCase())
-							);
-						});
-						return filtered;
-					}}
-					getOptionLabel={(option) => {
-						return option + " (" + rest["textValueSet"][option] + ")";
-					}} */
-					/* error={rest.error}
-					helperText={rest.helperText} */
 				/>
 			) : (
 				<SmallTextField
@@ -188,8 +163,3 @@ const CodingInput = ({
 };
 
 export default CodingInput;
-
-/* function areEqual(prev, next) {
-	return prev.coding == next.coding;
-}
-export default memo(CodingInput, areEqual); */

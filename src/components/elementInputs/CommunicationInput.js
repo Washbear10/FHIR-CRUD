@@ -3,14 +3,14 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import Communication from "../../classes/dataTypes/Communication";
 import { isObjectEmptyRecursive } from "../../utilities/formatting/fhirify";
 import { AttributeBlockErrorContext } from "../../utilities/other/Contexts";
-import { commonLanguages } from "../../utilities/valueSets/commonLanguages";
 import Subcomponent from "../common/Subcomponent";
 import BooleanInput from "../primitiveInputs/BooleanInput";
 import CodeableConeptInput from "./CodeableConeptInput";
+import { commonLanguages } from "../../utilities/valueSets/valueSets";
 
 const CommunicationInput = ({ communication, changeCommunication }) => {
+	// Error display section
 	const [errorMessage, setErrorMessage] = useState("");
-
 	const {
 		attributeBlockError,
 		setAttributeBlockError,
@@ -18,8 +18,9 @@ const CommunicationInput = ({ communication, changeCommunication }) => {
 		setAttributeBlockErrorMessage,
 	} = useContext(AttributeBlockErrorContext);
 
+	// Section for checking validity of inputs
+	//
 	const wasMounted = useRef(false);
-
 	useEffect(() => {
 		if (!wasMounted) {
 			wasMounted.current = true;
@@ -29,6 +30,7 @@ const CommunicationInput = ({ communication, changeCommunication }) => {
 	}, [communication]);
 
 	const checkValidity = () => {
+		// checks if constraints of Resource / element are adhered to
 		if (!isObjectEmptyRecursive(communication)) {
 			if (
 				communication.language.coding.some((item) => !item.system || !item.code)
@@ -51,6 +53,9 @@ const CommunicationInput = ({ communication, changeCommunication }) => {
 			setErrorMessage("");
 		}
 	};
+
+	// Section for handling changing data
+	//
 	const handleChangePreferred = (newChecked) => {
 		let newCom = new Communication({ ...communication, preferred: newChecked });
 		changeCommunication(newCom, communication);
@@ -61,6 +66,9 @@ const CommunicationInput = ({ communication, changeCommunication }) => {
 			communication
 		);
 	};
+
+	// render Section
+	//
 	return (
 		<Box>
 			<Subcomponent title="Language">

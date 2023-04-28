@@ -78,7 +78,6 @@ export default async function queryFHIR(resources, searchString, limit) {
 				await fetch(searchUrl, { method: "GET", headers: headers })
 					.then((response) => {
 						if (response.status == 401) {
-							alert("here query ");
 							throw new authenticationError(
 								"Authentication failed. You might need to login again."
 							);
@@ -123,8 +122,8 @@ export default async function queryFHIR(resources, searchString, limit) {
 									(element) => new resource({ ...element.resource })
 							  )
 							: [];
-						results[resource.name].push(...pageEntries);
-						if (!limit || results[resource.name].length < limit) {
+						results[resource.getResourceName].push(...pageEntries);
+						if (!limit || results[resource.getResourceName].length < limit) {
 							if (data.link) {
 								let next = data.link.filter((item) => item.relation == "next");
 								console.log("here in datalink: ", data);
@@ -136,7 +135,9 @@ export default async function queryFHIR(resources, searchString, limit) {
 					});
 			} while (nextPageLink);
 			if (limit)
-				results[resource.name] = results[resource.name].slice(0, limit);
+				results[resource.getResourceName] = results[
+					resource.getResourceName
+				].slice(0, limit);
 		}
 		console.log("Query: ", results);
 		return results;

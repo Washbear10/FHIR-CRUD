@@ -5,10 +5,16 @@ import React from "react";
 import Address from "../../classes/dataTypes/Address";
 import CodeInput from "../primitiveInputs/CodeInput";
 import SmallTextField from "../styledComponents/SmallTextField";
+import { addressType, addressUse } from "../../utilities/valueSets/valueSets";
 
-const useValues = ["home", "work", "temp", "old", "billing"];
-const typeValues = ["postal", "physical", "both"];
+/**
+ * Receive a single address from the address list of the Patient
+ * @param {*} param0
+ * @returns
+ */
 const AddressInput = ({ address, changeSingleAddress }) => {
+	// Section for methods handling change in data:
+	//
 	const handleChangeUse = (newValue) => {
 		let newAddress = new Address({ ...address, use: newValue });
 		changeSingleAddress(newAddress, address);
@@ -42,6 +48,7 @@ const AddressInput = ({ address, changeSingleAddress }) => {
 		changeSingleAddress(newAddress, address);
 	};
 
+	// removes empty input Textfields
 	const removeEmptyLines = () => {
 		let newLines = address.line.filter((item) => item != "");
 		if (newLines.length == 0) {
@@ -53,6 +60,7 @@ const AddressInput = ({ address, changeSingleAddress }) => {
 		});
 		changeSingleAddress(newAddress, address);
 	};
+
 	const changeSingleLine = (oldLineIndex, newLine) => {
 		let newLines = [...address.line];
 		newLines[oldLineIndex] = newLine;
@@ -73,6 +81,9 @@ const AddressInput = ({ address, changeSingleAddress }) => {
 			}
 		}
 	};
+
+	// Section for rendering
+	//
 	return (
 		<Box
 			sx={{
@@ -133,12 +144,12 @@ const AddressInput = ({ address, changeSingleAddress }) => {
 									className="lineInput"
 									value={singleLine.singleLine}
 									key={singleLine.index}
-									/* autoFocus={!sf.suffix && sf.key === name.suffix.length - 1} */
 									label="Line"
 									onChange={(event) => {
 										changeSingleLine(singleLine.index, event.target.value);
 									}}
 									onBlur={(e) => {
+										// removes empty input fields when not focusing any line
 										if (
 											singleLine.singleLine == "" ||
 											e.relatedTarget == null ||
@@ -163,7 +174,7 @@ const AddressInput = ({ address, changeSingleAddress }) => {
 			</Box>
 			<Box sx={{ display: "flex", columnGap: "0.5rem", width: "100%" }}>
 				<CodeInput
-					values={useValues}
+					values={addressUse}
 					label="use"
 					v={address.use || ""}
 					changeInput={(value) => {
@@ -171,7 +182,7 @@ const AddressInput = ({ address, changeSingleAddress }) => {
 					}}
 				/>
 				<CodeInput
-					values={typeValues}
+					values={addressType}
 					label="type"
 					v={address.type || ""}
 					changeInput={(value) => {

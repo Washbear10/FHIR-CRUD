@@ -8,13 +8,15 @@ import CodeInput from "../primitiveInputs/CodeInput";
 import IntegerInput from "../primitiveInputs/IntegerInput";
 import PeriodInput from "../primitiveInputs/PeriodInput";
 import SmallTextField from "../styledComponents/SmallTextField";
-
-const systemValues = ["phone", "fax", "email", "pager", "url", "sms", "other"];
-const useValues = ["home", "work", "temp", "old", "mobile"];
+import {
+	contactPointSystem,
+	contactPointUse,
+} from "../../utilities/valueSets/valueSets";
 
 const TelecomInput = ({ telecom, changeTelecom }) => {
+	// Section for checking validity of inputs
+	//
 	const [errorMessage, setErrorMessage] = useState("");
-
 	const wasMounted = useRef(false);
 	useEffect(() => {
 		if (!wasMounted) {
@@ -28,6 +30,8 @@ const TelecomInput = ({ telecom, changeTelecom }) => {
 		}
 	}, [telecom]);
 
+	// Section for handling data changes
+	//
 	const handleChangeSystem = (val) => {
 		let newTelecom = new ContactPoint({ ...telecom, system: val });
 		changeTelecom(newTelecom, telecom);
@@ -49,6 +53,7 @@ const TelecomInput = ({ telecom, changeTelecom }) => {
 				rank: null,
 			});
 		} else if (parseInt(val) < 2147483647) {
+			// max constraint of positive Int type in FHIR
 			newTelecom = new ContactPoint({
 				...telecom,
 				rank: parseInt(val),
@@ -67,6 +72,7 @@ const TelecomInput = ({ telecom, changeTelecom }) => {
 		changeTelecom(newTelecom, telecom);
 	};
 
+	// render section
 	return (
 		<>
 			<Box>
@@ -96,7 +102,7 @@ const TelecomInput = ({ telecom, changeTelecom }) => {
 					>
 						<Box sx={{ display: "flex", columnGap: "0.5rem", width: "100%" }}>
 							<CodeInput
-								values={systemValues}
+								values={contactPointSystem}
 								label="system"
 								v={telecom.system || ""}
 								changeInput={(value) => {
@@ -114,7 +120,7 @@ const TelecomInput = ({ telecom, changeTelecom }) => {
 						</Box>
 						<Box sx={{ display: "flex", columnGap: "0.5rem", width: "100%" }}>
 							<CodeInput
-								values={useValues}
+								values={contactPointUse}
 								label="use"
 								v={telecom.use || ""}
 								changeInput={(value) => {

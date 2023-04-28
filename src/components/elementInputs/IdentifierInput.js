@@ -11,23 +11,23 @@ import { isObjectEmptyRecursive } from "../../utilities/formatting/fhirify";
 import Subcomponent from "../common/Subcomponent";
 import PeriodInput from "../primitiveInputs/PeriodInput";
 import CodeableConeptInput from "./CodeableConeptInput";
+import { identifierUse } from "../../utilities/valueSets/valueSets";
 
-const validCodes = ["usual", "official", "temp", "secondary", "old"];
 const IdentifierInput = ({ identifier, changeIdentifier }) => {
+	// Section for checking validity of inputs
+	//
 	const [errorMessage, setErrorMessage] = useState("");
-	/* const {
-		attributeBlockWarning,
-		setAttributeBlockWarning,
-		attributeBlockWarningMessage,
-		setAttributeBlockWarningMessage,
-	} = useContext(AttributeBlockWarningContext); */
 	const wasMounted = useRef(false);
 	useEffect(() => {
-		if (wasMounted) checkInputValidity();
-		else wasMounted.current = true;
+		if (!wasMounted) {
+			wasMounted.current = true;
+			return;
+		}
+		checkValidity();
 	}, [identifier]);
 
-	const checkInputValidity = () => {
+	const checkValidity = () => {
+		// checks if constraints of Resource / element are adhered to
 		console.log("checking valdity for ident: ", identifier);
 		if (
 			(!identifier.value || identifier.value == "") &&
@@ -41,6 +41,8 @@ const IdentifierInput = ({ identifier, changeIdentifier }) => {
 		}
 	};
 
+	// Section for handling changing data
+	//
 	const handleChangeSystem = (e) => {
 		let newIdentifier = new Identifier({
 			...identifier,
@@ -79,6 +81,8 @@ const IdentifierInput = ({ identifier, changeIdentifier }) => {
 		changeIdentifier(newIdentifier, identifier);
 	};
 
+	// render Section
+	//
 	return (
 		<>
 			<Box>
@@ -125,7 +129,7 @@ const IdentifierInput = ({ identifier, changeIdentifier }) => {
 							}}
 						>
 							<CodeInput
-								values={validCodes}
+								values={identifierUse}
 								label="use"
 								v={identifier.use || ""}
 								changeInput={handleChangeUse}

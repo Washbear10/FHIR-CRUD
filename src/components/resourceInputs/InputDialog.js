@@ -12,6 +12,12 @@ import PatientInput from "./PatientInput";
 
 var equal = require("deep-equal");
 
+/**
+ * Component that renders an edit form with the actual contents being conditional of the resourceType
+ * @param {*} resource The resource that was selected from the Datagrid
+ * @param {*} resourceType Type of the resource to conditionally render correct content
+ * @returns
+ */
 const InputDialog = ({
 	open,
 	handleClose,
@@ -19,15 +25,24 @@ const InputDialog = ({
 	resourceType,
 	saveUpdates,
 }) => {
+	// resource state that will be modified
 	const [editedResource, setEditedResource] = useImmer(resource);
+	// keep copy of original
 	const [originalResource, setOriginalResource] = useImmer(resource);
+
+	// displaying loading or errors
 	const [backDropOpen, setBackDropOpen] = useState(false);
 	const [inputDialogError, setinputDialogError] = useState(false);
 
 	const theme = useTheme();
 
+	/**
+	 * Callback being passed down to components that can use it to change the data of the resource
+	 * @param {*} field The string name of the element of the resource to be modified
+	 * @param {*} value The value to insert
+	 */
 	const modifyResource = (field, value) => {
-		//The following 2 conditionals are there because deceasedBoolean and deceasedDateTime have custom setters. TODO: figure out how to avoid those checks
+		//The following 4 conditionals are there because deceasedBoolean and deceasedDateTime have custom setters. TODO: figure out how to avoid those checks
 		if (field === "deceasedBoolean") {
 			setEditedResource((draft) => {
 				draft.setDeceasedBoolean(value);
@@ -51,7 +66,7 @@ const InputDialog = ({
 		}
 	};
 
-	const getResourceInputDialog = (resource, resourceType, originalResource) => {
+	const getResourceInputDialog = (resource, resourceType) => {
 		if (!resource) return null;
 		switch (resourceType) {
 			case "Patient":
@@ -61,35 +76,9 @@ const InputDialog = ({
 		}
 	};
 
-	/* 	const makePatchFormat = () => {
-		let changedKeys = [];
-		Object.keys(editedResource).forEach((key) => {
-			if (editedResource[key] == originalResource[key]) {
-				console.log("key value is same reference -> wasnt changed:");
-			} else {
-				console.log("key value is NOT same:");
-				if (
-					isObjectEmptyRecursive(editedResource[key]) &&
-					!isObjectEmptyRecursive(originalResource[key])
-				) {
-					changedKeys.push({ op: "remove", path: `/${key}` });
-				} else {
-					let sp = JSON.parse(JSON.stringify(editedResource[key]));
-					clearObjectFromEmptyValues(sp);
-
-					changedKeys.push({
-						op: "add",
-						path: `/${key}`,
-						value: sp,
-					});
-				}
-
-			}
-		});
-		console.log(JSON.stringify(changedKeys));
-		return JSON.stringify(changedKeys);
-	}; */
-
+	/**
+	 * Save modifications to Server
+	 */
 	const handleSave = async () => {
 		setBackDropOpen(true);
 		let success = await saveUpdates(editedResource);
@@ -100,9 +89,6 @@ const InputDialog = ({
 	};
 
 	return (
-		/* 		<InputDialogErrorContext.Provider
-			value={{ inputDialogError, setinputDialogError }}
-		> */
 		<Dialog open={open} onClose={handleClose} maxWidth="xl" fullWidth>
 			<DialogTitle
 				sx={{
@@ -117,11 +103,7 @@ const InputDialog = ({
 			>
 				{resourceType}
 			</DialogTitle>
-			<Backdrop
-				sx={{ color: "#fff", zIndex: 1 }}
-				open={backDropOpen}
-				//onClick={handleCloseBackDrop}
-			>
+			<Backdrop sx={{ color: "#fff", zIndex: 1 }} open={backDropOpen}>
 				<CircularProgress color="inherit" />
 			</Backdrop>
 			<DialogContent
@@ -155,12 +137,8 @@ const InputDialog = ({
 				<Button color="success" variant="contained" onClick={handleSave}>
 					Save
 				</Button>
-				{/* <Button color="success" variant="contained" onClick={makePatchFormat}>
-					check patch
-				</Button> */}
 			</DialogActions>
 		</Dialog>
-		/* 		</InputDialogErrorContext.Provider> */
 	);
 };
 

@@ -3,6 +3,10 @@ import { IconButton, Tooltip } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
 
+/**
+ * Wrapper to delete elements with cardinaility > 1
+ * @param {*} title Tooltip displayed over delete button
+ */
 const DeleteableComponent = ({ title, handleDelete, children, ...rest }) => {
 	return (
 		<Box

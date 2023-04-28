@@ -14,7 +14,7 @@ const DeceasedInput = ({
 		<Box sx={{ display: "flex", flexDirection: "row", columnGap: "2rem" }}>
 			<BooleanInput
 				title="Deceased"
-				checked={deceasedBoolean} // medplum incorrectly allows strings here -> might return "blablabl"
+				checked={deceasedBoolean}
 				changeChecked={changeDeceasedBoolean}
 			/>
 

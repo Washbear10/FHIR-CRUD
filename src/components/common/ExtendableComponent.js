@@ -2,7 +2,10 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { IconButton, Tooltip } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
-
+/**
+ * Wrapper to add elements with cardinaility > 1
+ * @param {*} title Tooltip displayed over add button
+ */
 const ExtendableComponent = ({ title, handleExtend, children, ...rest }) => {
 	return (
 		<Box

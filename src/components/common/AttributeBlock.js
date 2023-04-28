@@ -6,12 +6,17 @@ import {
 	AttributeBlockErrorContext,
 	AttributeBlockWarningContext,
 } from "../../utilities/other/Contexts";
+
+/**
+ * Display a Block for a single Resource attribute block (e.g. Patient.name)
+ */
 const AttributeBlock = ({
 	attributeName,
 	attributeDescription,
 	inputComponents,
 	renderKey,
 }) => {
+	// displaying Errors or Warnings on Blocklevel
 	const [attributeBlockError, setAttributeBlockError] = useState(false);
 	const [attributeBlockErrorMessage, setAttributeBlockErrorMessage] =
 		useState("");
@@ -80,7 +85,7 @@ const AttributeBlock = ({
 
 						<small style={{ color: "gray" }}>{attributeDescription}</small>
 					</Box>{" "}
-					{inputComponents}
+					{inputComponents /* here the actual content will be passed */}
 					<hr style={{ width: "100%" }} />
 				</Box>
 			</AttributeBlockWarningContext.Provider>

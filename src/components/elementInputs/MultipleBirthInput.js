@@ -9,8 +9,8 @@ const MultipleBirthInput = ({
 	changeMultipleBirthBoolean,
 	changeMultipleBirthInteger,
 }) => {
-	useEffect(() => {}, [multipleBirthInteger]);
-
+	// render Section
+	//
 	return (
 		<Box sx={{ display: "flex", flexDirection: "row", columnGap: "2rem" }}>
 			<BooleanInput

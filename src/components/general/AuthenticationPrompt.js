@@ -14,9 +14,15 @@ import {
 import { LoginContext, SnackbarContext } from "../../utilities/other/Contexts";
 import { testBasicAuth } from "../../utilities/querying/query";
 
+/**
+ * Component to display a login prompt
+ */
 export default function AuthenticationPrompt() {
+	// consume context given by a high-hirarchy component
 	const { authenticationPromptOpen, setAuthenticationPromptOpen } =
 		React.useContext(LoginContext);
+
+	// display states
 	const [userNameInput, setUserNameInput] = React.useState("");
 	const [passwordInput, setPasswordInput] = React.useState("");
 	const [error, setError] = React.useState(false);
@@ -36,9 +42,11 @@ export default function AuthenticationPrompt() {
 	};
 
 	const handleSubmit = async () => {
+		// make HTTP Basic Auth header out of credentials supplied
 		let b64Creds = createAuthHeaderValue(userNameInput, passwordInput);
+
+		// test them with basic request
 		let testResult = await testBasicAuth(b64Creds);
-		console.log(testResult);
 		if (testResult == "Ok") {
 			setError(false);
 			saveBasicAuthCreds(b64Creds);

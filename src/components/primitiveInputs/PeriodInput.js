@@ -21,32 +21,7 @@ const PeriodInput = ({ period, changePeriod, ...rest }) => {
 	}, [period]);
 
 	const validatePeriod = (p) => {
-		/* 		let differenceError =
-			"Error: the start cannot be a later date than the end";
-		if (!p.start || !p.end) return "";
-		else {
-			let partsStart = getDateTimeParts(p.start);
-			let partsEnd = getDateTimeParts(p.end);
-			let yearStartInt = parseInt(partsStart[0]);
-			let yearEndInt = parseInt(partsEnd[0]);
-			let monthStartInt = parseInt(partsStart[1]);
-			let monthEndInt = parseInt(partsEnd[1]);
-
-			let dayStartInt = parseInt(partsStart[2]);
-			let monthEndInt = parseInt(partsEnd[2]);
-			if (yearStartInt && yearEndInt) {
-				if (yearStartInt > yearEndInt) return differenceError;
-				if (yearStartInt < yearEndInt) return "";
-				if (monthStartInt && monthEndInt) {
-					if (monthStartInt > monthEndInt) return differenceError;
-					if (monthStartInt < monthEndInt) return "";
-					if (monthStartInt && monthEndInt) {
-						if (monthStartInt > monthEndInt) return differenceError;
-						if (monthStartInt < monthEndInt) return "";
-					}
-				}
-			} else return "";
-		} */
+		// check if start before end date and return an errormessage if not
 		let differenceError =
 			"Error: the start should not be a later date than the end";
 		if (!p.start || !p.end) return "";
@@ -72,7 +47,7 @@ const PeriodInput = ({ period, changePeriod, ...rest }) => {
 			});
 			changePeriod(newPeriod);
 		} else {
-			alert("NOT valiud");
+			alert("Something went wrong changing the date.");
 		}
 	};
 
@@ -90,10 +65,11 @@ const PeriodInput = ({ period, changePeriod, ...rest }) => {
 			});
 			changePeriod(newPeriod);
 		} else {
-			alert("NOT valiud");
+			alert("Something went wrong changing the date.");
 		}
 	};
 
+	// render section
 	return (
 		<>
 			<Box

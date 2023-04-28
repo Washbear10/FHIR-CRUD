@@ -44,7 +44,7 @@ export function getDateTimeParts(value) {
 				} else if (dateTimeString.charAt(dateTimeString.length - 6) === "-") {
 					plusMinus = "-";
 				} else {
-					alert("Whoops, parsing datetimestring parts went wrong");
+					alert("Whoops, parsing datetime string parts went wrong.");
 				}
 			} else {
 				// else : Z found -> split to '' -> standard +00:00 UTC offset implied

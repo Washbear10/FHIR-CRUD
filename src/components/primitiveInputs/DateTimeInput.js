@@ -12,6 +12,14 @@ import SmallTextField from "../styledComponents/SmallTextField";
 var objectSupport = require("dayjs/plugin/objectSupport");
 dayjs.extend(objectSupport);
 dayjs.locale("de");
+
+/**
+ *
+ * @param {*} dateTimeString The fhir string of the datetime
+ * @param {*} typeOfDate date | dateTime
+ * @param {*} changeDateTime callback function to handle changes of the date
+ * @returns
+ */
 const DateTimeInput = ({
 	dateTimeString,
 	typeOfDate,
@@ -22,9 +30,12 @@ const DateTimeInput = ({
 	error,
 	errorMessage,
 }) => {
+	// selected date
 	const [currentValue, setCurrentValue] = useState(
 		dateTimeString ? dayjs(String(dateTimeString)) : undefined
 	);
+
+	// control open pickers
 	const [dateTimeOpen, setDateTimeOpen] = useState(false);
 	const [dateOpen, setDateOpen] = useState(false);
 
@@ -37,6 +48,7 @@ const DateTimeInput = ({
 		return () => {};
 	}, [dateTimeString]);
 
+	// for anchoring popups to pickers
 	const dateTimeAnchorEl = useRef(null);
 	const dateAnchorEl = useRef(null);
 
@@ -61,6 +73,9 @@ const DateTimeInput = ({
 		);
 	};
 
+	// render section
+
+	// give different Components depending on the type of the date
 	switch (typeOfDate) {
 		case "date":
 			return (

@@ -85,10 +85,12 @@ export class Patient {
 		this.internalReactExpanded = false;
 	}
 
+	// this is for getting the Classname when the javascript code is webpack bundled, as then classnames will be substituted by "e"
 	static get getResourceName() {
 		return "Patient";
 	}
 
+	// custom setters for attributes that are mutually exclusive
 	setDeceasedBoolean(newValue) {
 		this.deceasedBoolean = newValue;
 		this.deceasedDateTime = null;
@@ -106,6 +108,13 @@ export class Patient {
 		this.multipleBirthBoolean = null;
 	}
 
+	/**
+	 *  method to return the React component rendered within the datagrid for a given property
+	 * @param {*} propertyName The name of the attribute/property that has to be displayed
+	 * @param {*} propertyValue The value of the attribute/property
+	 * @param {*} rowExpanded Whether the datagrid row is expanded or not (affects how it should be displayed)
+	 * @returns ExpandableCell.jsx component
+	 */
 	static getAttributeDisplay(propertyName, propertyValue, rowExpanded) {
 		if (
 			[
@@ -162,6 +171,10 @@ export class Patient {
 		}
 	}
 
+	/**
+	 * Method to format a class instance to a JSON string without empty values / objects.
+	 * @returns Instance object as FHIR JSON string.
+	 */
 	toFHIRJson() {
 		let o = JSON.parse(JSON.stringify(this));
 		clearObjectFromEmptyValues(o);

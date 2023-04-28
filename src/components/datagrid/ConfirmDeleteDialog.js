@@ -1,6 +1,9 @@
 import { Button, Dialog, DialogActions, DialogTitle } from "@mui/material";
 import React from "react";
 
+/**
+ * Confirmation dialog shown when trying to delete resources
+ */
 const ConfirmDeleteDialog = ({ open, confirm, cancel }) => {
 	return (
 		<Dialog open={open}>

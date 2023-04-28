@@ -1,10 +1,13 @@
 import { Stack, Typography } from "@mui/material";
 import React from "react";
+/**
+ * Style wrapper for a unit of information (component / element)
+ */
 const Subcomponent = ({ children, title, description, ...rest }) => {
 	return (
 		<Stack
 			sx={
-				Object.keys(rest).includes("outer")
+				Object.keys(rest).includes("outer") // if outmost component, show thinner and lighter border
 					? {
 							border:
 								title || description

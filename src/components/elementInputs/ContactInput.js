@@ -16,18 +16,17 @@ import HumanNameInput from "./HumanNameInput";
 import ReferenceInput from "./ReferenceInput";
 import TelecomInput from "./TelecomInput";
 
-const genderValues = ["male", "female", "other", "unknown"];
-
 const ContactInput = ({ contact, changeContact }) => {
+	// Error display section
 	const [errorMessage, setErrorMessage] = useState("");
-
 	const {
 		attributeBlockError,
 		setAttributeBlockError,
 		attributeBlockErrorMessage,
 		setAttributeBlockErrorMessage,
 	} = useContext(AttributeBlockErrorContext);
-
+	// Section for checking validity of inputs
+	//
 	const wasMounted = useRef(false);
 	useEffect(() => {
 		if (wasMounted) checkInputValidity();
@@ -35,6 +34,7 @@ const ContactInput = ({ contact, changeContact }) => {
 	}, [contact]);
 
 	const checkInputValidity = () => {
+		// checks if constraints of Resource / element are adhered to
 		console.log("checking valdity for contact: ", contact);
 		if (
 			isObjectEmptyRecursive(contact.name) &&
@@ -57,6 +57,8 @@ const ContactInput = ({ contact, changeContact }) => {
 		}
 	};
 
+	// Section for handling changing data
+	//
 	const handleChangeRelationship = (changedRelationship) => {
 		let i = contact.relationship
 			.map((item) => item.internalReactID)
@@ -146,6 +148,9 @@ const ContactInput = ({ contact, changeContact }) => {
 		let newContact = new Contact({ ...contact, organization: newValue });
 		changeContact(newContact, contact);
 	};
+
+	// render Section
+	//
 	return (
 		<Box sx={{ display: "flex", flexDirection: "column", rowGap: "15px" }}>
 			<Subcomponent
@@ -247,7 +252,6 @@ const ContactInput = ({ contact, changeContact }) => {
 				/>
 			</Subcomponent>
 			<Subcomponent title={"Gender"} description="The contact person's gender">
-				{/* <CodeInput values={genderValues} changeInput={handleChangeGender} /> */}
 				<GenderInput
 					gender={contact.gender}
 					changeGender={handleChangeGender}

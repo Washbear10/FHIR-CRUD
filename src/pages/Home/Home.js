@@ -219,7 +219,6 @@ const Home = () => {
 		try {
 			await deleteResources(resourceIDs, type);
 		} catch (error) {
-			alert("here");
 			handleCatchError(error);
 			return error;
 		}
@@ -274,7 +273,6 @@ const Home = () => {
 				onClick={async () => {
 					console.log(process.env.REACT_APP_MAX_ATTACHMENT_SIZE);
 					console.log(process.env.REACT_APP_FHIRBASE);
-					alert("asd");
 					for (const resource of [Patient]) {
 						console.log(resource.getResourceName);
 					}

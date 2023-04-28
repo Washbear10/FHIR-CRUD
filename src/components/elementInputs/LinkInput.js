@@ -5,25 +5,29 @@ import { isObjectEmptyRecursive } from "../../utilities/formatting/fhirify";
 import { AttributeBlockErrorContext } from "../../utilities/other/Contexts";
 import CodeInput from "../primitiveInputs/CodeInput";
 import ReferenceInput from "./ReferenceInput";
+import { linkType } from "../../utilities/valueSets/valueSets";
 
-const codeValues = ["replaced-by", "replaces", "refer", "seealso"];
 const LinkInput = ({ link, changeLink }) => {
+	// Section for checking validity of inputs
+	//
 	const [errorMessage, setErrorMessage] = useState("");
-
 	const {
 		attributeBlockError,
 		setAttributeBlockError,
 		attributeBlockErrorMessage,
 		setAttributeBlockErrorMessage,
 	} = useContext(AttributeBlockErrorContext);
-
 	const wasMounted = useRef(false);
 	useEffect(() => {
-		if (wasMounted) checkInputValidity();
-		else wasMounted.current = true;
+		if (!wasMounted) {
+			wasMounted.current = true;
+			return;
+		}
+		checkValidity();
 	}, [link]);
 
-	const checkInputValidity = () => {
+	const checkValidity = () => {
+		// checks if constraints of Resource / element are adhered to
 		if (link.type && isObjectEmptyRecursive(link.other)) {
 			setAttributeBlockError(true);
 			setAttributeBlockErrorMessage(
@@ -42,6 +46,8 @@ const LinkInput = ({ link, changeLink }) => {
 		}
 	};
 
+	// Section for handling data changes
+	//
 	const handleChangeType = (newValue) => {
 		let newLink = new Link({ ...link, type: newValue });
 		changeLink(newLink, link);
@@ -55,6 +61,9 @@ const LinkInput = ({ link, changeLink }) => {
 
 		changeLink(newLink, link);
 	};
+
+	// render Section
+	//
 	return (
 		<Box sx={{ display: "flex", gap: "20px", flexDirection: "column" }}>
 			<Box sx={{ width: "500px" }}>
@@ -125,7 +134,7 @@ const LinkInput = ({ link, changeLink }) => {
 				/>
 			</Box>
 			<CodeInput
-				values={codeValues}
+				values={linkType}
 				v={link.type}
 				label="Type"
 				changeInput={handleChangeType}

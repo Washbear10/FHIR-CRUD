@@ -17,26 +17,23 @@ import { NumberStyleTextfield } from "../styledComponents/NumberStyleTextfield";
 var objectSupport = require("dayjs/plugin/objectSupport");
 dayjs.extend(objectSupport);
 
+// regexes for handling inputs validity
 const yearGeneral = /^\d{0,4}$/;
-const yearExact = /^\d{4}$/;
-
 const dayGeneral = /(^[1-9]$)|^(0[1-9]|1[0-9]|2[0-9]|3[01])$/;
-
-const monthGeneral = /^[012]{0,1}$/;
 const monthExact = /(^[1-9]$)|^(0[1-9]|1[012])$/;
 const PartialDateTimeInput = ({
 	typeOfDate,
 	partialDateTimeString,
 	dateTimeParts,
 	changeDateTime,
-	disableFuture,
-	disabled,
 	error,
 }) => {
+	// states to control open pickers
 	const [openYear, setOpenYear] = useState(false);
 	const [openMonth, setOpenMonth] = useState(false);
 	const [openDay, setOpenDay] = useState(false);
 
+	// states to store current values of datetime and parts
 	const [y, setY] = useState(dateTimeParts.at(0) || "");
 	const [m, setM] = useState(dateTimeParts.at(1) || "");
 	const [d, setD] = useState(dateTimeParts.at(2) || "");
@@ -53,16 +50,21 @@ const PartialDateTimeInput = ({
 		}
 	}, [partialDateTimeString]);
 
+	// helper functions invoked when the inputs fit the respective regular expressions.
+
 	const helpSetYear = (value) => {
 		setY(value);
 		if (currentValue) {
+			// there was a valid value before -> make clone, change year
 			var pdt = currentValue.clone();
 			pdt = pdt.set("year", parseInt(value));
 			setCurrentValue(pdt);
 		} else {
+			// no previous value -> create date, set year
 			var pdt = dayjs().year(parseInt(value));
 			setCurrentValue(pdt);
 		}
+
 		changeDateTime(
 			pdt,
 			value
@@ -73,9 +75,11 @@ const PartialDateTimeInput = ({
 					: ["year"]
 				: []
 		);
+		// change the dateTime by supplying the dayjs object and the parts that are set
 	};
 
 	const helpSetMonth = (value) => {
+		// same functionalyity as helpSetYear
 		if (typeof value == "number") {
 			// then value was received fom calendar picking
 			setM(String(value).padStart(2, "0"));
@@ -104,6 +108,7 @@ const PartialDateTimeInput = ({
 	};
 
 	const helpSetDay = (value) => {
+		// same functionalyity as helpSetYear
 		if (typeof value == "number") {
 			// then value was received fom calendar picking
 			setD(String(value).padStart(2, "0"));
@@ -123,6 +128,7 @@ const PartialDateTimeInput = ({
 		changeDateTime(pdt, y ? (m ? ["year", "month", "day"] : ["year"]) : []);
 	};
 
+	// functions that handle changing the inputs of year, month, date. All work equivalent.
 	const handleYearChange = (e) => {
 		if (e.target.value == "") {
 			setY("");
@@ -130,7 +136,8 @@ const PartialDateTimeInput = ({
 			if (currentValue) {
 				changeDateTime(null, []);
 			} else {
-				alert("whoops");
+				// Should never reach, there must have been another input in that field before, otherwise the event would not have fired.
+				alert("Something went wrong changing the date.");
 			}
 		} else if (e.target.value.match(yearGeneral)) {
 			helpSetYear(e.target.value);
@@ -142,7 +149,7 @@ const PartialDateTimeInput = ({
 			if (currentValue) {
 				changeDateTime(currentValue, y ? ["year"] : []);
 			} else {
-				alert("whoops");
+				alert("Something went wrong changing the date.");
 			}
 		} else if (e.target.value.match(monthExact)) {
 			helpSetMonth(e.target.value);
@@ -157,17 +164,19 @@ const PartialDateTimeInput = ({
 					y ? (m ? ["year", "month"] : ["year"]) : []
 				);
 			} else {
-				alert("whoops");
+				alert("Something went wrong changing the date.");
 			}
 		} else if (e.target.value.match(dayGeneral)) {
 			helpSetDay(e.target.value);
 		}
 	};
 
+	// to be supplied to slots of icons
 	const hideIcons = () => {
 		return null;
 	};
 
+	// render section
 	return (
 		<Box sx={{ display: "flex", py: "2px" }}>
 			<NumberStyleTextfield

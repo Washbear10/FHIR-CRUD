@@ -24,21 +24,19 @@ import { Link } from "react-router-dom";
 const drawerWidth = 240;
 const titleBarHeight = 60;
 
+/**
+ * Top-level component to render any Page within a scaffold and a Menubar
+ * @returns
+ */
 function CustomAppBar({ window, content }) {
 	const [mobileOpen, setMobileOpen] = React.useState(false);
 
 	const { authenticationPromptOpen, setAuthenticationPromptOpen } =
 		React.useContext(LoginContext);
-
 	const handleLoginOpen = () => {
 		setAuthenticationPromptOpen(true);
 	};
-	const handleLoginClose = () => {
-		setAuthenticationPromptOpen(false);
-	};
-
 	const navigate = useNavigate();
-
 	const handleDrawerToggle = () => {
 		setMobileOpen(!mobileOpen);
 	};
@@ -63,6 +61,7 @@ function CustomAppBar({ window, content }) {
 				<ListItem key={"Settings"} disablePadding>
 					<ListItemButton
 						onClick={(e) => {
+							// Ask Steffen what else might be needed.
 							alert("TODO?");
 						}}
 					>

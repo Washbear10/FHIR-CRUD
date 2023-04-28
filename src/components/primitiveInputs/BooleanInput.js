@@ -32,12 +32,5 @@ const BooleanInput = ({ title, checked, changeChecked, disabled }) => {
 		</Box>
 	);
 };
-/* function areEqual(prev, next) {
-	return (
-		prev.title == next.title &&
-		prev.checked == next.checked &&
-		prev.disabled == next.disabled
-	);
-}
-export default memo(BooleanInput, areEqual); */
+
 export default BooleanInput;

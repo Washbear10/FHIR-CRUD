@@ -15,30 +15,50 @@ import { useImmer } from "use-immer";
 import { v4 as uuidv4 } from "uuid";
 import { constructList } from "../../utilities/formatting/helpConstructInstances";
 import InputDialog from "../resourceInputs/InputDialog";
+
+/**
+ * Utilizes MUI Datagrid. Receives Class Instances of a resource type and displays them in rows.
+ * @param {*} resourceType The resourceType name, f.e. "Patient"
+ * @param {*} columns The columns to display for this type
+ * @param {*} rows The instances to display as rows
+ * @param {*} updateRows Callback to update Rows
+ * @param {*} newResources List of resources that were added manually.
+ * @param {*} updateNewResources Callback to update the new resources
+ * @param {*} deleteSelectedResources Callback to delete all the selected resources
+ * @param {*} saveUpdates Callback to save changes to a resource
+ * @param {*} loading Display loading spinner?
+ * @returns
+ */
 export default function CustomDataGrid({
 	resourceType,
 	columns,
 	rows,
 	updateRows,
-	changedResources,
-	updateChangedResources,
 	newResources,
 	updateNewResources,
 	deleteSelectedResources,
 	saveUpdates,
 	loading,
 }) {
+	// control Dialog for editing a resource
 	const [open, setOpen] = useState(false);
-	const [originalResource, setOriginalResource] = useState(null);
-	const [selectedResources, setSelectedResources] = useImmer([]);
+
+	// show backdrop while loading
 	const [backDropOpen, setBackDropOpen] = useState(false);
 
-	const [rerender, setRerender] = useState(false);
+	// keep a copy of the original resource when editing a resource
+	const [originalResource, setOriginalResource] = useState(null);
 
+	// Selection for datagrid
+	const [selectedResources, setSelectedResources] = useImmer([]);
+
+	//utility for manual rerender
+	const [rerender, setRerender] = useState(false);
 	const triggerRerender = () => {
 		setRerender((prev) => !prev);
 	};
 
+	// open Editing dialog
 	useEffect(() => {
 		if (originalResource !== null) {
 			setOpen(true);
@@ -46,22 +66,7 @@ export default function CustomDataGrid({
 		}
 	}, [originalResource]);
 
-	useEffect(() => {
-		console.log("CDG rerendered");
-	}, [
-		resourceType,
-		columns,
-		rows,
-		updateRows,
-		changedResources,
-		updateChangedResources,
-		newResources,
-		updateNewResources,
-		deleteSelectedResources,
-		saveUpdates,
-		loading,
-	]);
-
+	// save the changes made to a resource
 	const handleSaveUpdates = async (editedResource) => {
 		let updateResult = await saveUpdates(
 			resourceType,
@@ -75,26 +80,27 @@ export default function CustomDataGrid({
 		}
 	};
 
+	// delete selected resources
 	const handleDelete = async () => {
 		await deleteSelectedResources(selectedResources, resourceType);
 	};
 
+	// Create a new instance of that resource type and add it to the lists and set the original Resource
 	const addRow = () => {
 		const newInstance = new constructList[resourceType]({ id: uuidv4() });
 		updateNewResources([...newResources, newInstance], resourceType);
 		updateRows([...rows, newInstance], resourceType);
 		setOriginalResource(newInstance);
-		setOpen(true);
 	};
 
+	// expand a row on doubleclick
 	const handleRowDoubleClick = (params, e, d) => {
 		let i = rows.indexOf(params.row);
-
 		rows[i].internalReactExpanded = !rows[i].internalReactExpanded;
 		triggerRerender();
-		//updateRows([...rows, newInstance], resourceType);
 	};
 
+	// just handles clicks on the editbutton or the expand button
 	const handleCellClick = (params, event, details) => {
 		if (!loading && params.colDef.field == "editButton") {
 			setOriginalResource(params.row);
@@ -107,6 +113,7 @@ export default function CustomDataGrid({
 		}
 	};
 
+	// Modification of the Datagrid Footer
 	const MyFooter = () => {
 		return (
 			<>
@@ -145,6 +152,7 @@ export default function CustomDataGrid({
 		);
 	};
 
+	// Modification of the Datagrid Header
 	const MyHeader = () => {
 		return (
 			<>

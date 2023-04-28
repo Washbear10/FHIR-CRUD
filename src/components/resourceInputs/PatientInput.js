@@ -34,35 +34,18 @@ import MultipleBirthInput from "../elementInputs/MultipleBirthInput";
 import ReferenceInput from "../elementInputs/ReferenceInput";
 import TelecomInput from "../elementInputs/TelecomInput";
 
-const IterableElementClassList = {
-	telecom: ContactPoint,
-	identifier: Identifier,
-	name: HumanName,
-};
-
+/**
+ * Component rendered by InputDialog to display form to display and edit values of a Patient resource.
+ * @param {*} resource The Patient instance (deserialized)
+ * @param {*} modifyResource Callback to edit the resource
+ * @returns
+ */
 const PatientInput = ({ resource, modifyResource }) => {
-	useEffect(() => {
-		console.log("Patien rendered: ", resource);
-	}, [resource]);
-
-	const cloneElementList = (iterableElementType) => {
-		let newElements = [];
-		if (!resource || !resource[iterableElementType]) return [];
-		for (let i = 0; i < resource[iterableElementType].length; i++) {
-			let x = new IterableElementClassList[iterableElementType](
-				structuredClone(resource[iterableElementType][i])
-			);
-			x.internalReactID = resource[iterableElementType][i].internalReactID;
-			newElements.push(x);
-		}
-		return newElements;
-	};
-
+	// stuff to check wether the photo upload limit is exceeded
 	const [totalPhotoSize, setTotalPhotoSize] = useState(0);
 	useEffect(() => {
 		setTotalPhotoSize(calcTotalPhotoSize());
 	}, [resource.photo]);
-
 	function calcTotalPhotoSize() {
 		if (resource && resource.photo) {
 			let sum = 0;
@@ -76,21 +59,10 @@ const PatientInput = ({ resource, modifyResource }) => {
 		}
 		return 0;
 	}
-	const addName = () => {
-		/* let newNames = cloneElementList("name"); */
-		let newNames = [...resource.name];
 
-		newNames.push(new HumanName({}));
-		modifyResource("name", newNames);
-	};
-
-	const handleDeleteName = (index) => {
-		/* let newNames = cloneElementList("name"); */
-		let newNames = [...resource.name];
-		newNames.splice(index, 1);
-		if (newNames.length == 0) newNames.push(new HumanName({}));
-		modifyResource("name", newNames);
-	};
+	// Section containing all the callbacks that are passed down the various Element input Components such as HumanNameInput.
+	// They all work by basically the same by receiving an Instance of their respective data type and pushing to/removing from/changing the existing
+	// data. Every function modifies the resource prop via the modifyResource callback (see InputDialog).
 
 	// stateChange methods for Gender
 	const changeGender = (newValue) => {
@@ -113,6 +85,19 @@ const PatientInput = ({ resource, modifyResource }) => {
 		modifyResource("identifier", newIdentifiers);
 	};
 	//stateChange methods for Name
+	const addName = () => {
+		let newNames = [...resource.name];
+
+		newNames.push(new HumanName({}));
+		modifyResource("name", newNames);
+	};
+
+	const handleDeleteName = (index) => {
+		let newNames = [...resource.name];
+		newNames.splice(index, 1);
+		if (newNames.length == 0) newNames.push(new HumanName({}));
+		modifyResource("name", newNames);
+	};
 	const changeSingleName = (newValue, oldValue) => {
 		const i = resource.name
 			.map((item) => item.internalReactID)
@@ -286,6 +271,8 @@ const PatientInput = ({ resource, modifyResource }) => {
 		modifyResource("link", newLinks);
 	};
 
+	// changing photos:
+
 	const changePhoto = (newValue, oldValue) => {
 		const i = resource.photo
 			.map((item) => item.internalReactID)
@@ -305,6 +292,14 @@ const PatientInput = ({ resource, modifyResource }) => {
 		newPhotos.push(new Attachment({}));
 		modifyResource("photo", newPhotos);
 	};
+
+	// render section:
+
+	/**
+	 * Every element of Patient is contained in an AttributeBlock. Elements with cardinality > 1 are wrapped in ExtendableComponents and DeletableComponents
+	 * and are mapped over to give each instance its own Input. Check Identifier Block for example and explanation.
+	 *
+	 */
 	return (
 		<Box>
 			<AttributeBlock
@@ -327,20 +322,12 @@ const PatientInput = ({ resource, modifyResource }) => {
 				}
 				renderKey={resource ? resource.id : null}
 			/>
-			<Button
-				onClick={() => {
-					console.log(resource);
-				}}
-			>
-				click
-			</Button>
-
 			<AttributeBlock
 				attributeName="Identifier"
 				attributeDescription="Identifiers for this patient."
-				renderKey={resource ? resource.identifier : null}
+				renderKey={resource ? resource.identifier : null} // used for memoization
 				inputComponents={
-					<ExtendableComponent
+					<ExtendableComponent // Identifier cardinality > 1 -> can add new Identifiers
 						title="Add identifier"
 						handleExtend={() => {
 							addIdentifier();
@@ -350,6 +337,7 @@ const PatientInput = ({ resource, modifyResource }) => {
 							? resource.identifier
 								? resource.identifier
 										.map((singleIdentifier, index) => {
+											// helper object to get index and internalReactID as key for the component in the list
 											return {
 												idf: singleIdentifier,
 												key: singleIdentifier.internalReactID,
@@ -357,9 +345,10 @@ const PatientInput = ({ resource, modifyResource }) => {
 											};
 										})
 										.map((singleIdentifierObj) => {
+											// return Component for this single Identifier
 											return (
 												<Box key={singleIdentifierObj.key}>
-													<DeleteableComponent
+													<DeleteableComponent // cardinality > 1 -> identifier can be deleted
 														title="Delete this identifier"
 														handleDelete={() => {
 															handleDeleteIdentifier(singleIdentifierObj.index);
@@ -370,7 +359,7 @@ const PatientInput = ({ resource, modifyResource }) => {
 														}
 													>
 														<Subcomponent>
-															<IdentifierInput
+															<IdentifierInput // The component to render a single Identifier in the list of identifiers
 																identifier={singleIdentifierObj.idf}
 																changeIdentifier={changeIdentifier}
 															/>
@@ -522,7 +511,6 @@ const PatientInput = ({ resource, modifyResource }) => {
 														<DeleteableComponent
 															title="Delete this telecom"
 															handleDelete={() => {
-																alert("TODO: Change index to key!");
 																handleDeleteTelecom(singleTelecom.index);
 															}}
 															disabled={

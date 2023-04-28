@@ -1,9 +1,9 @@
 import { Box } from "@mui/system";
 import React, { useEffect } from "react";
 import CodeInput from "../primitiveInputs/CodeInput";
+import { genders } from "../../utilities/valueSets/valueSets";
 
 const GenderInput = ({ gender, changeGender }) => {
-	const validCodes = ["male", "female", "other", "unknown"];
 	useEffect(() => {}, [gender]);
 
 	return (
@@ -17,7 +17,7 @@ const GenderInput = ({ gender, changeGender }) => {
 			}}
 		>
 			<CodeInput
-				values={validCodes}
+				values={genders}
 				v={gender || null}
 				label="Gender"
 				changeInput={changeGender}

@@ -9,27 +9,21 @@ import Subcomponent from "../common/Subcomponent";
 import CodeInput from "../primitiveInputs/CodeInput";
 import PeriodInput from "../primitiveInputs/PeriodInput";
 import SmallTextField from "../styledComponents/SmallTextField";
+import { nameUse } from "../../utilities/valueSets/valueSets";
 
 const HumanNameInput = ({ name, changeSingleName }) => {
-	const initiallyRendered = useRef(false);
-	useEffect(() => {
-		initiallyRendered.current = true;
-	}, []);
-
+	// Section for checking validity of inputs
+	//
 	const [errorMessage, setErrorMessage] = useState("");
-	/* const {
-		attributeBlockWarning,
-		setAttributeBlockWarning,
-		attributeBlockWarningMessage,
-		setAttributeBlockWarningMessage,
-	} = useContext(AttributeBlockWarningContext); */
 	const wasMounted = useRef(false);
 	useEffect(() => {
-		if (wasMounted) checkInputValidity();
-		else wasMounted.current = true;
+		if (!wasMounted) {
+			wasMounted.current = true;
+			return;
+		}
+		checkValidity();
 	}, [name]);
-
-	const checkInputValidity = () => {
+	const checkValidity = () => {
 		console.log("checking valdity for name: ", name);
 		if (name.text == "") {
 			setErrorMessage("");
@@ -61,6 +55,8 @@ const HumanNameInput = ({ name, changeSingleName }) => {
 		}
 	};
 
+	// Section for handling changing data
+	//
 	const changeSingleGiven = (oldGivenIndex, newGiven) => {
 		let newGivens = [...name.given];
 		newGivens[oldGivenIndex] = newGiven;
@@ -187,6 +183,8 @@ const HumanNameInput = ({ name, changeSingleName }) => {
 		changeSingleName(newHumanName, name);
 	};
 
+	// render Section
+	//
 	return (
 		<>
 			<Box>
@@ -230,15 +228,7 @@ const HumanNameInput = ({ name, changeSingleName }) => {
 						}}
 					>
 						<CodeInput
-							values={[
-								"usual",
-								"official",
-								"temp",
-								"nickname",
-								"anonymous",
-								"old",
-								"maiden",
-							]}
+							values={nameUse}
 							v={name ? name.use || null : null}
 							label="use"
 							changeInput={handleChangeUse}
