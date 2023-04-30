@@ -62,6 +62,7 @@ const Home = () => {
 		setSnackbarTitle,
 	} = React.useContext(SnackbarContext);
 
+	// function to fetch FHIR data
 	const handleSearch = async ({ event, searchValue, limit }) => {
 		if (event) event.preventDefault();
 		setLoading(true);
@@ -131,22 +132,24 @@ const Home = () => {
 		});
 	};
 
+	// If changing an existing resource, we only want to patch the changed data -> saves bandwith -> improves performance.
+	// Create list of PATCH operations needed.
 	const makePatchFormat = (originalResource, editedResource) => {
 		let changedKeys = [];
 		Object.keys(editedResource).forEach((key) => {
 			if (editedResource[key] == originalResource[key]) {
 				console.log("key value is same reference -> wasnt changed:");
 			} else {
-				console.log("key value is NOT same:");
 				if (
 					isObjectEmptyRecursive(editedResource[key]) &&
 					!isObjectEmptyRecursive(originalResource[key])
 				) {
+					// that value was deleted
 					changedKeys.push({ op: "remove", path: `/${key}` });
 				} else {
+					// both adding and editing data works with the "add" operation
 					let sp = JSON.parse(JSON.stringify(editedResource[key]));
 					clearObjectFromEmptyValues(sp);
-
 					changedKeys.push({
 						op: "add",
 						path: `/${key}`,
@@ -155,9 +158,10 @@ const Home = () => {
 				}
 			}
 		});
-		console.log(JSON.stringify(changedKeys));
 		return JSON.stringify(changedKeys);
 	};
+
+	// save changes or additional Resources
 	const saveUpdates = async (
 		resourceType,
 		originalResource,
@@ -166,7 +170,7 @@ const Home = () => {
 		let updated = false;
 		let created = false;
 		try {
-			// This if block shall be removed when switching to IBM server as Medplum does not yet support update as create
+			// This if block might be removed when activating updateAsCreate functionality on IBM config
 			if (
 				newResources[resourceType] &&
 				newResources[resourceType].includes(originalResource)
@@ -211,6 +215,7 @@ const Home = () => {
 		setConfirmDeleteOpen(true);
 	};
 
+	// call delete on API on resources selected in the datagrid
 	const deleteSelectedResources = async (resourceIDs, type) => {
 		setDeleteCandidates([]);
 		setDeleteCandidatType(null);
@@ -233,23 +238,14 @@ const Home = () => {
 		setSnackbarTitle("Success");
 	};
 
-	/* const resetSearch = async () => {
-		const queryResult = await queryFHIR({
-			resources: filterResource ? resourceList : allResources,
-			limit: limit,
-		});
-		setResults(queryResult);
-		setInitialResources(queryResult);
-		
-		
-	}; */
-
+	// submit Search form
 	const handleSubmit = ({ event, searchValue, limit }) => {
 		handleSearch({ event: event, searchValue: searchValue, limit: limit });
 		setInputValue(searchValue);
 		setLimit(limit);
 	};
 
+	// render section
 	return (
 		<Box
 			sx={{
@@ -269,7 +265,7 @@ const Home = () => {
 					setDeleteCandidates([]);
 				}}
 			/>
-			<Button
+			{/* <Button
 				onClick={async () => {
 					console.log(process.env.REACT_APP_MAX_ATTACHMENT_SIZE);
 					console.log(process.env.REACT_APP_FHIRBASE);
@@ -279,7 +275,7 @@ const Home = () => {
 				}}
 			>
 				Test Error
-			</Button>
+			</Button> */}
 			<SearchForm
 				onSubmit={handleSubmit}
 				resourceList={resourceList}
@@ -295,14 +291,20 @@ const Home = () => {
 				<CircularProgress color="primary" sx={{ margin: "0 auto" }} />
 			) : null}
 			{Object.keys(results).map((resourceType) => {
+				// map over each resource type (currently only Patient) and create
+				// the columns and rows for the datagrid
 				let columns;
+
+				//need helper instance to map over properties
 				let helperInstance = new constructList[resourceType]({});
+				// filter out custom attributes used for react stuff as well as undisplayabled data
 				const classProperties = Object.keys(helperInstance).filter(
 					(element) =>
 						element != "internalReactID" &&
 						element != "internalReactExpanded" &&
-						element != "photo"
+						element != "photo" // hardcoded for patient, find better solution when adding other stuff
 				);
+
 				columns = classProperties.map((property) => {
 					const columnDefinition = {
 						field: property,
@@ -313,15 +315,13 @@ const Home = () => {
 								: property == "name" ||
 								  property == "address" ||
 								  property == "telecom"
+								? 250
+								: property.length > 10
 								? 200
 								: 100,
 
 						editable: false,
-						/* renderCell: (params) =>
-							constructList[resourceType].getAttributeDisplay(
-								property,
-								params.value
-							), */
+						// call class instance function of the resource type to find out how to render it
 						renderCell: (params) =>
 							constructList[resourceType].getAttributeDisplay(
 								property,
@@ -332,6 +332,8 @@ const Home = () => {
 
 					return columnDefinition;
 				});
+
+				// add two buttons at beginning
 				columns.unshift(
 					{
 						field: "editButton",
@@ -379,6 +381,7 @@ const Home = () => {
 					}
 				);
 
+				// return the Datagrid for this resource type (currently only Patient).
 				return (
 					<CustomDataGrid
 						key={resourceType}

@@ -13,10 +13,7 @@ export default class Reference {
 	}
 
 	calcDisplayString = () => {
-		let s1 = this.display
-			? this.display
-			: this.reference
-			? this.reference.id
-			: "";
+		let s1 = this.display ? this.display : this.reference ? this.reference : "";
+		return s1;
 	};
 }

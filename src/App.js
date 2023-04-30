@@ -145,10 +145,13 @@ function App() {
 					</Snackbar>
 					<Router>
 						<Routes>
-							<Route path="/" element={<CustomAppBar content={<Home />} />} />
+							<Route
+								path="/"
+								element={<CustomAppBar content={<Home />} title={"Search"} />}
+							/>
 							<Route
 								path="/about"
-								element={<CustomAppBar content={<About />} />}
+								element={<CustomAppBar content={<About />} title={"About"} />}
 							/>
 						</Routes>
 					</Router>

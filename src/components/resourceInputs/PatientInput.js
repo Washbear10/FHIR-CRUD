@@ -305,6 +305,7 @@ const PatientInput = ({ resource, modifyResource }) => {
 			<AttributeBlock
 				attributeName="Resource Type"
 				attributeDescription="The Type of this resource"
+				attributeLink={"https://www.hl7.org/fhir/patient.html#resource"}
 				inputComponents={
 					<DisabledTextField fullWidth disabled placeholder="Patient" />
 				}
@@ -313,6 +314,9 @@ const PatientInput = ({ resource, modifyResource }) => {
 			<AttributeBlock
 				attributeName="ID"
 				attributeDescription="The unique ID for this resource"
+				attributeLink={
+					"https://www.hl7.org/fhir/types-definitions.html#Element.id"
+				}
 				inputComponents={
 					<DisabledTextField
 						fullWidth
@@ -323,60 +327,10 @@ const PatientInput = ({ resource, modifyResource }) => {
 				renderKey={resource ? resource.id : null}
 			/>
 			<AttributeBlock
-				attributeName="Identifier"
-				attributeDescription="Identifiers for this patient."
-				renderKey={resource ? resource.identifier : null} // used for memoization
-				inputComponents={
-					<ExtendableComponent // Identifier cardinality > 1 -> can add new Identifiers
-						title="Add identifier"
-						handleExtend={() => {
-							addIdentifier();
-						}}
-					>
-						{resource
-							? resource.identifier
-								? resource.identifier
-										.map((singleIdentifier, index) => {
-											// helper object to get index and internalReactID as key for the component in the list
-											return {
-												idf: singleIdentifier,
-												key: singleIdentifier.internalReactID,
-												index: index,
-											};
-										})
-										.map((singleIdentifierObj) => {
-											// return Component for this single Identifier
-											return (
-												<Box key={singleIdentifierObj.key}>
-													<DeleteableComponent // cardinality > 1 -> identifier can be deleted
-														title="Delete this identifier"
-														handleDelete={() => {
-															handleDeleteIdentifier(singleIdentifierObj.index);
-														}}
-														disabled={
-															resource.identifier.length == 1 &&
-															isObjectEmptyRecursive(resource.identifier)
-														}
-													>
-														<Subcomponent>
-															<IdentifierInput // The component to render a single Identifier in the list of identifiers
-																identifier={singleIdentifierObj.idf}
-																changeIdentifier={changeIdentifier}
-															/>
-														</Subcomponent>
-													</DeleteableComponent>
-												</Box>
-											);
-										})
-								: null
-							: null}
-					</ExtendableComponent>
-				}
-			/>
-			<AttributeBlock
 				attributeName="Name"
 				attributeDescription="The names associated with this patient"
 				renderKey={resource ? resource.name : null}
+				attributeLink={"https://www.hl7.org/fhir/datatypes.html#HumanName"}
 				inputComponents={
 					<ExtendableComponent
 						title="Add a name"
@@ -423,33 +377,9 @@ const PatientInput = ({ resource, modifyResource }) => {
 				}
 			/>
 			<AttributeBlock
-				attributeName="Gender"
-				attributeDescription="The patients gender"
-				inputComponents={
-					<GenderInput
-						gender={resource ? resource.gender : null}
-						changeGender={changeGender}
-					/>
-				}
-				renderKey={resource ? resource.gender : null}
-			/>
-			<AttributeBlock
-				attributeName="Active"
-				attributeDescription="Indicates whether this patient's record is in active use"
-				inputComponents={
-					<BooleanInput
-						title="Active"
-						checked={
-							resource ? (resource.active ? resource.active : false) : false
-						} // mepdplum does not filter strings for boolean inputs -> might return "blablabla"
-						changeChecked={changeActive}
-					/>
-				}
-				renderKey={resource ? resource.active : null}
-			/>
-			<AttributeBlock
 				attributeName="Birthdate"
 				attributeDescription="The date of birth for the individual"
+				attributeLink={"https://www.hl7.org/fhir/datatypes.html#date"}
 				inputComponents={
 					<DateTabs
 						value={resource ? resource.birthDate || null : null}
@@ -464,8 +394,96 @@ const PatientInput = ({ resource, modifyResource }) => {
 				renderKey={resource ? resource.birthDate : null}
 			/>
 			<AttributeBlock
+				attributeName="Gender"
+				attributeDescription="The patients gender"
+				attributeLink={
+					"https://www.hl7.org/fhir/patient-definitions.html#Patient.gender"
+				}
+				inputComponents={
+					<GenderInput
+						gender={resource ? resource.gender : null}
+						changeGender={changeGender}
+					/>
+				}
+				renderKey={resource ? resource.gender : null}
+			/>
+			<AttributeBlock
+				attributeName="Photo"
+				attributeDescription="Images of the patient"
+				renderKey={resource ? resource.photo : null}
+				attributeLink={
+					"https://www.hl7.org/fhir/patient-definitions.html#Patient.photo"
+				}
+				inputComponents={
+					<ExtendableComponent
+						title="Add a photo"
+						handleExtend={() => {
+							addPhoto();
+						}}
+					>
+						{resource
+							? resource.photo
+								? resource.photo
+										.map((singlePhoto, index) => {
+											return {
+												singlePhoto: singlePhoto,
+												key: singlePhoto.internalReactID,
+												index: index,
+											};
+										})
+										.map((singlePhoto) => {
+											return (
+												<Box key={singlePhoto.key}>
+													<DeleteableComponent
+														title="Delete this photo"
+														handleDelete={() => {
+															handleDeletePhoto(singlePhoto.index);
+														}}
+														disabled={
+															resource.photo.length == 1 &&
+															isObjectEmptyRecursive(resource.photo)
+														}
+													>
+														<Subcomponent>
+															<AttachmentInput
+																attachment={singlePhoto.singlePhoto}
+																changeAttachment={changePhoto}
+																photoSizeSum={totalPhotoSize}
+															/>
+														</Subcomponent>
+													</DeleteableComponent>
+												</Box>
+											);
+										})
+								: null
+							: null}
+					</ExtendableComponent>
+				}
+			/>
+			<AttributeBlock
+				attributeName="Active"
+				attributeDescription="Indicates whether this patient's record is in active use"
+				attributeLink={
+					"https://www.hl7.org/fhir/patient-definitions.html#Patient.active"
+				}
+				inputComponents={
+					<BooleanInput
+						title="Active"
+						checked={
+							resource ? (resource.active ? resource.active : false) : false
+						} // mepdplum does not filter strings for boolean inputs -> might return "blablabla"
+						changeChecked={changeActive}
+					/>
+				}
+				renderKey={resource ? resource.active : null}
+			/>
+
+			<AttributeBlock
 				attributeName="Deceased"
 				attributeDescription="Indicates if (and/or when) the individual is deceased."
+				attributeLink={
+					"https://www.hl7.org/fhir/patient-definitions.html#Patient.deceased_x_"
+				}
 				renderKey={
 					resource
 						? JSON.stringify({
@@ -484,60 +502,10 @@ const PatientInput = ({ resource, modifyResource }) => {
 				}
 			/>
 			<AttributeBlock
-				attributeName="Telecom"
-				attributeDescription="A contact detail for the individual"
-				renderKey={resource ? resource.telecom : null}
-				inputComponents={
-					<>
-						<ExtendableComponent
-							title="Add telecom"
-							handleExtend={() => {
-								addTelecom();
-							}}
-						>
-							{resource
-								? resource.telecom
-									? resource.telecom
-											.map((singleTelecom, index) => {
-												return {
-													singleTelecom: singleTelecom,
-													key: singleTelecom.internalReactID,
-													index: index,
-												};
-											})
-											.map((singleTelecom) => {
-												return (
-													<Box key={singleTelecom.key}>
-														<DeleteableComponent
-															title="Delete this telecom"
-															handleDelete={() => {
-																handleDeleteTelecom(singleTelecom.index);
-															}}
-															disabled={
-																resource.telecom.length == 1 &&
-																isObjectEmptyRecursive(resource.telecom)
-															}
-														>
-															<Subcomponent>
-																<TelecomInput
-																	telecom={singleTelecom.singleTelecom}
-																	changeTelecom={changeTelecom}
-																/>
-															</Subcomponent>
-														</DeleteableComponent>
-													</Box>
-												);
-											})
-									: null
-								: null}
-						</ExtendableComponent>
-					</>
-				}
-			/>
-			<AttributeBlock
 				attributeName="Address"
 				attributeDescription="Addresses for the individual"
 				renderKey={resource ? resource.address : null}
+				attributeLink={"https://www.hl7.org/fhir/datatypes.html#Address"}
 				inputComponents={
 					<>
 						<ExtendableComponent
@@ -595,8 +563,117 @@ const PatientInput = ({ resource, modifyResource }) => {
 				}
 			/>
 			<AttributeBlock
+				attributeName="Identifier"
+				attributeDescription="Identifiers for this patient."
+				renderKey={resource ? resource.identifier : null} // used for memoization
+				attributeLink={"https://www.hl7.org/fhir/datatypes.html#identifier"}
+				inputComponents={
+					<ExtendableComponent // Identifier cardinality > 1 -> can add new Identifiers
+						title="Add identifier"
+						handleExtend={() => {
+							addIdentifier();
+						}}
+					>
+						{resource
+							? resource.identifier
+								? resource.identifier
+										.map((singleIdentifier, index) => {
+											// helper object to get index and internalReactID as key for the component in the list
+											return {
+												idf: singleIdentifier,
+												key: singleIdentifier.internalReactID,
+												index: index,
+											};
+										})
+										.map((singleIdentifierObj) => {
+											// return Component for this single Identifier
+											return (
+												<Box key={singleIdentifierObj.key}>
+													<DeleteableComponent // cardinality > 1 -> identifier can be deleted
+														title="Delete this identifier"
+														handleDelete={() => {
+															handleDeleteIdentifier(singleIdentifierObj.index);
+														}}
+														disabled={
+															resource.identifier.length == 1 &&
+															isObjectEmptyRecursive(resource.identifier)
+														}
+													>
+														<Subcomponent>
+															<IdentifierInput // The component to render a single Identifier in the list of identifiers
+																identifier={singleIdentifierObj.idf}
+																changeIdentifier={changeIdentifier}
+															/>
+														</Subcomponent>
+													</DeleteableComponent>
+												</Box>
+											);
+										})
+								: null
+							: null}
+					</ExtendableComponent>
+				}
+			/>
+
+			<AttributeBlock
+				attributeName="Telecom"
+				attributeDescription="A contact detail for the individual"
+				renderKey={resource ? resource.telecom : null}
+				attributeLink={"https://www.hl7.org/fhir/datatypes.html#ContactPoint"}
+				inputComponents={
+					<>
+						<ExtendableComponent
+							title="Add telecom"
+							handleExtend={() => {
+								addTelecom();
+							}}
+						>
+							{resource
+								? resource.telecom
+									? resource.telecom
+											.map((singleTelecom, index) => {
+												return {
+													singleTelecom: singleTelecom,
+													key: singleTelecom.internalReactID,
+													index: index,
+												};
+											})
+											.map((singleTelecom) => {
+												return (
+													<Box key={singleTelecom.key}>
+														<DeleteableComponent
+															title="Delete this telecom"
+															handleDelete={() => {
+																handleDeleteTelecom(singleTelecom.index);
+															}}
+															disabled={
+																resource.telecom.length == 1 &&
+																isObjectEmptyRecursive(resource.telecom)
+															}
+														>
+															<Subcomponent>
+																<TelecomInput
+																	telecom={singleTelecom.singleTelecom}
+																	changeTelecom={changeTelecom}
+																/>
+															</Subcomponent>
+														</DeleteableComponent>
+													</Box>
+												);
+											})
+									: null
+								: null}
+						</ExtendableComponent>
+					</>
+				}
+			/>
+
+			<AttributeBlock
 				attributeName="Marital status"
 				attributeDescription="The marital (civil) status of a patient"
+				attributeLink={
+					"https://www.hl7.org/fhir/datatypes.html#CodeableConcept"
+				}
 				inputComponents={
 					<CodeableConeptInput
 						codeableConcept={resource ? resource.maritalStatus : null}
@@ -607,7 +684,10 @@ const PatientInput = ({ resource, modifyResource }) => {
 			/>
 			<AttributeBlock
 				attributeName="Multiple birth"
-				attributeDescription="Whether patient is part of a multiple birth."
+				attributeDescription="Whether patient is part of a multiple birth. A number indicates the birth number in the sequence."
+				attributeLink={
+					"https://www.hl7.org/fhir/patient-definitions.html#Patient.multipleBirth_x_"
+				}
 				renderKey={
 					resource
 						? JSON.stringify({
@@ -633,6 +713,9 @@ const PatientInput = ({ resource, modifyResource }) => {
 			<AttributeBlock
 				attributeName="Communication"
 				attributeDescription="Languages which may be used to communicate with the patient about his or her health"
+				attributeLink={
+					"https://www.hl7.org/fhir/patient-definitions.html#Patient.communication"
+				}
 				renderKey={resource ? resource.communication : null}
 				inputComponents={
 					<>
@@ -688,6 +771,7 @@ const PatientInput = ({ resource, modifyResource }) => {
 			<AttributeBlock
 				attributeName="General Practitioner"
 				attributeDescription="Patient's nominated primary care provider(s)"
+				attributeLink={"https://www.hl7.org/fhir/references.html#Reference"}
 				renderKey={resource ? resource.generalPractitioner : null}
 				inputComponents={
 					<ExtendableComponent
@@ -776,6 +860,7 @@ const PatientInput = ({ resource, modifyResource }) => {
 			<AttributeBlock
 				attributeName="Managing Organization"
 				attributeDescription="Organization that is the custodian of the patient record"
+				attributeLink={"https://www.hl7.org/fhir/references.html#Reference"}
 				renderKey={resource ? resource.managingOrganization : null}
 				inputComponents={
 					<ReferenceInput
@@ -795,6 +880,9 @@ const PatientInput = ({ resource, modifyResource }) => {
 				attributeName="Link"
 				attributeDescription="Links to a Patient or RelatedPerson resource that concern the same actual individual"
 				renderKey={resource ? resource.link : null}
+				attributeLink={
+					"https://www.hl7.org/fhir/patient-definitions.html#Patient.link"
+				}
 				inputComponents={
 					<ExtendableComponent
 						title="Add a Link"
@@ -840,59 +928,13 @@ const PatientInput = ({ resource, modifyResource }) => {
 					</ExtendableComponent>
 				}
 			/>
-			<AttributeBlock
-				attributeName="Photo"
-				attributeDescription="Images of the patient"
-				renderKey={resource ? resource.photo : null}
-				inputComponents={
-					<ExtendableComponent
-						title="Add a photo"
-						handleExtend={() => {
-							addPhoto();
-						}}
-					>
-						{resource
-							? resource.photo
-								? resource.photo
-										.map((singlePhoto, index) => {
-											return {
-												singlePhoto: singlePhoto,
-												key: singlePhoto.internalReactID,
-												index: index,
-											};
-										})
-										.map((singlePhoto) => {
-											return (
-												<Box key={singlePhoto.key}>
-													<DeleteableComponent
-														title="Delete this photo"
-														handleDelete={() => {
-															handleDeletePhoto(singlePhoto.index);
-														}}
-														disabled={
-															resource.photo.length == 1 &&
-															isObjectEmptyRecursive(resource.photo)
-														}
-													>
-														<Subcomponent>
-															<AttachmentInput
-																attachment={singlePhoto.singlePhoto}
-																changeAttachment={changePhoto}
-																photoSizeSum={totalPhotoSize}
-															/>
-														</Subcomponent>
-													</DeleteableComponent>
-												</Box>
-											);
-										})
-								: null
-							: null}
-					</ExtendableComponent>
-				}
-			/>
+
 			<AttributeBlock
 				attributeName="Contact"
 				attributeDescription="Contact parties (e.g. guardian, partner, friend) for the patient"
+				attributeLink={
+					"https://www.hl7.org/fhir/patient-definitions.html#Patient.contact"
+				}
 				renderKey={resource ? resource.contact : null}
 				inputComponents={
 					<>

@@ -28,7 +28,7 @@ const MultipleBirthInput = ({
 				}}
 			>
 				<Typography variant="body2">
-					<span style={{ margin: "0px" }}>Number of siblings </span>
+					<span style={{ margin: "0px" }}>Position in birth order </span>
 					<small style={{ color: "gray" }}>
 						(mutually exclusive with the "multiple birth" checkbox")
 					</small>

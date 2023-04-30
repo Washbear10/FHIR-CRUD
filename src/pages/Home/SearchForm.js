@@ -5,6 +5,12 @@ import { Box } from "@mui/system";
 import React, { useState } from "react";
 
 const searchBarWidth = 600;
+
+/**
+ * Component to render the search form. Parts of it (the selection of which resource types to search for) are disabled since only Patient is yet supported.
+ * @param {*} resourceList prop to know which resources to render in the selection of resource types.
+ * @returns
+ */
 const SearchForm = ({
 	onSubmit,
 	resourceList,
@@ -12,6 +18,7 @@ const SearchForm = ({
 	filterResource,
 	updateFilterResource,
 }) => {
+	// search and limit input
 	const [inputValue, setInputValue] = useState("");
 	const [limit, setLimit] = useState("");
 	function handleLimitChange(event) {
@@ -21,10 +28,13 @@ const SearchForm = ({
 			setLimit(Math.abs(input));
 		}
 	}
+
 	function handleDeleteResource(resource) {
 		const newResourceList = resourceList.filter((item) => item != resource);
 		updateResourceList(newResourceList);
 	}
+
+	// render section
 	return (
 		<Box
 			component={"form"}
@@ -75,7 +85,8 @@ const SearchForm = ({
 						)}
 					/>
 				</Box>
-				{/* <FormGroup>
+				{/* This is disabled until more resources than Patient are added
+				<FormGroup>
 					<FormControlLabel
 						sx={{ width: "fit-content", marginBottom: "-1rem" }}
 						control={

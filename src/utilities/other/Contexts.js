@@ -1,5 +1,6 @@
 import { createContext } from "react";
 
+// Various contexts needed deep down as well as high up the Component tree hirarchy
 export const AttributeBlockErrorContext = createContext({
 	attributeBlockError: false,
 	setAttributeBlockError: () => {},

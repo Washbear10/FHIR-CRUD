@@ -47,3 +47,11 @@ Other:
 	- IBM seems to have issues with batch requests
 	- IBM does not implement name search properly (see search parameter name for patient => is string, so should allow modifier :text)
 	- IBM Patching multipleBirthInteger not updating properly
+
+
+
+
+written part:
+	- generelle beschreibung von usability praktiken und anwendung: https://www.interaction-design.org/literature/book/the-encyclopedia-of-human-computer-interaction-2nd-ed/usability-evaluation
+	- JUS: jounral https://uxpajournal.org
+	- konsolidiertes Modell mit definitionen von measurements : https://sci-hub.ru/10.1007/s11219-006-7600-8 Usability measurement and metrics: A consolidated model

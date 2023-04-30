@@ -1,11 +1,12 @@
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import { Typography } from "@mui/material";
+import { IconButton, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { memo, useState } from "react";
 import {
 	AttributeBlockErrorContext,
 	AttributeBlockWarningContext,
 } from "../../utilities/other/Contexts";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
 /**
  * Display a Block for a single Resource attribute block (e.g. Patient.name)
@@ -13,6 +14,7 @@ import {
 const AttributeBlock = ({
 	attributeName,
 	attributeDescription,
+	attributeLink,
 	inputComponents,
 	renderKey,
 }) => {
@@ -57,8 +59,25 @@ const AttributeBlock = ({
 							flexDirection: "column",
 						}}
 					>
-						<h3 style={{ margin: "0px", display: "flex" }}>
-							{attributeName}
+						<Box sx={{ display: "flex" }}>
+							<h3 style={{ margin: "0px", alignSelf: "center" }}>
+								{attributeName}
+							</h3>
+
+							<IconButton
+								variant="outlined"
+								color="primary"
+								sx={{
+									width: "fit-content",
+									alignSelf: "start",
+								}}
+								size="small"
+								onClick={() => {
+									window.open(attributeLink, "_blank").focus();
+								}}
+							>
+								<HelpOutlineIcon fontSize="medium" />
+							</IconButton>
 							{attributeBlockError ? (
 								<Box sx={{ display: "flex" }}>
 									<ErrorOutlineIcon
@@ -81,8 +100,7 @@ const AttributeBlock = ({
 									</Typography>
 								</Box>
 							) : null}
-						</h3>
-
+						</Box>
 						<small style={{ color: "gray" }}>{attributeDescription}</small>
 					</Box>{" "}
 					{inputComponents /* here the actual content will be passed */}

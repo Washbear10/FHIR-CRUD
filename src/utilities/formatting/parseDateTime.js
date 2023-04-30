@@ -1,8 +1,14 @@
 import dayjs from "dayjs";
 
+/**
+ * Returns an array of datetime parts of a given fhir String representing a date.
+ * @param {*} value FHIR (partial) datetime string
+ * @returns Array[10] of the extracted parts from the string. Non-existent parts are null. Always ordered
+ * from year to timzeonoffsetMinute (so, in duration descending)
+ */
 export function getDateTimeParts(value) {
 	if (!value || !dayjs(value).isValid()) return Array(10).fill(null);
-	const dateTimeString = String(value);
+	const dateTimeString = String(value); // could be received as integer for only a year supplied
 	let [datePart, timeOffsetPart] = ["", ""];
 	if (dateTimeString.includes("T")) {
 		[datePart, timeOffsetPart] = dateTimeString.split("T");
@@ -68,9 +74,14 @@ export function getDateTimeParts(value) {
 	];
 }
 
+/**
+ * translates a dayjs object to a FHIR dattime string only includeing the supplied datetime parts
+ * @param {*} date
+ * @param {*} parts
+ * @returns FHIR dattime string
+ */
 export function dateToFHIRString(date, parts) {
 	if (date == null) return "";
-
 	let s2 = "";
 	if (parts.includes("year")) {
 		s2 = date.format("YYYY");
@@ -84,7 +95,7 @@ export function dateToFHIRString(date, parts) {
 			}
 		}
 
-		// Manually add leading 0s because dayjs is too dumb to do it
+		// Manually add leading 0s because dayjs is too fucking dumb to do it (excuse my language)
 		if (date.year() < 10) s2 = "000" + s2;
 		else if (date.year() < 100) s2 = "00" + s2;
 		else if (date.year() < 1000) s2 = "0" + s2;

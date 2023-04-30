@@ -1,3 +1,10 @@
+/**
+ * A recursive function I am quite proud of :D.
+ * Clears an object or a class instance recursively from empty objects, arrays and falsy values as well as custom
+ * attributes used for react stuff.
+ * @param {*} obj The object to clear
+ * @returns Nothing, modifies in place.
+ */
 export function clearObjectFromEmptyValues(obj) {
 	if (obj instanceof Object) {
 		if (Array.isArray(obj)) {
@@ -39,6 +46,11 @@ export function clearObjectFromEmptyValues(obj) {
 	}
 }
 
+/**
+ * Used to check if an object or instance is recursively empty
+ * @param {*} obj The object to check
+ * @returns True or false wether the object is recursively empty.
+ */
 export const isObjectEmptyRecursive = (obj) => {
 	if (obj instanceof Object) {
 		if (obj === null || obj === undefined || Object.keys(obj).length === 0)

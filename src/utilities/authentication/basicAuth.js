@@ -1,3 +1,8 @@
+/**
+ * Save the credentials b64 encoded as a cookie
+ * @param {*} b64Value credentials of form user:password b64 encoded
+ * @param {*} expiringDays when expiring?
+ */
 export const saveBasicAuthCreds = (b64Value, expiringDays) => {
 	const d = new Date();
 	d.setTime(d.getTime() + expiringDays * 24 * 60 * 60 * 1000);
@@ -10,6 +15,10 @@ export const getBasicAuthCreds = () => {
 	return creds;
 };
 
+/**
+ * get cookie by name
+ * @returns cookie requested
+ */
 function getCookie(cname) {
 	let name = cname + "=";
 	let decodedCookie = decodeURIComponent(document.cookie);

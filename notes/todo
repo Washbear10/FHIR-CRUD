@@ -1,10 +1,7 @@
 Validate each attribute before saving
       either leave empty strings or remove attribute alltogether, but NO NULL!
 test behaviour of sending vs getting time (regarding  offset)
-Implement search error handling (resource has been edited/deleted in the meantime)
-when switching date tabs and user makes no change, it does not yet register a change in date, only on "onChange"
 add descriptive labels/tooltips to fields
-creat login functionality > avoid hardcoded credentials
 
 
 
@@ -17,7 +14,6 @@ Resume :
 Done, further test when time:
       check if all elements are represented with corresponding cardinality
       birthdate switching date when chaning year in partial date
-      test passing internalReactID to classes, and only set in constructor if not in arguments
 
 
 
@@ -25,7 +21,6 @@ Done, further test when time:
 Backlog:
       display name text if property existing
       add tooltips to every button/ui
-      check if "shouldPrefixautoFocus" is still needed (aswell as suffix and given)
       bundle all multi-item inputs into new reusable component (names, prefix, coding ....) with their placeholder
       test better solution for empty inputs instead of placeholders (maybe pass newly Constructed instances => problem was with updating the reactID)
       rework approach for input dialog: better: just fill with resource, don't update resource every time ?

@@ -1,3 +1,5 @@
+// this file contains all the used valueSets that some elements are bound to.
+
 export const addressUse = ["home", "work", "temp", "old", "billing"];
 export const addressType = ["postal", "physical", "both"];
 export const genders = ["male", "female", "other", "unknown"];

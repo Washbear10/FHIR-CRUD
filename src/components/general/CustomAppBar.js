@@ -20,7 +20,7 @@ import Typography from "@mui/material/Typography";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { LoginContext } from "../../utilities/other/Contexts";
-import { Link } from "react-router-dom";
+import Link from "@mui/material/Link";
 const drawerWidth = 240;
 const titleBarHeight = 60;
 
@@ -28,7 +28,7 @@ const titleBarHeight = 60;
  * Top-level component to render any Page within a scaffold and a Menubar
  * @returns
  */
-function CustomAppBar({ window, content }) {
+function CustomAppBar({ window, content, title }) {
 	const [mobileOpen, setMobileOpen] = React.useState(false);
 
 	const { authenticationPromptOpen, setAuthenticationPromptOpen } =
@@ -113,6 +113,7 @@ function CustomAppBar({ window, content }) {
 					width: { md: `calc(100% - ${drawerWidth}px)` },
 					height: `${titleBarHeight}px`,
 					ml: { md: `${drawerWidth}px` },
+					background: "radial-gradient(ellipse at top, #17375a, #171d55)",
 				}}
 			>
 				<Toolbar
@@ -130,7 +131,23 @@ function CustomAppBar({ window, content }) {
 						<MenuIcon />
 					</IconButton>
 					<Typography variant="h6" noWrap component="div">
-						Search Resources
+						{title}
+					</Typography>
+					<Typography
+						variant="body2"
+						noWrap
+						component="div"
+						sx={{ justifySelf: "end", marginLeft: "auto" }}
+					>
+						configured FHIR server:{" "}
+						<Link
+							href={process.env.REACT_APP_FHIRBASE}
+							color={"error"}
+							variant="subtitle1"
+							target="_blank"
+						>
+							{process.env.REACT_APP_FHIRBASE}
+						</Link>
 					</Typography>
 				</Toolbar>
 			</AppBar>

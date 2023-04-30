@@ -7,8 +7,17 @@ import {
 	updateError,
 } from "./errors";
 
+/**
+ * Function to test wether Credentials are accepted
+ * @param {*} authenticationValue b64 encoded user:password
+ * @returns
+ */
 export async function testBasicAuth(authenticationValue) {
-	async function innerTestBasicAuth() {
+	console.log("reached outer Auth: ", authenticationValue);
+	// very important! This inner function is required because the apiTimeout function needs to access
+	// the name of the function being called. So it can't be an anonymous function.
+	/* async function innerTestBasicAuth() {
+		console.log("reached inner Auth: ", authenticationValue);
 		const headers = new Headers();
 		const searchUrl = `${process.env.REACT_APP_FHIRBASE}`;
 		headers.set("Authorization", "Basic " + authenticationValue);
@@ -23,38 +32,45 @@ export async function testBasicAuth(authenticationValue) {
 				}
 			}
 		);
-	}
-	let r = apiTimeout(innerTestBasicAuth, 5000);
+	} */
+	// refer to upper comment
+	/* let r = apiTimeout(innerTestBasicAuth, 5000, "innerTestBasicAuth"); */
+	let r = apiTimeout(
+		async () => {
+			console.log("reached inner Auth: ", authenticationValue);
+			const headers = new Headers();
+			const searchUrl = `${process.env.REACT_APP_FHIRBASE}`;
+			headers.set("Authorization", "Basic " + authenticationValue);
+			return await fetch(searchUrl, { method: "GET", headers: headers }).then(
+				(response) => {
+					if (response.status === 401) {
+						return "Unauthenticated";
+					} else if (!response.ok) {
+						return "Error";
+					} else {
+						return "Ok";
+					}
+				}
+			);
+		},
+		5000,
+		"testBasicAuth"
+	);
 	return r;
 }
 
-async function getResultCount(url) {
-	// Preflight method to get number of results (without actual resources). Can be used for better pagination handling.
-	const headers = new Headers();
-	const authenticationValue = getBasicAuthCreds();
-	headers.set("Authorization", "Basic " + authenticationValue);
-	let errorMessages;
-	return await fetch(url, { method: "GET", headers: headers })
-		.then(async (response) => {
-			if (response.status == 401)
-				throw new authenticationError(
-					"Authentication failed. You might need to login again."
-				);
-
-			if (!response.ok) {
-				return null;
-			}
-			return response.json();
-		})
-		.then((data) => {
-			return data.total ? data.total : null;
-		});
-}
-
-export default async function queryFHIR(resources, searchString, limit) {
+/**
+ * Invoked by searching. Get fhir resources and deserialize them.
+ * @param {*} resourceTypes which types to search for
+ * @param {*} searchString which value to search for
+ * @param {*} limit limit number of returned results
+ * @returns
+ */
+export default async function queryFHIR(resourceTypes, searchString, limit) {
 	let r = apiTimeout(async () => {
+		// store list of resources returned for each type in results
 		var results = {};
-		resources.forEach((r) => {
+		resourceTypes.forEach((r) => {
 			results[r] = [];
 		});
 
@@ -65,16 +81,17 @@ export default async function queryFHIR(resources, searchString, limit) {
 			const authenticationValue = getBasicAuthCreds();
 			headers.set("Authorization", "Basic " + authenticationValue);
 			let count = 100;
-
 			let nextPageLink = "";
+
+			// do while for fetching all resources (if server returns batches in multiple pages)
 			do {
+				// search parameter only works for Patient. Please Generalize when extending.
 				const searchUrl = nextPageLink
 					? nextPageLink
 					: `${process.env.REACT_APP_FHIRBASE}/${resource.getResourceName}?${
 							searchString ? "name:contains=" + searchString + "&" : ""
 					  }_count=${count}`;
 				let errorMessages;
-				/* headers.set("Authorization", "Bearer " + token); */
 				await fetch(searchUrl, { method: "GET", headers: headers })
 					.then((response) => {
 						if (response.status == 401) {
@@ -82,8 +99,9 @@ export default async function queryFHIR(resources, searchString, limit) {
 								"Authentication failed. You might need to login again."
 							);
 						}
-
 						if (response.status == 400) {
+							// FHIR defines issues that are returned as description of what went wrong.
+							// We can use these to display as snackbar error.
 							try {
 								let jsonResponse = response.json();
 								errorMessages = jsonResponse.issue
@@ -117,6 +135,7 @@ export default async function queryFHIR(resources, searchString, limit) {
 								errorMessages
 							);
 						}
+						// push results to result array
 						const pageEntries = data.entry
 							? data.entry.map(
 									(element) => new resource({ ...element.resource })
@@ -126,24 +145,29 @@ export default async function queryFHIR(resources, searchString, limit) {
 						if (!limit || results[resource.getResourceName].length < limit) {
 							if (data.link) {
 								let next = data.link.filter((item) => item.relation == "next");
-								console.log("here in datalink: ", data);
-								console.log("here next is: ", next);
 								nextPageLink = next.length > 0 ? next[0].url : "";
-								console.log("here nextplagelinkg is: ", nextPageLink);
 							} else nextPageLink = "";
 						} else nextPageLink = "";
 					});
 			} while (nextPageLink);
+
 			if (limit)
+				//cut off to requested amount
 				results[resource.getResourceName] = results[
 					resource.getResourceName
 				].slice(0, limit);
 		}
-		console.log("Query: ", results);
 		return results;
 	}, 40000);
 	return r;
 }
+
+/**
+ * Make a POST request to create a resource.
+ * @param {*} resourceType type of the resource to append to url string
+ * @param {*} newResource the unserialized resource
+ * @returns
+ */
 export async function createFHIRResource(resourceType, newResource) {
 	let r = apiTimeout(async () => {
 		const searchUrl = `${process.env.REACT_APP_FHIRBASE}/${resourceType}`;
@@ -181,6 +205,14 @@ export async function createFHIRResource(resourceType, newResource) {
 	});
 	return r;
 }
+
+/**
+ * Make a PATCH request to edit a resource.
+ * @param {*} resourceType type of the resource to append to url string
+ * @param {*} oldResource the old resource, needed for id
+ * @param {*} updatedResource the body of the PATCH request
+ * @returns
+ */
 export async function updateFHIRResource(
 	resourceType,
 	oldResource,
@@ -193,7 +225,6 @@ export async function updateFHIRResource(
 		headers.set("Authorization", "Basic " + authenticationValue);
 		headers.set("Content-Type", "application/json-patch+json");
 		let errorMessages;
-
 		const updateResult = await fetch(searchUrl, {
 			method: "PATCH",
 			headers: headers,
@@ -254,6 +285,12 @@ export async function updateFHIRResource(
 	return r;
 }
 
+/**
+ * Make a DELETE request to remove  resources from the server.
+ * @param {*} ids Array of resource ids to delete
+ * @param {*} resourceType type of the resource whose entries should be deleted
+ * @returns
+ */
 export async function deleteResources(ids, resourceType) {
 	let r = apiTimeout(async () => {
 		const headers = new Headers();
@@ -264,9 +301,7 @@ export async function deleteResources(ids, resourceType) {
 		const results = await Promise.all(
 			ids.map(async (id) => {
 				const searchUrl = `${process.env.REACT_APP_FHIRBASE}/${resourceType}/${id}`;
-
 				headers.set("Content-Type", "application/fhir+json");
-
 				await fetch(searchUrl, {
 					method: "DELETE",
 					headers: headers,
@@ -339,21 +374,16 @@ export async function deleteResources(ids, resourceType) {
 	return r;
 }
 
-export const allResources = [
-	"Binary",
-	"Bundle",
-	"CapabilityStatement",
-	"CodeSystem",
-	"Observation",
-	"OperationDefinition",
-	"OperationOutcome",
-	"Parameters",
-	"Patient",
-	"StructureDefinition",
-	"ValueSet",
-];
+/**
+ * Wrapper function to throw timeoutErrors if the callback function didn't resolve within a given time.
+ * @param {*} apiCall Function that makes api calls
+ * @param {*} timeoutLength How long this function should wait for the apiCall to resolve before throwing updaterror.
+ * @param {*} apiCallName Name of the calling function. Workaround for the issue that webpack bundles function names so I can't use apiCall.name anymore.
+ * @returns
+ */
+export const apiTimeout = async (apiCall, timeoutLength, apiCallName) => {
+	console.log("reached api timeout. apicallname: ", apiCall.name);
 
-export const apiTimeout = async (apiCall, timeoutLength) => {
 	let timeoutId;
 	let timeoutPromise = new Promise(async (resolve, reject) => {
 		timeoutId = setTimeout(() => {
@@ -365,25 +395,39 @@ export const apiTimeout = async (apiCall, timeoutLength) => {
 			);
 		}, timeoutLength || 5000);
 	});
-	if (apiCall.name != "innerTestBasicAuth" && !getBasicAuthCreds()) {
+
+	// Can't make any request to api as long as no authentication cookies are present
+	//if (!getBasicAuthCreds() && apiCall.name != "innerTestBasicAuth") {
+	if (!getBasicAuthCreds() && apiCallName != "testBasicAuth") {
+		console.log(
+			"apicallname is NOT innertestbasicauth or no authcreds present ",
+			apiCall.name
+		);
 		clearTimeout(timeoutId);
 		throw new authenticationError("Session expired. You need to login first.");
 	}
+	console.log(
+		"apicallname IS innertestbasicauth or  authcreds present, now calling apiCall",
+		apiCall.name
+	);
 	const apiCallPromise = apiCall();
 	return Promise.race([apiCallPromise, timeoutPromise]).finally(() => {
 		clearTimeout(timeoutId);
 	});
 };
 
+/**
+ *  This function differs from the normal queryFHIR function in that it does deserialize the results, but keeps it in JSON. This is because
+ *  the referenced types are not (yet) represented in this application (for now only "Patient").
+ * @param {*} resourcetype Type of the resource to search for
+ * @param {*} paramsAndModifiers Applicable search parameters and modifiers for this resource type.
+ * @returns
+ */
 export async function searchReference(resourcetype, paramsAndModifiers) {
-	// This function differs from the normal queryFHIR function in that it does deserialize the results, but keeps it in JSON. This is because
-	// the referenced types are not (yet) represented in this application (for now only "Patient").
-	/* let token;
-	token = await getToken(); */
-
 	// This functionality will be added if the IBM server supports the _filter option to allow logical OR on multiple element types, not only on the values
 	// of a single element Type.
 	//const searchUrl = `${process.env.REACT_APP_FHIRBASE}/fhir/R4/${resourcetype}?${paramsAndModifiers}`;
+
 	const searchUrl = `${process.env.REACT_APP_FHIRBASE}/${resourcetype}?`;
 
 	const headers = new Headers();
@@ -428,10 +472,16 @@ export async function searchReference(resourcetype, paramsAndModifiers) {
 	return results;
 }
 
+/**
+ * Fetch some url (used by attachments)
+ * @param {*} url
+ * @returns
+ */
 export async function getAttachment(url) {
 	// This functionality will be added if the IBM server supports the _filter option to allow logical OR on multiple element types, not only on the values
 	// of a single element Type.
 	//const searchUrl = `${process.env.REACT_APP_FHIRBASE}/fhir/R4/${resourcetype}?${paramsAndModifiers}`;
+
 	const searchUrl = url;
 	const headers = new Headers();
 	const authenticationValue = getBasicAuthCreds();
@@ -439,8 +489,40 @@ export async function getAttachment(url) {
 	return fetch(searchUrl, { method: "GET", headers: headers });
 }
 
+/**
+ * helper function to display html String correctly (without html entities). Used by errors throwing
+ * html content so that it can be displayed by the UI properly.
+ * @param {*} html
+ * @returns
+ */
 function decodeHtml(html) {
 	var txt = document.createElement("textarea");
 	txt.innerHTML = html;
 	return txt.value;
+}
+
+/**
+ * Preflight method to get number of results (without actual resources). Can be used for better pagination handling.
+ * Unused for now, can be explored when performance decreases with huge datasets.
+ */
+async function getResultCount(url) {
+	const headers = new Headers();
+	const authenticationValue = getBasicAuthCreds();
+	headers.set("Authorization", "Basic " + authenticationValue);
+	let errorMessages;
+	return await fetch(url, { method: "GET", headers: headers })
+		.then(async (response) => {
+			if (response.status == 401)
+				throw new authenticationError(
+					"Authentication failed. You might need to login again."
+				);
+
+			if (!response.ok) {
+				return null;
+			}
+			return response.json();
+		})
+		.then((data) => {
+			return data.total ? data.total : null;
+		});
 }
