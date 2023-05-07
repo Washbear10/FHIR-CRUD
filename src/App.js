@@ -103,61 +103,63 @@ function App() {
 	const [snackbarMessage, setSnackbarMessage] = useState("");
 	const [snackbarTitle, setSnackbarTitle] = useState("");
 	return (
-		<ThemeProvider theme={theme}>
-			<SnackbarContext.Provider
-				value={{
-					snackbarOpen,
-					setSnackbarOpen,
-					snackbarColor,
-					setSnackbarColor,
-					snackbarMessage,
-					setSnackbarMessage,
-					snackbarTitle,
-					setSnackbarTitle,
-				}}
-			>
-				<LoginContext.Provider
-					value={{ authenticationPromptOpen, setAuthenticationPromptOpen }}
+		<React.StrictMode>
+			<ThemeProvider theme={theme}>
+				<SnackbarContext.Provider
+					value={{
+						snackbarOpen,
+						setSnackbarOpen,
+						snackbarColor,
+						setSnackbarColor,
+						snackbarMessage,
+						setSnackbarMessage,
+						snackbarTitle,
+						setSnackbarTitle,
+					}}
 				>
-					<AuthenticationPrompt />
-					<Snackbar
-						autoHideDuration={snackbarColor == "success" ? 3000 : null}
-						open={snackbarOpen}
-						onClose={() => {
-							setSnackbarOpen(false);
-						}}
-						message="Note archived"
-						anchorOrigin={{ vertical: "top", horizontal: "right" }}
+					<LoginContext.Provider
+						value={{ authenticationPromptOpen, setAuthenticationPromptOpen }}
 					>
-						<Alert
-							color={snackbarColor}
-							sx={{
-								width: "40vw",
-								minHeight: "5rem",
-								alignItems: "flex-start",
+						<AuthenticationPrompt />
+						<Snackbar
+							autoHideDuration={snackbarColor == "success" ? 3000 : null}
+							open={snackbarOpen}
+							onClose={() => {
+								setSnackbarOpen(false);
 							}}
-							severity={snackbarColor || "success"}
-							variant="filled"
+							message="Note archived"
+							anchorOrigin={{ vertical: "top", horizontal: "right" }}
 						>
-							<AlertTitle>{snackbarTitle}</AlertTitle>
-							{snackbarMessage}
-						</Alert>
-					</Snackbar>
-					<Router>
-						<Routes>
-							<Route
-								path="/"
-								element={<CustomAppBar content={<Home />} title={"Search"} />}
-							/>
-							<Route
-								path="/about"
-								element={<CustomAppBar content={<About />} title={"About"} />}
-							/>
-						</Routes>
-					</Router>
-				</LoginContext.Provider>
-			</SnackbarContext.Provider>
-		</ThemeProvider>
+							<Alert
+								color={snackbarColor}
+								sx={{
+									width: "40vw",
+									minHeight: "5rem",
+									alignItems: "flex-start",
+								}}
+								severity={snackbarColor || "success"}
+								variant="filled"
+							>
+								<AlertTitle>{snackbarTitle}</AlertTitle>
+								{snackbarMessage}
+							</Alert>
+						</Snackbar>
+						<Router>
+							<Routes>
+								<Route
+									path="/"
+									element={<CustomAppBar content={<Home />} title={"Search"} />}
+								/>
+								<Route
+									path="/about"
+									element={<CustomAppBar content={<About />} title={"About"} />}
+								/>
+							</Routes>
+						</Router>
+					</LoginContext.Provider>
+				</SnackbarContext.Provider>
+			</ThemeProvider>
+		</React.StrictMode>
 	);
 }
 

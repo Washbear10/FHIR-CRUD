@@ -59,4 +59,5 @@ ExpandableCell.propTypes = {
 	value: PropTypes.any,
 };
 
-export default React.memo(ExpandableCell);
+/* export default React.memo(ExpandableCell); */
+export default ExpandableCell;

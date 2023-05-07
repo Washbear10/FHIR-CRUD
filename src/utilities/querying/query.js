@@ -382,8 +382,6 @@ export async function deleteResources(ids, resourceType) {
  * @returns
  */
 export const apiTimeout = async (apiCall, timeoutLength, apiCallName) => {
-	console.log("reached api timeout. apicallname: ", apiCall.name);
-
 	let timeoutId;
 	let timeoutPromise = new Promise(async (resolve, reject) => {
 		timeoutId = setTimeout(() => {
@@ -399,17 +397,10 @@ export const apiTimeout = async (apiCall, timeoutLength, apiCallName) => {
 	// Can't make any request to api as long as no authentication cookies are present
 	//if (!getBasicAuthCreds() && apiCall.name != "innerTestBasicAuth") {
 	if (!getBasicAuthCreds() && apiCallName != "testBasicAuth") {
-		console.log(
-			"apicallname is NOT innertestbasicauth or no authcreds present ",
-			apiCall.name
-		);
 		clearTimeout(timeoutId);
 		throw new authenticationError("Session expired. You need to login first.");
 	}
-	console.log(
-		"apicallname IS innertestbasicauth or  authcreds present, now calling apiCall",
-		apiCall.name
-	);
+
 	const apiCallPromise = apiCall();
 	return Promise.race([apiCallPromise, timeoutPromise]).finally(() => {
 		clearTimeout(timeoutId);
@@ -509,8 +500,10 @@ async function getResultCount(url) {
 	const headers = new Headers();
 	const authenticationValue = getBasicAuthCreds();
 	headers.set("Authorization", "Basic " + authenticationValue);
-	let errorMessages;
-	return await fetch(url, { method: "GET", headers: headers })
+	return await fetch(url + "&_summary=count", {
+		method: "GET",
+		headers: headers,
+	})
 		.then(async (response) => {
 			if (response.status == 401)
 				throw new authenticationError(
@@ -525,4 +518,161 @@ async function getResultCount(url) {
 		.then((data) => {
 			return data.total ? data.total : null;
 		});
+}
+
+export async function getPageData(pageLink) {
+	let r = apiTimeout(async () => {
+		// store list of resources returned for each type in results
+		let results = [];
+
+		// Since this application only implements the Patient input, only Patient resources can be queried.
+		// When functionality for other Resources are added, some minor changes will have to be made to this function (mainly regarding search parameters.)
+		const headers = new Headers();
+		const authenticationValue = getBasicAuthCreds();
+		headers.set("Authorization", "Basic " + authenticationValue);
+		let nextLink = "";
+		let prevLink = "";
+		let errorMessages;
+		await fetch(pageLink, { method: "GET", headers: headers })
+			.then((response) => {
+				if (response.status == 401) {
+					throw new authenticationError(
+						"Authentication failed. You might need to login again."
+					);
+				}
+				if (response.status == 400) {
+					// FHIR defines issues that are returned as description of what went wrong.
+					// We can use these to display as snackbar error.
+					try {
+						let jsonResponse = response.json();
+						errorMessages = jsonResponse.issue
+							.filter((issue) => issue["severity"] == "error")
+							.map((issue) => {
+								let s = "";
+								if (issue.expression)
+									s += "Issue in " + issue.expression.join(",") + ": ";
+								if (issue.details) s += issue.details.text;
+							});
+					} catch (e) {
+						console.log("caught error trying to decode issues: ", e);
+					}
+					throw new updateError(errorMessages.join("\n"));
+				}
+				return response.json();
+			})
+			.then((data) => {
+				if (data["resourceType"] == "OperationOutcome") {
+					errorMessages = data.issue
+						.filter((issue) => issue["severity"] == "error")
+						.map((element) => {
+							return element.details.text;
+						});
+				}
+				if (errorMessages) {
+					throw new queryError(
+						"There was an error fetching data." +
+							"\nFHIR issues: " +
+							errorMessages,
+						errorMessages
+					);
+				}
+				// push results to result array
+				const pageEntries = data.entry
+					? data.entry.map((element) => new Patient({ ...element.resource }))
+					: [];
+				results = pageEntries;
+				if (data.link) {
+					const next = data.link.filter((item) => item.relation == "next");
+					nextLink = next.length > 0 ? next[0].url : "";
+					const prev = data.link.filter((item) => item.relation == "previous");
+					prevLink = prev.length > 0 ? prev[0].url : "";
+				}
+			});
+
+		return { data: results, nextLink: nextLink, prevLink: prevLink };
+	}, 5000);
+	return r;
+}
+
+export async function testInitialQuery(resourceType, searchString) {
+	let r = apiTimeout(async () => {
+		// store list of resources returned for each type in results
+		let results = [];
+
+		// Since this application only implements the Patient input, only Patient resources can be queried.
+		// When functionality for other Resources are added, some minor changes will have to be made to this function (mainly regarding search parameters.)
+		const headers = new Headers();
+		const authenticationValue = getBasicAuthCreds();
+		headers.set("Authorization", "Basic " + authenticationValue);
+		let count = 10;
+		let nextPageLink = "";
+		// do while for fetching all resources (if server returns batches in multiple pages)
+		// search parameter only works for Patient. Please Generalize when extending.
+		const searchUrl = `${process.env.REACT_APP_FHIRBASE}/Patient?_count=${count}`;
+
+		const resultCount = await getResultCount(searchUrl);
+
+		let errorMessages;
+		await fetch(searchUrl, { method: "GET", headers: headers })
+			.then((response) => {
+				if (response.status == 401) {
+					throw new authenticationError(
+						"Authentication failed. You might need to login again."
+					);
+				}
+				if (response.status == 400) {
+					// FHIR defines issues that are returned as description of what went wrong.
+					// We can use these to display as snackbar error.
+					try {
+						let jsonResponse = response.json();
+						errorMessages = jsonResponse.issue
+							.filter((issue) => issue["severity"] == "error")
+							.map((issue) => {
+								let s = "";
+								if (issue.expression)
+									s += "Issue in " + issue.expression.join(",") + ": ";
+								if (issue.details) s += issue.details.text;
+							});
+					} catch (e) {
+						console.log("caught error trying to decode issues: ", e);
+					}
+					throw new updateError(errorMessages.join("\n"));
+				}
+				return response.json();
+			})
+			.then((data) => {
+				if (data["resourceType"] == "OperationOutcome") {
+					errorMessages = data.issue
+						.filter((issue) => issue["severity"] == "error")
+						.map((element) => {
+							return element.details.text;
+						});
+				}
+				if (errorMessages) {
+					throw new queryError(
+						"There was an error fetching data." +
+							"\nFHIR issues: " +
+							errorMessages,
+						errorMessages
+					);
+				}
+				// push results to result array
+				const pageEntries = data.entry
+					? data.entry.map((element) => new Patient({ ...element.resource }))
+					: [];
+				results = pageEntries;
+				if (data.link) {
+					let next = data.link.filter((item) => item.relation == "next");
+					nextPageLink = next.length > 0 ? next[0].url : "";
+				}
+			});
+		let returnValue = {
+			results: results,
+			resultCount: resultCount,
+			nextPageLink: nextPageLink,
+		};
+		console.log(returnValue);
+		return returnValue;
+	}, 40000);
+	return r;
 }

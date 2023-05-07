@@ -15,6 +15,7 @@ import { useImmer } from "use-immer";
 import { v4 as uuidv4 } from "uuid";
 import { constructList } from "../../utilities/formatting/helpConstructInstances";
 import InputDialog from "../resourceInputs/InputDialog";
+import { useRef } from "react";
 
 /**
  * Utilizes MUI Datagrid. Receives Class Instances of a resource type and displays them in rows.
@@ -33,13 +34,33 @@ export default function CustomDataGrid({
 	resourceType,
 	columns,
 	rows,
+	rowCount,
 	updateRows,
 	newResources,
 	updateNewResources,
 	deleteSelectedResources,
 	saveUpdates,
-	loading,
+	//loading,
+	updatePage,
 }) {
+	const [paginationModel, setPaginationModel] = React.useState({
+		page: 0,
+		pageSize: 10,
+	});
+
+	const [loading, setloading] = useState(false);
+
+	const nextOrPrev = useRef("");
+
+	useEffect(() => {
+		console.log(nextOrPrev.current);
+		updatePage(resourceType, nextOrPrev.current);
+	}, [paginationModel.page]);
+
+	useEffect(() => {
+		setloading(false);
+	}, [rows]);
+
 	// control Dialog for editing a resource
 	const [open, setOpen] = useState(false);
 
@@ -207,9 +228,13 @@ export default function CustomDataGrid({
 				getRowHeight={() => "auto"}
 				rows={rows}
 				columns={columns}
-				rowsPerPageOptions={[20, 50, 100]}
-				initialState={{
-					pagination: { paginationModel: { pageSize: 50 } },
+				rowsPerPageOptions={[10]}
+				pageSize={10}
+				onPageChange={(newPage) => {
+					setloading(true);
+					nextOrPrev.current =
+						newPage > paginationModel.page ? "next" : "previous";
+					setPaginationModel({ ...paginationModel, page: newPage });
 				}}
 				checkboxSelection
 				disableSelectionOnClick
@@ -223,11 +248,15 @@ export default function CustomDataGrid({
 				components={{
 					Footer: MyFooter,
 					Header: MyHeader,
-					LoadingOverlay: () => <LinearProgress />,
 				}}
 				loading={loading}
 				disableRowSelectionOnClick={loading}
 				disableVirtualization
+				rowCount={rowCount}
+				paginationModel={paginationModel}
+				paginationMode="server"
+				pagination
+				keepNonExistentRowsSelected
 			/>
 		</Box>
 	);

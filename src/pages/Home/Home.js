@@ -5,6 +5,9 @@ import CustomDataGrid from "../../components/datagrid/CustomDataGrid";
 import queryFHIR, {
 	createFHIRResource,
 	deleteResources,
+	getNextPageData,
+	getPageData,
+	testInitialQuery,
 	updateFHIRResource,
 } from "../../utilities/querying/query";
 import SearchForm from "./SearchForm";
@@ -26,6 +29,8 @@ import {
 	timeoutError,
 } from "../../utilities/querying/errors";
 import { Patient } from "../../classes/resourceTypes/Patient";
+import { getBasicAuthCreds } from "../../utilities/authentication/basicAuth";
+import Test from "../../components/test/Test";
 const Home = () => {
 	// state for Search Component
 	const [resourceList, setResourceList] = useState(["Patient"]); // Hardcoded, can be used when the resource type selector in the search bar component is reenabled.
@@ -34,9 +39,14 @@ const Home = () => {
 	const [filterResource, setFilterResource] = useState(false);
 
 	// state for Datagrids
-	const [results, setResults] = useImmer({});
+	//const [results, setResults] = useImmer({});
+	const [results, setResults] = useState({});
 	const [changedResources, setChangedResources] = useImmer({});
 	const [newResources, setNewResources] = useImmer({});
+	const [nextPageLink, setNextPageLink] = useImmer({ Patient: "" });
+	const [prevPageLink, setPrevPageLink] = useImmer({ Patient: "" });
+	const [resultCount, setResultCount] = useImmer({ Patient: null });
+	const [gridsLoading, setGridsLoading] = useImmer({ Patient: false });
 
 	// states for ui elements
 	const [loading, setLoading] = useState(false);
@@ -45,6 +55,8 @@ const Home = () => {
 	// states for deleting of resources
 	const [deleteCandidates, setDeleteCandidates] = useState([]);
 	const [deleteCandidatType, setDeleteCandidatType] = useState(null);
+
+	const [testData, setTestData] = useState([]);
 
 	// needed to open Login prompt up the hirarchy
 	const { authenticationPromptOpen, setAuthenticationPromptOpen } =
@@ -67,19 +79,68 @@ const Home = () => {
 		if (event) event.preventDefault();
 		setLoading(true);
 		try {
-			const queryResult = await queryFHIR(
+			/* const queryResult = await queryFHIR(
 				resourceList,
 				searchValue,
 				parseInt(limit) || 0
-			);
+			); */
+			const queryResult = await testInitialQuery("Patient, searchValue");
 			console.log(queryResult);
-			setResults(queryResult);
+			setResults((prev) => {
+				return { ...prev, Patient: queryResult["results"] };
+			});
+			setNextPageLink((prev) => {
+				return { ...prev, Patient: queryResult["nextPageLink"] };
+			});
+			setResultCount((prev) => {
+				return { ...prev, Patient: queryResult["resultCount"] };
+			});
 			setLoading(false);
 		} catch (error) {
 			handleCatchError(error);
 			setLoading(false);
 			return error;
 		}
+	};
+
+	const updatePage = async (resourceType, nextOrPrev) => {
+		setGridsLoading((prev) => {
+			prev[resourceType] = true;
+		});
+		if (nextOrPrev == "next") {
+			if (!nextPageLink[resourceType]) return;
+			else {
+				const result = await getPageData(nextPageLink[resourceType]);
+				console.log(result);
+				setNextPageLink((prev) => {
+					return { ...prev, Patient: result["nextLink"] };
+				});
+				setPrevPageLink((prev) => {
+					return { ...prev, Patient: result["prevLink"] };
+				});
+				setResults((prev) => {
+					return { ...prev, Patient: result["data"] };
+				});
+			}
+		} else if (nextOrPrev == "previous") {
+			if (!prevPageLink[resourceType]) return;
+			else {
+				const result = await getPageData(prevPageLink[resourceType]);
+				console.log(result);
+				setNextPageLink((prev) => {
+					return { ...prev, Patient: result["nextLink"] };
+				});
+				setPrevPageLink((prev) => {
+					return { ...prev, Patient: result["prevLink"] };
+				});
+				setResults((prev) => {
+					return { ...prev, Patient: result["data"] };
+				});
+			}
+		} else alert("in here else page");
+		setGridsLoading((prev) => {
+			prev.Patient = false;
+		});
 	};
 
 	const handleCatchError = (error) => {
@@ -265,17 +326,28 @@ const Home = () => {
 					setDeleteCandidates([]);
 				}}
 			/>
-			{/* <Button
+			<Button
 				onClick={async () => {
-					console.log(process.env.REACT_APP_MAX_ATTACHMENT_SIZE);
-					console.log(process.env.REACT_APP_FHIRBASE);
-					for (const resource of [Patient]) {
-						console.log(resource.getResourceName);
-					}
+					const headers = new Headers();
+					const authenticationValue = getBasicAuthCreds();
+					headers.set("Authorization", "Basic " + authenticationValue);
+					fetch("https://localhost:9443/fhir-server/api/v4/Patient", {
+						headers: headers,
+					})
+						.then((response) => {
+							let j = response.json();
+							return j;
+						})
+						.then((data) => {
+							let r = data.entry.map(
+								(item) => new Patient({ ...item.resource })
+							);
+							setTestData(r);
+						});
 				}}
 			>
 				Test Error
-			</Button> */}
+			</Button>
 			<SearchForm
 				onSubmit={handleSubmit}
 				resourceList={resourceList}
@@ -388,6 +460,7 @@ const Home = () => {
 						resourceType={resourceType}
 						columns={columns}
 						rows={results[resourceType]}
+						rowCount={resultCount[resourceType]}
 						updateRows={updateRows}
 						changedResources={changedResources[resourceType] || []}
 						updateChangedResources={updateChangedResources}
@@ -395,10 +468,12 @@ const Home = () => {
 						updateNewResources={updateNewResources}
 						deleteSelectedResources={confirmDelete}
 						saveUpdates={saveUpdates}
-						loading={loading}
+						//loading={gridsLoading[resourceType]}
+						updatePage={updatePage}
 					/>
 				);
 			})}
+			<Test data={testData} />
 		</Box>
 	);
 };
