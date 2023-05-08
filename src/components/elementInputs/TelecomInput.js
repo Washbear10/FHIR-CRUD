@@ -13,7 +13,7 @@ import {
 	contactPointUse,
 } from "../../utilities/valueSets/valueSets";
 
-const TelecomInput = ({ telecom, changeTelecom }) => {
+const TelecomInput = ({ telecom, changeTelecom, allowedUse }) => {
 	// Section for checking validity of inputs
 	//
 	const [errorMessage, setErrorMessage] = useState("");
@@ -120,7 +120,7 @@ const TelecomInput = ({ telecom, changeTelecom }) => {
 						</Box>
 						<Box sx={{ display: "flex", columnGap: "0.5rem", width: "100%" }}>
 							<CodeInput
-								values={contactPointUse}
+								values={allowedUse || contactPointUse}
 								label="use"
 								v={telecom.use || ""}
 								changeInput={(value) => {

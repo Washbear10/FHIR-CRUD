@@ -12,7 +12,7 @@ import { addressType, addressUse } from "../../utilities/valueSets/valueSets";
  * @param {*} param0
  * @returns
  */
-const AddressInput = ({ address, changeSingleAddress }) => {
+const AddressInput = ({ address, changeSingleAddress, allowedUse }) => {
 	// Section for methods handling change in data:
 	//
 	const handleChangeUse = (newValue) => {
@@ -174,7 +174,7 @@ const AddressInput = ({ address, changeSingleAddress }) => {
 			</Box>
 			<Box sx={{ display: "flex", columnGap: "0.5rem", width: "100%" }}>
 				<CodeInput
-					values={addressUse}
+					values={allowedUse || addressUse}
 					label="use"
 					v={address.use || ""}
 					changeInput={(value) => {

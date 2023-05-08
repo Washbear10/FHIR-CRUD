@@ -1,6 +1,6 @@
 import { Box } from "@mui/system";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import Link from "../../classes/dataTypes/Link";
+import Link from "../../classes/dataTypes/backboneElements/Patient/Link";
 import { isObjectEmptyRecursive } from "../../utilities/formatting/fhirify";
 import { AttributeBlockErrorContext } from "../../utilities/other/Contexts";
 import CodeInput from "../primitiveInputs/CodeInput";

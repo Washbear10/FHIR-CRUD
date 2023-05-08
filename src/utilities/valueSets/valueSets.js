@@ -1,6 +1,7 @@
 // this file contains all the used valueSets that some elements are bound to.
 
 export const addressUse = ["home", "work", "temp", "old", "billing"];
+export const OrganizationAddressUse = ["work", "temp", "old", "billing"];
 export const addressType = ["postal", "physical", "both"];
 export const genders = ["male", "female", "other", "unknown"];
 export const nameUse = [
@@ -14,6 +15,14 @@ export const nameUse = [
 ];
 export const identifierUse = ["usual", "official", "temp", "secondary", "old"];
 export const linkType = ["replaced-by", "replaces", "refer", "seealso"];
+export const contactEntityType = [
+	"BILL",
+	"ADMIN",
+	"HR",
+	"PAYOR",
+	"PATINF",
+	"PRESS",
+];
 export const contactPointSystem = [
 	"phone",
 	"fax",
@@ -24,6 +33,8 @@ export const contactPointSystem = [
 	"other",
 ];
 export const contactPointUse = ["home", "work", "temp", "old", "mobile"];
+export const OrganizationContactPointUse = ["work", "temp", "old", "mobile"];
+
 export const commonLanguages = {
 	ar: "Arabic",
 	bg: "Bulgarian",

@@ -42,6 +42,7 @@ export default function CustomDataGrid({
 	deleteSelectedResources,
 	saveUpdates,
 	updatePage,
+	expandRow,
 }) {
 	const [paginationModel, setPaginationModel] = React.useState({
 		page: 0,
@@ -107,7 +108,6 @@ export default function CustomDataGrid({
 	const addRow = () => {
 		setBackDropOpen(true);
 		const newInstance = new constructList[resourceType]({ id: uuidv4() });
-		console.log(newInstance);
 		updateNewResources([...newResources, newInstance], resourceType);
 		updateRows([...rows, newInstance], resourceType);
 		setOriginalResource(newInstance);
@@ -116,8 +116,10 @@ export default function CustomDataGrid({
 	// expand a row on doubleclick
 	const handleRowDoubleClick = (params, e, d) => {
 		let i = rows.indexOf(params.row);
-		rows[i].internalReactExpanded = !rows[i].internalReactExpanded;
-		triggerRerender();
+		expandRow(i);
+
+		//rows[i].internalReactExpanded = !rows[i].internalReactExpanded;
+		//triggerRerender();
 	};
 
 	// just handles clicks on the editbutton or the expand button
@@ -128,8 +130,9 @@ export default function CustomDataGrid({
 		}
 		if (!loading && params.colDef.field == "expandButton") {
 			let i = rows.indexOf(params.row);
-			rows[i].internalReactExpanded = !rows[i].internalReactExpanded;
-			triggerRerender();
+			expandRow(resourceType, i);
+			//rows[i].internalReactExpanded = !rows[i].internalReactExpanded;
+			//triggerRerender();
 		}
 	};
 

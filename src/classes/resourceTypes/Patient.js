@@ -6,11 +6,11 @@ import Address from "../dataTypes/Address";
 import Attachment from "../dataTypes/Attachment";
 import CodeableConcept from "../dataTypes/CodeableConcept";
 import Communication from "../dataTypes/Communication";
-import Contact from "../dataTypes/Contact";
+import Contact from "../dataTypes/backboneElements/Patient/Contact";
 import { ContactPoint } from "../dataTypes/ContactPoint";
 import { HumanName } from "../dataTypes/HumanName";
 import { Identifier } from "../dataTypes/Identifier";
-import Link from "../dataTypes/Link";
+import Link from "../dataTypes/backboneElements/Patient/Link";
 import Reference from "../specialTypes/Reference";
 
 export class Patient {

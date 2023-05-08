@@ -79,6 +79,7 @@ const SearchForm = ({
 								label="Search Patients by name"
 								value={inputValue}
 								onChange={(event) => {
+									console.log(event.target.value);
 									setInputValue(event.target.value);
 								}}
 							/>

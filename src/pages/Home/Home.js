@@ -197,6 +197,13 @@ const Home = () => {
 		});
 	};
 
+	const expandRow = (resourceType, index) => {
+		setResults((draft) => {
+			draft[resourceType][index].internalReactExpanded =
+				!draft[resourceType][index].internalReactExpanded;
+		});
+	};
+
 	// If changing an existing resource, we only want to patch the changed data -> saves bandwith -> improves performance.
 	// Create list of PATCH operations needed.
 	const makePatchFormat = (originalResource, editedResource) => {
@@ -356,7 +363,6 @@ const Home = () => {
 				onSubmit={handleSubmit}
 				resourceList={resourceList}
 				updateResourceList={updateResourceList}
-				inputValue={inputValue}
 				updateInputValue={updateInputValue}
 				filterResource={filterResource}
 				updateFilterResource={updateFilterResource}
@@ -477,6 +483,7 @@ const Home = () => {
 						prev={prevPageLink[resourceType]}
 						updatePrev={updatePrev}
 						updateNext={updateNext}
+						expandRow={expandRow}
 					/>
 				);
 			})}
