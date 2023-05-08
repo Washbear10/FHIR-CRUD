@@ -60,7 +60,7 @@ const CodeInput = ({
 									textOverflow: "clip",
 									overflow: "visible",
 								}}
-								error={rest.error ? 1 : 0}
+								error={rest.error ? true : false}
 								helperText={rest.helpertext}
 							/>
 					  )

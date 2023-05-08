@@ -31,6 +31,7 @@ import {
 import { Patient } from "../../classes/resourceTypes/Patient";
 import { getBasicAuthCreds } from "../../utilities/authentication/basicAuth";
 import Test from "../../components/test/Test";
+import DataGridDemo from "../../components/test/Test";
 const Home = () => {
 	// state for Search Component
 	const [resourceList, setResourceList] = useState(["Patient"]); // Hardcoded, can be used when the resource type selector in the search bar component is reenabled.
@@ -39,14 +40,12 @@ const Home = () => {
 	const [filterResource, setFilterResource] = useState(false);
 
 	// state for Datagrids
-	//const [results, setResults] = useImmer({});
-	const [results, setResults] = useState({});
+	const [results, setResults] = useImmer({});
 	const [changedResources, setChangedResources] = useImmer({});
 	const [newResources, setNewResources] = useImmer({});
 	const [nextPageLink, setNextPageLink] = useImmer({ Patient: "" });
 	const [prevPageLink, setPrevPageLink] = useImmer({ Patient: "" });
 	const [resultCount, setResultCount] = useImmer({ Patient: null });
-	const [gridsLoading, setGridsLoading] = useImmer({ Patient: false });
 
 	// states for ui elements
 	const [loading, setLoading] = useState(false);
@@ -84,7 +83,7 @@ const Home = () => {
 				searchValue,
 				parseInt(limit) || 0
 			); */
-			const queryResult = await testInitialQuery("Patient, searchValue");
+			const queryResult = await testInitialQuery("Patient", searchValue);
 			console.log(queryResult);
 			setResults((prev) => {
 				return { ...prev, Patient: queryResult["results"] };
@@ -104,9 +103,6 @@ const Home = () => {
 	};
 
 	const updatePage = async (resourceType, nextOrPrev) => {
-		setGridsLoading((prev) => {
-			prev[resourceType] = true;
-		});
 		if (nextOrPrev == "next") {
 			if (!nextPageLink[resourceType]) return;
 			else {
@@ -137,9 +133,17 @@ const Home = () => {
 					return { ...prev, Patient: result["data"] };
 				});
 			}
-		} else alert("in here else page");
-		setGridsLoading((prev) => {
-			prev.Patient = false;
+		}
+	};
+
+	const updatePrev = (resourceType, url) => {
+		setPrevPageLink((prev) => {
+			return { ...prev, resourceType: url };
+		});
+	};
+	const updateNext = (resourceType, url) => {
+		setNextPageLink((prev) => {
+			return { ...prev, resourceType: url };
 		});
 	};
 
@@ -468,12 +472,14 @@ const Home = () => {
 						updateNewResources={updateNewResources}
 						deleteSelectedResources={confirmDelete}
 						saveUpdates={saveUpdates}
-						//loading={gridsLoading[resourceType]}
 						updatePage={updatePage}
+						next={nextPageLink[resourceType]}
+						prev={prevPageLink[resourceType]}
+						updatePrev={updatePrev}
+						updateNext={updateNext}
 					/>
 				);
 			})}
-			<Test data={testData} />
 		</Box>
 	);
 };

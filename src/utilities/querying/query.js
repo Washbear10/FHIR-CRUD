@@ -532,6 +532,7 @@ export async function getPageData(pageLink) {
 		headers.set("Authorization", "Basic " + authenticationValue);
 		let nextLink = "";
 		let prevLink = "";
+
 		let errorMessages;
 		await fetch(pageLink, { method: "GET", headers: headers })
 			.then((response) => {
@@ -594,7 +595,7 @@ export async function getPageData(pageLink) {
 	return r;
 }
 
-export async function testInitialQuery(resourceType, searchString) {
+export async function testInitialQuery(resourceType, searchString, pageSize) {
 	let r = apiTimeout(async () => {
 		// store list of resources returned for each type in results
 		let results = [];
@@ -604,11 +605,13 @@ export async function testInitialQuery(resourceType, searchString) {
 		const headers = new Headers();
 		const authenticationValue = getBasicAuthCreds();
 		headers.set("Authorization", "Basic " + authenticationValue);
-		let count = 10;
+		let count = pageSize || 20;
 		let nextPageLink = "";
 		// do while for fetching all resources (if server returns batches in multiple pages)
 		// search parameter only works for Patient. Please Generalize when extending.
-		const searchUrl = `${process.env.REACT_APP_FHIRBASE}/Patient?_count=${count}`;
+		const searchUrl = `${process.env.REACT_APP_FHIRBASE}/Patient?${
+			searchString ? "name:contains=" + searchString + "&" : ""
+		}_count=${count}`;
 
 		const resultCount = await getResultCount(searchUrl);
 

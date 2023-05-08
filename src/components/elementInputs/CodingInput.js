@@ -105,7 +105,7 @@ const CodingInput = ({
 					handleChangeSystem(e.target.value);
 				}}
 				className="systemInput"
-				error={errorMessage && !systemUneditable ? 1 : 0}
+				error={errorMessage && !systemUneditable ? true : false}
 				helperText={errorMessage && !systemUneditable ? errorMessage : null}
 			/>
 
@@ -130,7 +130,7 @@ const CodingInput = ({
 						handleChangeCode(e.target.value);
 					}}
 					className="codeInput"
-					error={errorMessage ? 1 : 0}
+					error={errorMessage ? true : false}
 					helpertext={errorMessage}
 				/>
 			)}

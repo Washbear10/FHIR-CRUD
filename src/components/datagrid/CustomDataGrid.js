@@ -16,6 +16,7 @@ import { v4 as uuidv4 } from "uuid";
 import { constructList } from "../../utilities/formatting/helpConstructInstances";
 import InputDialog from "../resourceInputs/InputDialog";
 import { useRef } from "react";
+import { getPageData } from "../../utilities/querying/query";
 
 /**
  * Utilizes MUI Datagrid. Receives Class Instances of a resource type and displays them in rows.
@@ -40,18 +41,14 @@ export default function CustomDataGrid({
 	updateNewResources,
 	deleteSelectedResources,
 	saveUpdates,
-	//loading,
 	updatePage,
 }) {
 	const [paginationModel, setPaginationModel] = React.useState({
 		page: 0,
 		pageSize: 10,
 	});
-
 	const [loading, setloading] = useState(false);
-
 	const nextOrPrev = useRef("");
-
 	useEffect(() => {
 		console.log(nextOrPrev.current);
 		updatePage(resourceType, nextOrPrev.current);
@@ -108,7 +105,9 @@ export default function CustomDataGrid({
 
 	// Create a new instance of that resource type and add it to the lists and set the original Resource
 	const addRow = () => {
+		setBackDropOpen(true);
 		const newInstance = new constructList[resourceType]({ id: uuidv4() });
+		console.log(newInstance);
 		updateNewResources([...newResources, newInstance], resourceType);
 		updateRows([...rows, newInstance], resourceType);
 		setOriginalResource(newInstance);
@@ -183,7 +182,7 @@ export default function CustomDataGrid({
 				>
 					<h2>{resourceType}</h2>
 					<Typography variant="subtitle2">
-						{rows.length} resources found
+						{rowCount} resources found
 					</Typography>
 				</Box>
 			</>
@@ -193,8 +192,8 @@ export default function CustomDataGrid({
 	return (
 		<Box
 			sx={{
-				height: 700,
 				width: "100%",
+				height: "70vh",
 			}}
 		>
 			{originalResource ? (
@@ -228,8 +227,8 @@ export default function CustomDataGrid({
 				getRowHeight={() => "auto"}
 				rows={rows}
 				columns={columns}
-				rowsPerPageOptions={[10]}
-				pageSize={10}
+				rowsPerPageOptions={[20]}
+				pageSize={20}
 				onPageChange={(newPage) => {
 					setloading(true);
 					nextOrPrev.current =
