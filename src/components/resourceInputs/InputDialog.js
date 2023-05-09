@@ -9,6 +9,7 @@ import * as React from "react";
 import { useState } from "react";
 import { useImmer } from "use-immer";
 import PatientInput from "./PatientInput";
+import OrganizationInput from "./OrganizationInput";
 
 var equal = require("deep-equal");
 
@@ -42,7 +43,7 @@ const InputDialog = ({
 	 * @param {*} value The value to insert
 	 */
 	const modifyResource = (field, value) => {
-		//The following 4 conditionals are there because deceasedBoolean and deceasedDateTime have custom setters. TODO: figure out how to avoid those checks
+		//The following 4 conditionals are there because deceasedBoolean and deceasedDateTime have custom setters. TODO: figure out how to make this more elegant
 		if (field === "deceasedBoolean") {
 			setEditedResource((draft) => {
 				draft.setDeceasedBoolean(value);
@@ -72,6 +73,13 @@ const InputDialog = ({
 			case "Patient":
 				return (
 					<PatientInput resource={resource} modifyResource={modifyResource} />
+				);
+			case "Organization":
+				return (
+					<OrganizationInput
+						resource={resource}
+						modifyResource={modifyResource}
+					/>
 				);
 		}
 	};

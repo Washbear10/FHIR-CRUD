@@ -1,5 +1,6 @@
 import { Patient } from "../../classes/resourceTypes/Patient";
 import { getBasicAuthCreds } from "../authentication/basicAuth";
+import { constructList } from "../formatting/helpConstructInstances";
 import {
 	authenticationError,
 	queryError,
@@ -520,7 +521,7 @@ async function getResultCount(url) {
 		});
 }
 
-export async function getPageData(pageLink) {
+export async function getPageData(pageLink, resourceType) {
 	let r = apiTimeout(async () => {
 		// store list of resources returned for each type in results
 		let results = [];
@@ -579,7 +580,10 @@ export async function getPageData(pageLink) {
 				}
 				// push results to result array
 				const pageEntries = data.entry
-					? data.entry.map((element) => new Patient({ ...element.resource }))
+					? data.entry.map(
+							(element) =>
+								new constructList[resourceType]({ ...element.resource })
+					  )
 					: [];
 				results = pageEntries;
 				if (data.link) {
@@ -590,7 +594,7 @@ export async function getPageData(pageLink) {
 				}
 			});
 
-		return { data: results, nextLink: nextLink, prevLink: prevLink };
+		return { results: results, nextPageLink: nextLink, prevPageLink: prevLink };
 	}, 5000);
 	return r;
 }
@@ -609,7 +613,7 @@ export async function testInitialQuery(resourceType, searchString, pageSize) {
 		let nextPageLink = "";
 		// do while for fetching all resources (if server returns batches in multiple pages)
 		// search parameter only works for Patient. Please Generalize when extending.
-		const searchUrl = `${process.env.REACT_APP_FHIRBASE}/Patient?${
+		const searchUrl = `${process.env.REACT_APP_FHIRBASE}/${resourceType}?${
 			searchString ? "name:contains=" + searchString + "&" : ""
 		}_count=${count}`;
 
@@ -661,7 +665,10 @@ export async function testInitialQuery(resourceType, searchString, pageSize) {
 				}
 				// push results to result array
 				const pageEntries = data.entry
-					? data.entry.map((element) => new Patient({ ...element.resource }))
+					? data.entry.map(
+							(element) =>
+								new constructList[resourceType]({ ...element.resource })
+					  )
 					: [];
 				results = pageEntries;
 				if (data.link) {

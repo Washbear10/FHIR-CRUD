@@ -34,18 +34,27 @@ import Test from "../../components/test/Test";
 import DataGridDemo from "../../components/test/Test";
 const Home = () => {
 	// state for Search Component
-	const [resourceList, setResourceList] = useState(["Patient"]); // Hardcoded, can be used when the resource type selector in the search bar component is reenabled.
+	const [selectedSearchResource, setSelectedSearchResource] =
+		useState("Patient");
 	const [inputValue, setInputValue] = useState("");
 	const [limit, setLimit] = useState("-");
-	const [filterResource, setFilterResource] = useState(false);
 
 	// state for Datagrids
 	const [results, setResults] = useImmer({});
 	const [changedResources, setChangedResources] = useImmer({});
 	const [newResources, setNewResources] = useImmer({});
-	const [nextPageLink, setNextPageLink] = useImmer({ Patient: "" });
-	const [prevPageLink, setPrevPageLink] = useImmer({ Patient: "" });
-	const [resultCount, setResultCount] = useImmer({ Patient: null });
+	const [nextPageLink, setNextPageLink] = useImmer({
+		Patient: "",
+		Organization: "",
+	});
+	const [prevPageLink, setPrevPageLink] = useImmer({
+		Patient: "",
+		Organization: "",
+	});
+	const [resultCount, setResultCount] = useImmer({
+		Patient: null,
+		Organization: null,
+	});
 
 	// states for ui elements
 	const [loading, setLoading] = useState(false);
@@ -83,16 +92,19 @@ const Home = () => {
 				searchValue,
 				parseInt(limit) || 0
 			); */
-			const queryResult = await testInitialQuery("Patient", searchValue);
+			const queryResult = await testInitialQuery(
+				selectedSearchResource,
+				searchValue
+			);
 			console.log(queryResult);
 			setResults((prev) => {
-				return { ...prev, Patient: queryResult["results"] };
+				prev[selectedSearchResource] = queryResult["results"];
 			});
 			setNextPageLink((prev) => {
-				return { ...prev, Patient: queryResult["nextPageLink"] };
+				prev[selectedSearchResource] = queryResult["nextPageLink"];
 			});
 			setResultCount((prev) => {
-				return { ...prev, Patient: queryResult["resultCount"] };
+				prev[selectedSearchResource] = queryResult["resultCount"];
 			});
 			setLoading(false);
 		} catch (error) {
@@ -106,31 +118,37 @@ const Home = () => {
 		if (nextOrPrev == "next") {
 			if (!nextPageLink[resourceType]) return;
 			else {
-				const result = await getPageData(nextPageLink[resourceType]);
+				const result = await getPageData(
+					nextPageLink[resourceType],
+					resourceType
+				);
 				console.log(result);
 				setNextPageLink((prev) => {
-					return { ...prev, Patient: result["nextLink"] };
+					prev[selectedSearchResource] = result["nextPageLink"];
 				});
 				setPrevPageLink((prev) => {
-					return { ...prev, Patient: result["prevLink"] };
+					prev[selectedSearchResource] = result["prevPageLink"];
 				});
 				setResults((prev) => {
-					return { ...prev, Patient: result["data"] };
+					prev[selectedSearchResource] = result["results"];
 				});
 			}
 		} else if (nextOrPrev == "previous") {
 			if (!prevPageLink[resourceType]) return;
 			else {
-				const result = await getPageData(prevPageLink[resourceType]);
+				const result = await getPageData(
+					prevPageLink[resourceType],
+					resourceType
+				);
 				console.log(result);
 				setNextPageLink((prev) => {
-					return { ...prev, Patient: result["nextLink"] };
+					prev[selectedSearchResource] = result["nextPageLink"];
 				});
 				setPrevPageLink((prev) => {
-					return { ...prev, Patient: result["prevLink"] };
+					prev[selectedSearchResource] = result["prevPageLink"];
 				});
 				setResults((prev) => {
-					return { ...prev, Patient: result["data"] };
+					prev[selectedSearchResource] = result["results"];
 				});
 			}
 		}
@@ -138,12 +156,12 @@ const Home = () => {
 
 	const updatePrev = (resourceType, url) => {
 		setPrevPageLink((prev) => {
-			return { ...prev, resourceType: url };
+			prev[resourceType] = url;
 		});
 	};
 	const updateNext = (resourceType, url) => {
 		setNextPageLink((prev) => {
-			return { ...prev, resourceType: url };
+			prev[resourceType] = url;
 		});
 	};
 
@@ -168,17 +186,11 @@ const Home = () => {
 		}
 	};
 	// methods passed down to Search Component
-	const updateResourceList = (updatedResourceList) => {
-		setResourceList(updatedResourceList);
-	};
 	const updateInputValue = (newVal) => {
 		setInputValue(newVal);
 	};
-	const updateLimit = (newLimit) => {
-		setLimit(newLimit);
-	};
-	const updateFilterResource = (filter) => {
-		setFilterResource(filter);
+	const updateSelectedSearchResource = (newSearchResource) => {
+		setSelectedSearchResource(newSearchResource);
 	};
 	//methods passed down to CustomDataGrids
 	const updateRows = (newRows, resourceType) => {
@@ -311,8 +323,8 @@ const Home = () => {
 	};
 
 	// submit Search form
-	const handleSubmit = ({ event, searchValue, limit }) => {
-		handleSearch({ event: event, searchValue: searchValue, limit: limit });
+	const handleSubmit = ({ event, searchValue }) => {
+		handleSearch({ event: event, searchValue: searchValue });
 		setInputValue(searchValue);
 		setLimit(limit);
 	};
@@ -361,13 +373,9 @@ const Home = () => {
 			</Button>
 			<SearchForm
 				onSubmit={handleSubmit}
-				resourceList={resourceList}
-				updateResourceList={updateResourceList}
+				selectedSearchResource={selectedSearchResource}
+				updateSelectedSearchResource={updateSelectedSearchResource}
 				updateInputValue={updateInputValue}
-				filterResource={filterResource}
-				updateFilterResource={updateFilterResource}
-				limit={limit}
-				updateLimit={updateLimit}
 			/>
 			{loading ? (
 				<CircularProgress color="primary" sx={{ margin: "0 auto" }} />

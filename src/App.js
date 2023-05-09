@@ -60,7 +60,7 @@ const theme = createTheme({
 			main: colors.indigo[900],
 		},
 		secondary: {
-			main: "#f44336",
+			main: "#adadadbe",
 		},
 		success: {
 			main: colors.green[500],
@@ -86,9 +86,7 @@ const theme = createTheme({
 		body1: {
 			fontWeight: 500,
 		},
-		button: {
-			fontStyle: "italic",
-		},
+		button: { fontWeight: "bolder" },
 	},
 });
 
