@@ -1,6 +1,6 @@
 import { Button, CircularProgress, IconButton, Tooltip } from "@mui/material";
 import { Box } from "@mui/system";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CustomDataGrid from "../../components/datagrid/CustomDataGrid";
 import queryFHIR, {
 	createFHIRResource,
@@ -38,23 +38,17 @@ const Home = () => {
 		useState("Patient");
 	const [inputValue, setInputValue] = useState("");
 	const [limit, setLimit] = useState("-");
+	useEffect(() => {
+		setResults(null);
+	}, [selectedSearchResource]);
 
 	// state for Datagrids
-	const [results, setResults] = useImmer({});
+	const [results, setResults] = useImmer();
 	const [changedResources, setChangedResources] = useImmer({});
 	const [newResources, setNewResources] = useImmer({});
-	const [nextPageLink, setNextPageLink] = useImmer({
-		Patient: "",
-		Organization: "",
-	});
-	const [prevPageLink, setPrevPageLink] = useImmer({
-		Patient: "",
-		Organization: "",
-	});
-	const [resultCount, setResultCount] = useImmer({
-		Patient: null,
-		Organization: null,
-	});
+	const [nextPageLink, setNextPageLink] = useImmer();
+	const [prevPageLink, setPrevPageLink] = useImmer();
+	const [resultCount, setResultCount] = useImmer();
 
 	// states for ui elements
 	const [loading, setLoading] = useState(false);
@@ -97,15 +91,9 @@ const Home = () => {
 				searchValue
 			);
 			console.log(queryResult);
-			setResults((prev) => {
-				prev[selectedSearchResource] = queryResult["results"];
-			});
-			setNextPageLink((prev) => {
-				prev[selectedSearchResource] = queryResult["nextPageLink"];
-			});
-			setResultCount((prev) => {
-				prev[selectedSearchResource] = queryResult["resultCount"];
-			});
+			setResults(queryResult["results"]);
+			setNextPageLink(queryResult["nextPageLink"]);
+			setResultCount(queryResult["resultCount"]);
 			setLoading(false);
 		} catch (error) {
 			handleCatchError(error);
@@ -116,53 +104,31 @@ const Home = () => {
 
 	const updatePage = async (resourceType, nextOrPrev) => {
 		if (nextOrPrev == "next") {
-			if (!nextPageLink[resourceType]) return;
+			if (!nextPageLink) return;
 			else {
-				const result = await getPageData(
-					nextPageLink[resourceType],
-					resourceType
-				);
+				const result = await getPageData(nextPageLink, resourceType);
 				console.log(result);
-				setNextPageLink((prev) => {
-					prev[selectedSearchResource] = result["nextPageLink"];
-				});
-				setPrevPageLink((prev) => {
-					prev[selectedSearchResource] = result["prevPageLink"];
-				});
-				setResults((prev) => {
-					prev[selectedSearchResource] = result["results"];
-				});
+				setNextPageLink(result["nextPageLink"]);
+				setPrevPageLink(result["prevPageLink"]);
+				setResults(result["results"]);
 			}
 		} else if (nextOrPrev == "previous") {
-			if (!prevPageLink[resourceType]) return;
+			if (!prevPageLink) return;
 			else {
-				const result = await getPageData(
-					prevPageLink[resourceType],
-					resourceType
-				);
+				const result = await getPageData(prevPageLink, resourceType);
 				console.log(result);
-				setNextPageLink((prev) => {
-					prev[selectedSearchResource] = result["nextPageLink"];
-				});
-				setPrevPageLink((prev) => {
-					prev[selectedSearchResource] = result["prevPageLink"];
-				});
-				setResults((prev) => {
-					prev[selectedSearchResource] = result["results"];
-				});
+				setNextPageLink(result["nextPageLink"]);
+				setPrevPageLink(result["prevPageLink"]);
+				setResults(result["results"]);
 			}
 		}
 	};
 
 	const updatePrev = (resourceType, url) => {
-		setPrevPageLink((prev) => {
-			prev[resourceType] = url;
-		});
+		setPrevPageLink(url);
 	};
 	const updateNext = (resourceType, url) => {
-		setNextPageLink((prev) => {
-			prev[resourceType] = url;
-		});
+		setNextPageLink(url);
 	};
 
 	const handleCatchError = (error) => {
@@ -193,11 +159,9 @@ const Home = () => {
 		setSelectedSearchResource(newSearchResource);
 	};
 	//methods passed down to CustomDataGrids
-	const updateRows = (newRows, resourceType) => {
-		setResults((draft) => {
-			draft[resourceType] = newRows;
-		});
-	};
+	/* const updateRows = (newRows, resourceType) => {
+		setResults(newRows);
+	}; */
 	const updateChangedResources = (changedRows, resourceType) => {
 		setChangedResources((draft) => {
 			draft[resourceType] = changedRows;
@@ -211,8 +175,7 @@ const Home = () => {
 
 	const expandRow = (resourceType, index) => {
 		setResults((draft) => {
-			draft[resourceType][index].internalReactExpanded =
-				!draft[resourceType][index].internalReactExpanded;
+			draft[index].internalReactExpanded = !draft[index].internalReactExpanded;
 		});
 	};
 
@@ -275,7 +238,10 @@ const Home = () => {
 			return error;
 		}
 		try {
-			handleSearch({ searchValue: inputValue, limit: parseInt(limit) || 0 });
+			await handleSearch({
+				searchValue: inputValue,
+				limit: parseInt(limit) || 0,
+			});
 			setSnackbarColor("success");
 			setSnackbarMessage(
 				updated
@@ -329,6 +295,123 @@ const Home = () => {
 		setLimit(limit);
 	};
 
+	const getDataGrid = () => {
+		{
+			// map over each resource type (currently only Patient) and create
+			// the columns and rows for the datagrid
+
+			//need helper instance to map over properties
+			let helperInstance = new constructList[selectedSearchResource]({});
+			// filter out custom attributes used for react stuff as well as undisplayabled data
+			const classProperties = Object.keys(helperInstance).filter(
+				(element) =>
+					element != "internalReactID" &&
+					element != "internalReactExpanded" &&
+					element != "photo" // hardcoded for patient, find better solution when adding other stuff
+			);
+
+			let columns = classProperties.map((property) => {
+				const columnDefinition = {
+					field: property,
+					headerName: property,
+					width:
+						property == "id"
+							? 300
+							: property == "name" ||
+							  property == "address" ||
+							  property == "telecom"
+							? 250
+							: property.length > 10
+							? 200
+							: 100,
+
+					editable: false,
+					// call class instance function of the resource type to find out how to render it
+					renderCell: (params) =>
+						constructList[selectedSearchResource].getAttributeDisplay(
+							property,
+							params.value,
+							params.row.internalReactExpanded
+						),
+				};
+
+				return columnDefinition;
+			});
+
+			// add two buttons at beginning
+			columns.unshift(
+				{
+					field: "editButton",
+					headerName: "",
+					editable: false,
+					sortable: false,
+					flex: 1,
+					disableColumnMenu: true,
+					align: "center",
+					renderCell: (row) => (
+						<IconButton>
+							<EditIcon color="primary" />
+						</IconButton>
+					),
+				},
+				{
+					field: "expandButton",
+					headerName: "",
+					editable: false,
+					sortable: false,
+					flex: 1,
+					disableColumnMenu: true,
+					align: "center",
+					renderCell: (row) => {
+						return (
+							<IconButton>
+								<Tooltip
+									title={
+										row.row.internalReactExpanded
+											? "Collapse row"
+											: "Expand row"
+									}
+								>
+									<div>
+										{row.row.internalReactExpanded ? (
+											<KeyboardArrowUpIcon color="primary" />
+										) : (
+											<KeyboardArrowDownIcon color="primary" />
+										)}
+									</div>
+								</Tooltip>
+							</IconButton>
+						);
+					},
+				}
+			);
+
+			// return the Datagrid for this resource type (currently only Patient).
+			return (
+				<CustomDataGrid
+					key={selectedSearchResource}
+					resourceType={selectedSearchResource}
+					columns={columns}
+					rows={results}
+					rowCount={resultCount}
+					//updateRows={updateRows}
+					changedResources={changedResources[selectedSearchResource] || []}
+					updateChangedResources={updateChangedResources}
+					newResources={newResources[selectedSearchResource] || []}
+					updateNewResources={updateNewResources}
+					deleteSelectedResources={confirmDelete}
+					saveUpdates={saveUpdates}
+					updatePage={updatePage}
+					next={nextPageLink}
+					prev={prevPageLink}
+					updatePrev={updatePrev}
+					updateNext={updateNext}
+					expandRow={expandRow}
+				/>
+			);
+		}
+	};
+
 	// render section
 	return (
 		<Box
@@ -354,18 +437,67 @@ const Home = () => {
 					const headers = new Headers();
 					const authenticationValue = getBasicAuthCreds();
 					headers.set("Authorization", "Basic " + authenticationValue);
-					fetch("https://localhost:9443/fhir-server/api/v4/Patient", {
+					headers.set("Content-Type", "application/fhir+json");
+					let o = {
+						resourceType: "Bundle",
+						type: "transaction",
+						entry: [
+							{
+								request: { method: "POST", url: "Endpoint" },
+								resource: {
+									resourceType: "Endpoint",
+									text: {
+										status: "generated",
+										div: '<div xmlns="http://www.w3.org/1999/xhtml">\n\t\t\tHealth Intersections CarePlan Hub<br/>\n\t\t\tCarePlans can be uploaded to/from this loccation\n\t\t</div>',
+									},
+									status: "active",
+									connectionType: {
+										system:
+											"http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
+										code: "hl7-fhir-rest",
+									},
+									name: "Generated",
+									contact: [
+										{
+											system: "email",
+											value: "endpointmanager@example.org",
+											use: "work",
+										},
+									],
+									period: {
+										start: "2014-09-01",
+									},
+									payloadType: [
+										{
+											coding: [
+												{
+													system: "http://hl7.org/fhir/resource-types",
+													code: "CarePlan",
+												},
+											],
+										},
+									],
+									payloadMimeType: ["application/fhir+xml"],
+									address:
+										"http://fhir3.healthintersections.com.au/open/CarePlan",
+									header: ["bearer-code BASGS534s4"],
+								},
+							},
+						],
+					};
+					let s = JSON.stringify(o);
+
+					fetch("https://localhost:9443/fhir-server/api/v4/", {
 						headers: headers,
+						method: "POST",
+						body: s,
 					})
 						.then((response) => {
 							let j = response.json();
 							return j;
 						})
 						.then((data) => {
-							let r = data.entry.map(
-								(item) => new Patient({ ...item.resource })
-							);
-							setTestData(r);
+							console.log(data);
 						});
 				}}
 			>
@@ -375,126 +507,13 @@ const Home = () => {
 				onSubmit={handleSubmit}
 				selectedSearchResource={selectedSearchResource}
 				updateSelectedSearchResource={updateSelectedSearchResource}
+				inputValue={inputValue}
 				updateInputValue={updateInputValue}
 			/>
 			{loading ? (
 				<CircularProgress color="primary" sx={{ margin: "0 auto" }} />
 			) : null}
-			{Object.keys(results).map((resourceType) => {
-				// map over each resource type (currently only Patient) and create
-				// the columns and rows for the datagrid
-				let columns;
-
-				//need helper instance to map over properties
-				let helperInstance = new constructList[resourceType]({});
-				// filter out custom attributes used for react stuff as well as undisplayabled data
-				const classProperties = Object.keys(helperInstance).filter(
-					(element) =>
-						element != "internalReactID" &&
-						element != "internalReactExpanded" &&
-						element != "photo" // hardcoded for patient, find better solution when adding other stuff
-				);
-
-				columns = classProperties.map((property) => {
-					const columnDefinition = {
-						field: property,
-						headerName: property,
-						width:
-							property == "id"
-								? 300
-								: property == "name" ||
-								  property == "address" ||
-								  property == "telecom"
-								? 250
-								: property.length > 10
-								? 200
-								: 100,
-
-						editable: false,
-						// call class instance function of the resource type to find out how to render it
-						renderCell: (params) =>
-							constructList[resourceType].getAttributeDisplay(
-								property,
-								params.value,
-								params.row.internalReactExpanded
-							),
-					};
-
-					return columnDefinition;
-				});
-
-				// add two buttons at beginning
-				columns.unshift(
-					{
-						field: "editButton",
-						headerName: "",
-						editable: false,
-						sortable: false,
-						flex: 1,
-						disableColumnMenu: true,
-						align: "center",
-						renderCell: (row) => (
-							<IconButton>
-								<EditIcon color="primary" />
-							</IconButton>
-						),
-					},
-					{
-						field: "expandButton",
-						headerName: "",
-						editable: false,
-						sortable: false,
-						flex: 1,
-						disableColumnMenu: true,
-						align: "center",
-						renderCell: (row) => {
-							return (
-								<IconButton>
-									<Tooltip
-										title={
-											row.row.internalReactExpanded
-												? "Collapse row"
-												: "Expand row"
-										}
-									>
-										<div>
-											{row.row.internalReactExpanded ? (
-												<KeyboardArrowUpIcon color="primary" />
-											) : (
-												<KeyboardArrowDownIcon color="primary" />
-											)}
-										</div>
-									</Tooltip>
-								</IconButton>
-							);
-						},
-					}
-				);
-
-				// return the Datagrid for this resource type (currently only Patient).
-				return (
-					<CustomDataGrid
-						key={resourceType}
-						resourceType={resourceType}
-						columns={columns}
-						rows={results[resourceType]}
-						rowCount={resultCount[resourceType]}
-						updateRows={updateRows}
-						changedResources={changedResources[resourceType] || []}
-						updateChangedResources={updateChangedResources}
-						newResources={newResources[resourceType] || []}
-						updateNewResources={updateNewResources}
-						deleteSelectedResources={confirmDelete}
-						saveUpdates={saveUpdates}
-						updatePage={updatePage}
-						next={nextPageLink[resourceType]}
-						prev={prevPageLink[resourceType]}
-						updatePrev={updatePrev}
-						updateNext={updateNext}
-						expandRow={expandRow}
-					/>
-				);
-			})}
+			{results ? getDataGrid() : null}
 		</Box>
 	);
 };

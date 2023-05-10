@@ -15,6 +15,18 @@ export const nameUse = [
 ];
 export const identifierUse = ["usual", "official", "temp", "secondary", "old"];
 export const linkType = ["replaced-by", "replaces", "refer", "seealso"];
+export const organizationType = [
+	"prov",
+	"dept",
+	"govt",
+	"pay",
+	"edu",
+	"reli",
+	"crs",
+	"cg",
+	"bus",
+	"other",
+];
 export const contactEntityType = [
 	"BILL",
 	"ADMIN",

@@ -16,9 +16,14 @@ const CodeInput = ({
 		<Autocomplete
 			options={values}
 			size="small"
-			value={values ? (values.includes(v) ? v : null) : null}
+			value={
+				values ? (values.includes(v) || rest["freeSolo"] ? v : null) : null
+			}
 			onChange={(event, newValue, reason) => {
 				changeInput(newValue);
+			}}
+			onInputChange={(event, newValue, reason) => {
+				if (rest["freeSolo"] && reason === "input") changeInput(newValue);
 			}}
 			sx={{
 				maxWidth: width ? width : "200px",

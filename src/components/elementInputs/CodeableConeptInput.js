@@ -36,7 +36,7 @@ const CodeableConeptInput = ({
 			...codeableConcept,
 			text: newValue ? newValue : null,
 		});
-		changeCodeableConcept(newCodeableConcept);
+		changeCodeableConcept(newCodeableConcept, codeableConcept);
 	};
 
 	const handleChangeTextCode = (newValue) => {
@@ -44,7 +44,7 @@ const CodeableConeptInput = ({
 			...codeableConcept,
 			text: newValue ? newValue : null,
 		});
-		changeCodeableConcept(newCodeableConcept);
+		changeCodeableConcept(newCodeableConcept, codeableConcept);
 	};
 	const handleChangeCoding = (newCoding, oldCoding) => {
 		if (codeableConcept.coding) {
@@ -63,15 +63,18 @@ const CodeableConeptInput = ({
 					coding: newCodings,
 				});
 			}
-			changeCodeableConcept(newCodeableConcept);
+			changeCodeableConcept(newCodeableConcept, codeableConcept);
 		} else if (codeableConcept) {
 			let newCodeableConcept = new CodeableConcept({
 				...codeableConcept,
 				coding: [newCoding],
 			});
-			changeCodeableConcept(newCodeableConcept);
+			changeCodeableConcept(newCodeableConcept, codeableConcept);
 		} else {
-			changeCodeableConcept(new CodeableConcept({ coding: [newCoding] }));
+			changeCodeableConcept(
+				new CodeableConcept({ coding: [newCoding] }),
+				codeableConcept
+			);
 		}
 	};
 
@@ -83,7 +86,7 @@ const CodeableConeptInput = ({
 			...codeableConcept,
 			coding: newCodings,
 		});
-		changeCodeableConcept(newCodeableConcept);
+		changeCodeableConcept(newCodeableConcept, codeableConcept);
 	};
 
 	const handleAddCoding = () => {
@@ -93,7 +96,7 @@ const CodeableConeptInput = ({
 			...codeableConcept,
 			coding: newCodings,
 		});
-		changeCodeableConcept(newCodeableConcept);
+		changeCodeableConcept(newCodeableConcept, codeableConcept);
 	};
 
 	// render Section:
@@ -155,6 +158,7 @@ const CodeableConeptInput = ({
 													systemValueCombinationRequired={
 														systemValueCombinationRequired
 													}
+													clearOnBlur={rest["clearOnBlur"]}
 												/>
 											</DeleteableComponent>
 										</Box>

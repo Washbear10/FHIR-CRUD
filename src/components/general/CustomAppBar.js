@@ -142,7 +142,7 @@ function CustomAppBar({ window, content, title }) {
 						configured FHIR server:{" "}
 						<Link
 							href={process.env.REACT_APP_FHIRBASE}
-							color={"error"}
+							sx={{ color: "yellow" }}
 							variant="subtitle1"
 							target="_blank"
 						>

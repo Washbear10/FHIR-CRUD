@@ -35,3 +35,4 @@ Backlog:
       better performance rendering, check out memo again
       allow empty values, remove non-value inputs
       implement input for other attachment values
+      dont fetch endpoints every time new endpoint is added

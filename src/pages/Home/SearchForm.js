@@ -18,8 +18,8 @@ const SearchForm = ({
 	updateSelectedSearchResource,
 }) => {
 	// search and limit input
-	const [inputValue, setInputValue] = useState("");
 	const [searchLabel, setSearchLabel] = useState("Search Patients by name");
+	const [inputValue, setInputValue] = useState("");
 
 	useEffect(() => {
 		if (selectedSearchResource == "Patient")
@@ -55,27 +55,18 @@ const SearchForm = ({
 						updateSelectedSearchResource(newVal);
 					}}
 				/>
-				<Autocomplete
-					id="free-solo-demo"
-					freeSolo
+				<TextField
 					sx={{
 						width: {
 							xs: "100%",
 							sm: `${searchBarWidth}px`,
 						},
 					}}
-					options={[]}
-					renderInput={(params) => (
-						<TextField
-							{...params}
-							label={searchLabel}
-							value={inputValue}
-							onChange={(event) => {
-								console.log(event.target.value);
-								setInputValue(event.target.value);
-							}}
-						/>
-					)}
+					label={searchLabel}
+					value={inputValue}
+					onChange={(event) => {
+						setInputValue(event.target.value);
+					}}
 				/>
 				<Button variant="contained" type="submit">
 					Search

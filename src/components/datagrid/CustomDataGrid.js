@@ -46,13 +46,16 @@ export default function CustomDataGrid({
 }) {
 	const [paginationModel, setPaginationModel] = React.useState({
 		page: 0,
-		pageSize: 10,
+		pageSize: 20,
 	});
 	const [loading, setloading] = useState(false);
 	const nextOrPrev = useRef("");
 	useEffect(() => {
 		console.log(nextOrPrev.current);
-		updatePage(resourceType, nextOrPrev.current);
+		if (nextOrPrev.current) {
+			alert("switching");
+			updatePage(resourceType, nextOrPrev.current);
+		}
 	}, [paginationModel.page]);
 
 	useEffect(() => {
@@ -93,6 +96,11 @@ export default function CustomDataGrid({
 			editedResource
 		);
 		if (updateResult == "OK") {
+			nextOrPrev.current = "";
+			setPaginationModel({
+				page: 0,
+				pageSize: 20,
+			});
 			return true;
 		} else {
 			return false;
@@ -109,7 +117,7 @@ export default function CustomDataGrid({
 		setBackDropOpen(true);
 		const newInstance = new constructList[resourceType]({ id: uuidv4() });
 		updateNewResources([...newResources, newInstance], resourceType);
-		updateRows([...rows, newInstance], resourceType);
+		//updateRows([...rows, newInstance], resourceType);
 		setOriginalResource(newInstance);
 	};
 
@@ -206,7 +214,7 @@ export default function CustomDataGrid({
 					handleClose={() => {
 						setOpen(false);
 						setOriginalResource(null);
-						if (newResources.includes(originalResource)) {
+						/* if (newResources.includes(originalResource)) {
 							// delete row again if it was just added. If you wanted to keep it, should've clicked "save" button, not close
 							updateNewResources(
 								newResources.filter((item) => item !== originalResource),
@@ -216,7 +224,7 @@ export default function CustomDataGrid({
 								rows.filter((item) => item !== originalResource),
 								resourceType
 							);
-						}
+						} */
 					}}
 					resource={originalResource}
 					saveUpdates={handleSaveUpdates}
@@ -228,6 +236,7 @@ export default function CustomDataGrid({
 
 			<DataGrid
 				getRowHeight={() => "auto"}
+				page={paginationModel.page}
 				rows={rows}
 				columns={columns}
 				rowsPerPageOptions={[20]}
@@ -258,7 +267,7 @@ export default function CustomDataGrid({
 				paginationModel={paginationModel}
 				paginationMode="server"
 				pagination
-				keepNonExistentRowsSelected
+				//keepNonExistentRowsSelected
 			/>
 		</Box>
 	);

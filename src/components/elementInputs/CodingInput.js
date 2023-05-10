@@ -13,6 +13,7 @@ const CodingInput = ({
 	systemUneditable,
 	systemValueCombinationRequired,
 	bindingCodes,
+	clearOnBlur,
 }) => {
 	// Error display section
 	const [errorMessage, setErrorMessage] = useState("");
@@ -118,9 +119,10 @@ const CodingInput = ({
 						handleChangeCode(newValue);
 					}}
 					label={"code"}
-					clearOnBlur={true}
+					clearOnBlur={clearOnBlur == undefined ? true : clearOnBlur}
 					error={errorMessage ? 1 : 0}
 					helpertext={errorMessage}
+					freeSolo={systemValueCombinationRequired ? false : true}
 				/>
 			) : (
 				<SmallTextField

@@ -25,7 +25,7 @@ const ConfirmDeleteDialog = ({ open, confirm, cancel }) => {
 				}}
 			>
 				<Button
-					color="secondary"
+					sx={{ color: "crimson" }}
 					variant="outlined"
 					onClick={() => {
 						cancel();
