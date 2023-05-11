@@ -53,7 +53,6 @@ export default function CustomDataGrid({
 	useEffect(() => {
 		console.log(nextOrPrev.current);
 		if (nextOrPrev.current) {
-			alert("switching");
 			updatePage(resourceType, nextOrPrev.current);
 		}
 	}, [paginationModel.page]);
@@ -138,7 +137,7 @@ export default function CustomDataGrid({
 		}
 		if (!loading && params.colDef.field == "expandButton") {
 			let i = rows.indexOf(params.row);
-			expandRow(resourceType, i);
+			expandRow(i);
 			//rows[i].internalReactExpanded = !rows[i].internalReactExpanded;
 			//triggerRerender();
 		}

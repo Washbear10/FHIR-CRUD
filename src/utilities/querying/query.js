@@ -112,6 +112,7 @@ export default async function queryFHIR(resourceTypes, searchString, limit) {
 										if (issue.expression)
 											s += "Issue in " + issue.expression.join(",") + ": ";
 										if (issue.details) s += issue.details.text;
+										return s;
 									});
 							} catch (e) {
 								console.log("caught error trying to decode issues: ", e);
@@ -181,14 +182,19 @@ export async function createFHIRResource(resourceType, newResource) {
 			method: "POST",
 			headers: headers,
 			body: newResource.toFHIRJson(),
-		}).then((response) => {
+		}).then(async (response) => {
 			if (response.status == 401)
 				throw new authenticationError(
 					"Authentication failed. You might need to login again."
 				);
 			if (response.status == 400) {
 				try {
-					let jsonResponse = response.json();
+					let jsonResponse = await response.json();
+					console.log(jsonResponse);
+					console.log(
+						jsonResponse.issue.filter((issue) => issue["severity"] == "error")
+					);
+
 					errorMessages = jsonResponse.issue
 						.filter((issue) => issue["severity"] == "error")
 						.map((issue) => {
@@ -196,7 +202,9 @@ export async function createFHIRResource(resourceType, newResource) {
 							if (issue.expression)
 								s += "Issue in " + issue.expression.join(",") + ": ";
 							if (issue.details) s += issue.details.text;
+							return s;
 						});
+					console.log(errorMessages);
 				} catch (e) {
 					console.log("caught error trying to decode issues: ", e);
 				}
@@ -554,6 +562,7 @@ export async function getPageData(pageLink, resourceType) {
 								if (issue.expression)
 									s += "Issue in " + issue.expression.join(",") + ": ";
 								if (issue.details) s += issue.details.text;
+								return s;
 							});
 					} catch (e) {
 						console.log("caught error trying to decode issues: ", e);

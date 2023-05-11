@@ -173,7 +173,7 @@ const Home = () => {
 		});
 	};
 
-	const expandRow = (resourceType, index) => {
+	const expandRow = (index) => {
 		setResults((draft) => {
 			draft[index].internalReactExpanded = !draft[index].internalReactExpanded;
 		});
@@ -319,7 +319,9 @@ const Home = () => {
 							? 300
 							: property == "name" ||
 							  property == "address" ||
-							  property == "telecom"
+							  property == "telecom" ||
+							  property == "endpoint" ||
+							  property == "partOf"
 							? 250
 							: property.length > 10
 							? 200
