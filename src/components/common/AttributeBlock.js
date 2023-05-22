@@ -48,7 +48,7 @@ const AttributeBlock = ({
 						display: "flex",
 						gap: "1rem",
 						flexDirection: "column",
-						paddingBottom: "1.5rem",
+						paddingBottom: "0.5rem",
 						paddingX: "1rem",
 					}}
 				>

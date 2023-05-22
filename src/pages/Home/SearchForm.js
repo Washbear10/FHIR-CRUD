@@ -4,6 +4,7 @@ import TextField from "@mui/material/TextField";
 import { Box } from "@mui/system";
 import React, { useEffect, useState } from "react";
 import ToggleButtons from "../../components/common/ToggleButtons";
+import { GridSearchIcon } from "@mui/x-data-grid";
 
 const searchBarWidth = 500;
 
@@ -68,7 +69,7 @@ const SearchForm = ({
 						setInputValue(event.target.value);
 					}}
 				/>
-				<Button variant="contained" type="submit">
+				<Button variant="contained" type="submit" endIcon={<GridSearchIcon />}>
 					Search
 				</Button>
 			</Box>

@@ -24,7 +24,7 @@ const ExtendableComponent = ({ title, handleExtend, children, ...rest }) => {
 			>
 				{children}
 			</Box>
-			<Tooltip title={title}>
+			<Tooltip title={title} arrow>
 				<span style={{ width: "fit-content" }}>
 					<IconButton
 						variant="outlined"

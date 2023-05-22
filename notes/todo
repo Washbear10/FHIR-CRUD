@@ -6,9 +6,7 @@ add descriptive labels/tooltips to fields
 
 
 Resume :
-      Identifiertype binding!!!!!
-      UPDATE DATAGRID AFTER PATCH OR WHATEVER!!!
-      disable open close if copying
+      - text in address represented fully in parts!
 
 
 Done, further test when time:
@@ -36,3 +34,26 @@ Backlog:
       allow empty values, remove non-value inputs
       implement input for other attachment values
       dont fetch endpoints every time new endpoint is added
+
+
+notes for later:
+- errors 
+- data types description in FHIR section
+- describe headers used
+- describe data serialization
+- valuesets + binding strength
+- extensions
+- describe what changes to fhir config are important:
+      - patch
+      - Basic Auth
+      - 
+
+Update:
+
+
+marital status codes
+_filter?
+CORS allowed
+PATCH activated
+sort by
+bundle delete responses

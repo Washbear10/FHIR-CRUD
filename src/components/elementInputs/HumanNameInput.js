@@ -1,6 +1,6 @@
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import { Box, IconButton, Typography } from "@mui/material";
+import { Box, IconButton, Tooltip, Typography } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import { HumanName } from "../../classes/dataTypes/HumanName";
 
@@ -266,16 +266,18 @@ const HumanNameInput = ({ name, changeSingleName }) => {
 											);
 										})
 								: null}
-							<IconButton
-								variant="outlined"
-								color="primary"
-								onClick={addGiven}
-								sx={{ marginY: "5px" }}
-								size="small"
-								disabled={!name.given || name.given.includes("")}
-							>
-								<AddCircleOutlineIcon fontSize="small" />
-							</IconButton>{" "}
+							<Tooltip title={"Add given"} arrow>
+								<IconButton
+									variant="outlined"
+									color="primary"
+									onClick={addGiven}
+									sx={{ marginY: "5px" }}
+									size="small"
+									disabled={!name.given || name.given.includes("")}
+								>
+									<AddCircleOutlineIcon fontSize="small" />
+								</IconButton>
+							</Tooltip>
 						</Box>
 						<SmallTextField
 							value={name.family || ""}

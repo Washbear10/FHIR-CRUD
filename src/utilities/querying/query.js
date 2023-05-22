@@ -695,3 +695,67 @@ export async function testInitialQuery(resourceType, searchString, pageSize) {
 	}, 40000);
 	return r;
 }
+
+export async function bundleDelete(ids, resourceType) {
+	let r = apiTimeout(async () => {
+		const headers = new Headers();
+		const authenticationValue = getBasicAuthCreds();
+		headers.set("Authorization", "Basic " + authenticationValue);
+		headers.set("Content-Type", "application/fhir+json");
+		let errorMessages;
+		let bundleObject = {
+			resourceType: "Bundle",
+			type: "transaction",
+			entry: ids.map((id) => {
+				return {
+					request: {
+						method: "DELETE",
+						url: `${resourceType}/${id}`,
+					},
+				};
+			}),
+		};
+
+		const searchUrl = `${process.env.REACT_APP_FHIRBASE}/`;
+		await fetch(searchUrl, {
+			method: "POST",
+			headers: headers,
+			body: JSON.stringify(bundleObject),
+		}).then(async (response) => {
+			if (!response.ok) {
+				if (response.status == 400) {
+					try {
+						const jsonResponse = await response.json();
+						console.log(jsonResponse);
+						errorMessages = jsonResponse.issue
+							.filter((issue) => issue["severity"] == "error")
+							.map((issue) => {
+								console.log("issue is: ", issue);
+								let s = "";
+								if (issue.expression)
+									s += "Issue in " + issue["expression"].join(",") + ": ";
+								if (issue.details) s += issue.details.text;
+								console.log(s);
+								return decodeHtml(s);
+							});
+					} catch (e) {
+						console.log("caught error trying to decode issues: ", e);
+						throw new updateError(
+							"There was an unexpected error deleting a resource."
+						);
+					}
+					if (errorMessages) throw new updateError(errorMessages.join("\n"));
+					else
+						throw new updateError(
+							"There was an unexpected error deleting a resource."
+						);
+				}
+				if (response.status == 401)
+					throw new authenticationError(
+						"Authentication failed. You might need to login again."
+					);
+			}
+		});
+	});
+	return r;
+}

@@ -3,6 +3,7 @@ import { Box } from "@mui/system";
 import React, { useEffect, useState } from "react";
 import CustomDataGrid from "../../components/datagrid/CustomDataGrid";
 import queryFHIR, {
+	bundleDelete,
 	createFHIRResource,
 	deleteResources,
 	getNextPageData,
@@ -272,7 +273,8 @@ const Home = () => {
 		setConfirmDeleteOpen(false);
 		setLoading(true);
 		try {
-			await deleteResources(resourceIDs, type);
+			//await deleteResources(resourceIDs, type);
+			await bundleDelete(resourceIDs, type);
 		} catch (error) {
 			handleCatchError(error);
 			return error;
@@ -434,7 +436,7 @@ const Home = () => {
 					setDeleteCandidates([]);
 				}}
 			/>
-			<Button
+			{/* <Button
 				onClick={async () => {
 					const headers = new Headers();
 					const authenticationValue = getBasicAuthCreds();
@@ -504,7 +506,7 @@ const Home = () => {
 				}}
 			>
 				Test Error
-			</Button>
+			</Button> */}
 			<SearchForm
 				onSubmit={handleSubmit}
 				selectedSearchResource={selectedSearchResource}

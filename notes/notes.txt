@@ -13,6 +13,11 @@ Comparison:
 		- Commur (must create account, not allowed atm) , create account produces internal server error, npm registry private
 		- ontoserver (focused on terminology, no CRUD on non-terminology related resources)
 		- HAPI (no standalone GUI -> overkill, + GUI only displays + edits in raw JSON + does not provide config for Basic auth/oauth2 enabled settings)
+		- Smile CDR - same gui as hapi
+	- Non GUI servers:
+		- Microsoft Azure FHIR Server 
+		- Firely
+		- 
 	- MEdplum drawbacks ( inconsistencies )
 		- no partial dates
 		- no multiple prefixes or suffixes per name
@@ -36,10 +41,12 @@ Implementation:
 	- configure IBM Fhire server to support update as create (https://linuxforhealth.github.io/FHIR/guides/FHIRServerUsersGuide#34-updatecreate-feature)
 	- configure IBM to support _filter searches
 
-	- caveats:
-		- performance will suffer on very big Datasets (all rows saved in client memory)
-			- if time -> implement server side pagination on datagrid
-		- 
+
+
+
+
+
+
 
 Other:
 	- maxresults not recognized in either ibm nor medplum
@@ -48,10 +55,8 @@ Other:
 	- IBM does not implement name search properly (see search parameter name for patient => is string, so should allow modifier :text)
 	- IBM Patching multipleBirthInteger not updating properly
 
-
-
-
-written part:
-	- generelle beschreibung von usability praktiken und anwendung: https://www.interaction-design.org/literature/book/the-encyclopedia-of-human-computer-interaction-2nd-ed/usability-evaluation
-	- JUS: jounral https://uxpajournal.org
-	- konsolidiertes Modell mit definitionen von measurements : https://sci-hub.ru/10.1007/s11219-006-7600-8 Usability measurement and metrics: A consolidated model
+Limitations:
+- performance will suffer on very big Datasets (all rows saved in client memory)
+	- if time -> implement server side pagination on datagrid
+- fetch org. on open (maybe only page)
+- Task creation underlies bias since author and creator are same person

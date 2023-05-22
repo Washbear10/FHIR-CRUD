@@ -90,6 +90,9 @@ const DateTimeInput = ({
 				>
 					<LocalizationProvider dateAdapter={AdapterDayjs}>
 						<DatePicker
+							components={{
+								ActionBar: () => <CustomActionBar onClick={handleClear} />,
+							}}
 							value={currentValue}
 							minDate={dayjs().subtract(1000, "year")}
 							label={label}
