@@ -15,32 +15,11 @@ import {
  */
 export async function testBasicAuth(authenticationValue) {
 	console.log("reached outer Auth: ", authenticationValue);
-	// very important! This inner function is required because the apiTimeout function needs to access
-	// the name of the function being called. So it can't be an anonymous function.
-	/* async function innerTestBasicAuth() {
-		console.log("reached inner Auth: ", authenticationValue);
-		const headers = new Headers();
-		const searchUrl = `${process.env.REACT_APP_FHIRBASE}`;
-		headers.set("Authorization", "Basic " + authenticationValue);
-		return await fetch(searchUrl, { method: "GET", headers: headers }).then(
-			(response) => {
-				if (response.status === 401) {
-					return "Unauthenticated";
-				} else if (!response.ok) {
-					return "Error";
-				} else {
-					return "Ok";
-				}
-			}
-		);
-	} */
-	// refer to upper comment
-	/* let r = apiTimeout(innerTestBasicAuth, 5000, "innerTestBasicAuth"); */
 	let r = apiTimeout(
 		async () => {
 			console.log("reached inner Auth: ", authenticationValue);
 			const headers = new Headers();
-			const searchUrl = `${process.env.REACT_APP_FHIRBASE}`;
+			const searchUrl = `${process.env.REACT_APP_FHIRBASE}/$healthcheck`;
 			headers.set("Authorization", "Basic " + authenticationValue);
 			return await fetch(searchUrl, { method: "GET", headers: headers }).then(
 				(response) => {
@@ -48,7 +27,7 @@ export async function testBasicAuth(authenticationValue) {
 						return "Unauthenticated";
 					} else if (!response.ok) {
 						return "Error";
-					} else {
+					} else if (response.status === 200) {
 						return "Ok";
 					}
 				}

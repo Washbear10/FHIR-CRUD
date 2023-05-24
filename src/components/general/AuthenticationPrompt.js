@@ -63,6 +63,7 @@ export default function AuthenticationPrompt() {
 			setSnackbarMessage("Authenticated.");
 			setSnackbarTitle("Success");
 		} else {
+			alert("here unsucc");
 			setError(true);
 			setPasswordInput("");
 			setSnackbarOpen(true);
