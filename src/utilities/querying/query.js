@@ -14,7 +14,6 @@ import {
  * @returns
  */
 export async function testBasicAuth(authenticationValue) {
-	console.log("reached outer Auth: ", authenticationValue);
 	let r = apiTimeout(
 		async () => {
 			console.log("reached inner Auth: ", authenticationValue);
@@ -37,6 +36,13 @@ export async function testBasicAuth(authenticationValue) {
 		"testBasicAuth"
 	);
 	return r;
+}
+
+export async function checkOnline() {
+	const searchUrl = `${process.env.REACT_APP_FHIRBASE}/$healthcheck`;
+	return await fetch(searchUrl, { method: "GET" }).then((response) => {
+		return response.status === 401 || response.status === 200;
+	});
 }
 
 /**

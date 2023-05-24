@@ -21,6 +21,11 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { LoginContext } from "../../utilities/other/Contexts";
 import Link from "@mui/material/Link";
+import CircleIcon from "@mui/icons-material/Circle";
+import { checkOnline } from "../../utilities/querying/query";
+import { useState, useEffect } from "react";
+import { CircularProgress, Tooltip } from "@mui/material";
+import WarningIcon from "@mui/icons-material/Warning";
 const drawerWidth = 240;
 const titleBarHeight = 60;
 
@@ -30,6 +35,19 @@ const titleBarHeight = 60;
  */
 function CustomAppBar({ window, content, title }) {
 	const [mobileOpen, setMobileOpen] = React.useState(false);
+
+	const [connection, setConnection] = useState(null);
+
+	useEffect(() => {
+		let online = checkOnline();
+		setConnection(online);
+		const interval = setInterval(async () => {
+			let online = await checkOnline();
+			setConnection(online);
+		}, 10000);
+
+		return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
+	}, []);
 
 	const { authenticationPromptOpen, setAuthenticationPromptOpen } =
 		React.useContext(LoginContext);
@@ -137,17 +155,50 @@ function CustomAppBar({ window, content, title }) {
 						variant="body2"
 						noWrap
 						component="div"
-						sx={{ justifySelf: "end", marginLeft: "auto" }}
+						sx={{
+							justifySelf: "end",
+							marginLeft: "auto",
+							display: "flex",
+							justifyContent: "center",
+							alignItems: "center",
+						}}
 					>
-						configured FHIR server:{" "}
-						<Link
-							href={process.env.REACT_APP_FHIRBASE}
-							sx={{ color: "yellow" }}
-							variant="subtitle1"
-							target="_blank"
+						configured FHIR server status:
+						<Box
+							ml={"15px"}
+							sx={{
+								display: "flex",
+								alignItems: "center",
+							}}
 						>
-							{process.env.REACT_APP_FHIRBASE}
-						</Link>
+							<Tooltip
+								title={
+									connection
+										? "FHIR server online"
+										: "No connection to FHIR server"
+								}
+							>
+								{connection ? (
+									<CircleIcon color="success" fontSize="" />
+								) : (
+									<CircularProgress
+										color="error"
+										size={"1rem"}
+										thickness={10}
+										disableShrink
+									/>
+								)}
+							</Tooltip>
+							<Link
+								href={process.env.REACT_APP_FHIRBASE_DIRECT + "/metadata"}
+								sx={{ color: "yellow" }}
+								variant="subtitle1"
+								target="_blank"
+								underline="always"
+							>
+								{process.env.REACT_APP_FHIRBASE_DIRECT}
+							</Link>
+						</Box>
 					</Typography>
 				</Toolbar>
 			</AppBar>
