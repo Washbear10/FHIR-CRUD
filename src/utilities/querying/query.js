@@ -400,8 +400,7 @@ export const apiTimeout = async (apiCall, timeoutLength, apiCallName) => {
 					"Request taking very long. Try limiting the input or check if the server is online."
 				)
 			);
-			//}, timeoutLength || 5000);
-		}, 5);
+		}, timeoutLength || 5000);
 	});
 
 	// Can't make any request to api as long as no authentication cookies are present
