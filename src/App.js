@@ -134,6 +134,7 @@ function App() {
 									width: "40vw",
 									minHeight: "5rem",
 									alignItems: "flex-start",
+									whiteSpace: "pre-line",
 								}}
 								severity={snackbarColor || "success"}
 								variant="filled"

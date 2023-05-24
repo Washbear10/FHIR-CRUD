@@ -11,7 +11,7 @@ COPY . .
 RUN npm ci 
 # Set the env to "production"
 ENV NODE_ENV production
-ENV REACT_APP_FHIRBASE="https://localhost:9443/fhir-server/api/v4"
+ENV REACT_APP_FHIRBASE="https://fhir-ui.misit-augsburg.de/server/"
 ENV REACT_APP_MAX_ATTACHMENT_SIZE=10000000  
 # Build the app
 RUN npm run build

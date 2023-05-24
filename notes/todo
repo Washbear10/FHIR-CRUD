@@ -57,3 +57,4 @@ CORS allowed
 PATCH activated
 sort by
 bundle delete responses
+only ever "successfull" if no faulty response!

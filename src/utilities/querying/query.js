@@ -300,7 +300,7 @@ export async function updateFHIRResource(
  * @param {*} resourceType type of the resource whose entries should be deleted
  * @returns
  */
-export async function deleteResources(ids, resourceType) {
+/* export async function deleteResources(ids, resourceType) {
 	let r = apiTimeout(async () => {
 		const headers = new Headers();
 		const authenticationValue = getBasicAuthCreds();
@@ -381,7 +381,7 @@ export async function deleteResources(ids, resourceType) {
 		);
 	});
 	return r;
-}
+} */
 
 /**
  * Wrapper function to throw timeoutErrors if the callback function didn't resolve within a given time.
@@ -400,7 +400,8 @@ export const apiTimeout = async (apiCall, timeoutLength, apiCallName) => {
 					"Request taking very long. Try limiting the input or check if the server is online."
 				)
 			);
-		}, timeoutLength || 5000);
+			//}, timeoutLength || 5000);
+		}, 5);
 	});
 
 	// Can't make any request to api as long as no authentication cookies are present
