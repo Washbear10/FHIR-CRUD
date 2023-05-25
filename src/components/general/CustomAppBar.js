@@ -18,14 +18,16 @@ import Paper from "@mui/material/Paper";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { LoginContext } from "../../utilities/other/Contexts";
 import Link from "@mui/material/Link";
 import CircleIcon from "@mui/icons-material/Circle";
 import { checkOnline } from "../../utilities/querying/query";
 import { useState, useEffect } from "react";
-import { CircularProgress, Tooltip } from "@mui/material";
-import WarningIcon from "@mui/icons-material/Warning";
+import { Button, CircularProgress, Tooltip } from "@mui/material";
+import logo from "../../static/logo.png";
+import ReadMoreIcon from "@mui/icons-material/ReadMore";
+import { getBasicAuthCreds } from "../../utilities/authentication/basicAuth";
 const drawerWidth = 240;
 const titleBarHeight = 60;
 
@@ -33,19 +35,16 @@ const titleBarHeight = 60;
  * Top-level component to render any Page within a scaffold and a Menubar
  * @returns
  */
-function CustomAppBar({ window, content, title }) {
+function CustomAppBar({ content, title }) {
 	const [mobileOpen, setMobileOpen] = React.useState(false);
-
 	const [connection, setConnection] = useState(null);
-
 	useEffect(() => {
 		let online = checkOnline();
 		setConnection(online);
 		const interval = setInterval(async () => {
 			let online = await checkOnline();
 			setConnection(online);
-		}, 10000);
-
+		}, 15000);
 		return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
 	}, []);
 
@@ -54,14 +53,33 @@ function CustomAppBar({ window, content, title }) {
 	const handleLoginOpen = () => {
 		setAuthenticationPromptOpen(true);
 	};
+	const loc = useLocation();
+	const handleLogout = () => {
+		document.cookie =
+			"basicCreds=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+		window.location.reload();
+	};
+
 	const navigate = useNavigate();
 	const handleDrawerToggle = () => {
 		setMobileOpen(!mobileOpen);
 	};
 
 	const drawer = (
-		<Box sx={{}}>
-			<Toolbar />
+		<Box sx={{ height: "fit-content" }}>
+			<Toolbar
+				sx={{
+					"&.MuiToolbar-root": {
+						paddingLeft: "1px",
+						paddingRight: "1px",
+						backgroundColor: "rgba(100,100,150,0.8)",
+					},
+				}}
+			>
+				<Box height={"100%"} width={"100%"}>
+					<img src={logo} alt="Chair logo" style={{ width: "100%" }} />
+				</Box>
+			</Toolbar>
 			<Divider />
 			<List>
 				<ListItem key={"Search"} disablePadding>
@@ -76,17 +94,16 @@ function CustomAppBar({ window, content, title }) {
 						<ListItemText primary={"Search"} />
 					</ListItemButton>
 				</ListItem>
-				<ListItem key={"Settings"} disablePadding>
+				<ListItem key={"Make request"} disablePadding>
 					<ListItemButton
 						onClick={(e) => {
-							// Ask Steffen what else might be needed.
-							alert("TODO?");
+							navigate("/request");
 						}}
 					>
 						<ListItemIcon>
-							<SettingsIcon />
+							<ReadMoreIcon />
 						</ListItemIcon>
-						<ListItemText primary={"Settings"} />
+						<ListItemText primary={"Make request"} />
 					</ListItemButton>
 				</ListItem>
 				<ListItem key={"About"} disablePadding>
@@ -116,12 +133,28 @@ function CustomAppBar({ window, content, title }) {
 						<ListItemText primary={"Login"} />
 					</ListItemButton>
 				</ListItem>
+				<ListItem key={"Login"} disablePadding>
+					<ListItemButton
+						onClick={(e) => {
+							handleLogout();
+						}}
+					>
+						<ListItemIcon>
+							<VpnKeyIcon />
+						</ListItemIcon>
+						<ListItemText primary={"Logout"} />
+					</ListItemButton>
+				</ListItem>
 			</List>
+			<Box sx={{ height: "100%", display: "flex" }}>
+				<Box sx={{ my: "auto", px: "1rem" }}>
+					<Typography variant="body2">
+						Display your advertisment here! WOW!!!
+					</Typography>
+				</Box>
+			</Box>
 		</Box>
 	);
-
-	const container =
-		window !== undefined ? () => window().document.body : undefined;
 
 	return (
 		<Box sx={{ display: "flex" }}>
@@ -150,6 +183,15 @@ function CustomAppBar({ window, content, title }) {
 					</IconButton>
 					<Typography variant="h6" noWrap component="div">
 						{title}
+					</Typography>
+					<Typography
+						variant="body2"
+						sx={{
+							color: getBasicAuthCreds() ? "green" : "rgb(255, 181, 20)",
+							ml: "1rem",
+						}}
+					>
+						{getBasicAuthCreds() ? "Authenticated" : "Not authenticated"}
 					</Typography>
 					<Typography
 						variant="body2"
@@ -212,7 +254,7 @@ function CustomAppBar({ window, content, title }) {
 			>
 				{/* The implementation can be swapped with js to avoid SEO duplication of links. */}
 				<Drawer
-					container={container}
+					//container={container}
 					variant="temporary"
 					open={mobileOpen}
 					onClose={handleDrawerToggle}

@@ -40,113 +40,13 @@ export async function testBasicAuth(authenticationValue) {
 
 export async function checkOnline() {
 	const searchUrl = `${process.env.REACT_APP_FHIRBASE}/$healthcheck`;
-	return await fetch(searchUrl, { method: "GET" }).then((response) => {
-		return response.status === 401 || response.status === 200;
-	});
-}
-
-/**
- * Invoked by searching. Get fhir resources and deserialize them.
- * @param {*} resourceTypes which types to search for
- * @param {*} searchString which value to search for
- * @param {*} limit limit number of returned results
- * @returns
- */
-export default async function queryFHIR(resourceTypes, searchString, limit) {
-	let r = apiTimeout(async () => {
-		// store list of resources returned for each type in results
-		var results = {};
-		resourceTypes.forEach((r) => {
-			results[r] = [];
+	try {
+		return await fetch(searchUrl, { method: "GET" }).then((response) => {
+			return response.status === 401 || response.status === 200;
 		});
-
-		// Since this application only implements the Patient input, only Patient resources can be queried.
-		// When functionality for other Resources are added, some minor changes will have to be made to this function (mainly regarding search parameters.)
-		for (const resource of [Patient]) {
-			const headers = new Headers();
-			const authenticationValue = getBasicAuthCreds();
-			headers.set("Authorization", "Basic " + authenticationValue);
-			let count = 100;
-			let nextPageLink = "";
-
-			// do while for fetching all resources (if server returns batches in multiple pages)
-			do {
-				// search parameter only works for Patient. Please Generalize when extending.
-				const searchUrl = nextPageLink
-					? nextPageLink
-					: `${process.env.REACT_APP_FHIRBASE}/${resource.getResourceName}?${
-							searchString ? "name:contains=" + searchString + "&" : ""
-					  }_count=${count}`;
-				let errorMessages;
-				await fetch(searchUrl, { method: "GET", headers: headers })
-					.then((response) => {
-						if (response.status == 401) {
-							throw new authenticationError(
-								"Authentication failed. You might need to login again."
-							);
-						}
-						if (response.status == 400) {
-							// FHIR defines issues that are returned as description of what went wrong.
-							// We can use these to display as snackbar error.
-							try {
-								let jsonResponse = response.json();
-								errorMessages = jsonResponse.issue
-									.filter((issue) => issue["severity"] == "error")
-									.map((issue) => {
-										let s = "";
-										if (issue.expression)
-											s += "Issue in " + issue.expression.join(",") + ": ";
-										if (issue.details) s += issue.details.text;
-										return s;
-									});
-							} catch (e) {
-								console.log("caught error trying to decode issues: ", e);
-							}
-							throw new updateError(errorMessages.join("\n"));
-						}
-						return response.json();
-					})
-					.then((data) => {
-						if (data["resourceType"] == "OperationOutcome") {
-							errorMessages = data.issue
-								.filter((issue) => issue["severity"] == "error")
-								.map((element) => {
-									return element.details.text;
-								});
-						}
-						if (errorMessages) {
-							throw new queryError(
-								"There was an error fetching data." +
-									"\nFHIR issues: " +
-									errorMessages,
-								errorMessages
-							);
-						}
-						// push results to result array
-						const pageEntries = data.entry
-							? data.entry.map(
-									(element) => new resource({ ...element.resource })
-							  )
-							: [];
-						results[resource.getResourceName].push(...pageEntries);
-						if (!limit || results[resource.getResourceName].length < limit) {
-							if (data.link) {
-								let next = data.link.filter((item) => item.relation == "next");
-								nextPageLink = next.length > 0 ? next[0].url : "";
-							} else nextPageLink = "";
-						} else nextPageLink = "";
-					});
-			} while (nextPageLink);
-
-			if (limit)
-				//cut off to requested amount
-				results[resource.getResourceName] = results[
-					resource.getResourceName
-				].slice(0, limit);
-		}
-		return results;
-	}, 40000);
-	return r;
+	} catch (e) {
+		console.log(e);
+	}
 }
 
 /**
@@ -278,95 +178,6 @@ export async function updateFHIRResource(
 	}, 10000);
 	return r;
 }
-
-/**
- * Make a DELETE request to remove  resources from the server.
- * @param {*} ids Array of resource ids to delete
- * @param {*} resourceType type of the resource whose entries should be deleted
- * @returns
- */
-/* export async function deleteResources(ids, resourceType) {
-	let r = apiTimeout(async () => {
-		const headers = new Headers();
-		const authenticationValue = getBasicAuthCreds();
-		headers.set("Authorization", "Basic " + authenticationValue);
-		let errorMessages;
-
-		const results = await Promise.all(
-			ids.map(async (id) => {
-				const searchUrl = `${process.env.REACT_APP_FHIRBASE}/${resourceType}/${id}`;
-				headers.set("Content-Type", "application/fhir+json");
-				await fetch(searchUrl, {
-					method: "DELETE",
-					headers: headers,
-				}).then(async (response) => {
-					if (!response.ok) {
-						if (response.status == 400) {
-							try {
-								const jsonResponse = await response.json();
-								console.log(jsonResponse);
-								errorMessages = jsonResponse.issue
-									.filter((issue) => issue["severity"] == "error")
-									.map((issue) => {
-										console.log("issue is: ", issue);
-										let s = "";
-										if (issue.expression)
-											s += "Issue in " + issue["expression"].join(",") + ": ";
-										if (issue.details) s += issue.details.text;
-										console.log(s);
-										return decodeHtml(s);
-									});
-							} catch (e) {
-								console.log("caught error trying to decode issues: ", e);
-								throw new updateError(
-									"There was an unexpected error deleting this resource."
-								);
-							}
-							if (errorMessages)
-								throw new updateError(errorMessages.join("\n"));
-							else
-								throw new updateError(
-									"There was an unexpected error deleting this resource."
-								);
-						}
-						if (response.status == 401)
-							throw new authenticationError(
-								"Authentication failed. You might need to login again."
-							);
-						if (response.status === 405)
-							throw new updateError(
-								"Deleting for resource " +
-									String(id) +
-									" not allowed. Is there a server-side policy that prevents deletion of particular resources?"
-							);
-						else if (response.status === 409)
-							throw new updateError(
-								"Deleting for resource " +
-									String(id) +
-									" not allowed. There seems to be a conflict."
-							);
-						else if (response.status === 410)
-							throw new updateError(
-								"Deleting for resource " +
-									String(id) +
-									" not possible. It does not exist on the server. Maybe it was deleted by another user in the meantime."
-							);
-						else {
-							throw new updateError(
-								"Deleting for resource " +
-									String(id) +
-									" not allowed. Status code: " +
-									String(response.status) +
-									". Refer to the FHIR specification for what might have gone wrong."
-							);
-						}
-					}
-				});
-			})
-		);
-	});
-	return r;
-} */
 
 /**
  * Wrapper function to throw timeoutErrors if the callback function didn't resolve within a given time.
@@ -743,4 +554,29 @@ export async function bundleDelete(ids, resourceType) {
 		});
 	});
 	return r;
+}
+
+export async function manualRequest(url, method, headers, body) {
+	const headers_object = new Headers();
+	headers.forEach((header) => {
+		headers_object.set(header.header, header.value);
+	});
+	let requestOptions = {
+		method: method,
+		headers: headers_object,
+	};
+	if (body) {
+		const jsonBody = JSON.stringify(JSON.parse(body));
+		if (jsonBody) {
+			requestOptions.body = jsonBody;
+		}
+	}
+	return await fetch(url, requestOptions);
+	/* return fetch(url, requestOptions)
+		.then((response) => {
+			return response.json();
+		})
+		.then((json) => {
+			return json;
+		}); */
 }

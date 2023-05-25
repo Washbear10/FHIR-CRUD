@@ -436,77 +436,7 @@ const Home = () => {
 					setDeleteCandidates([]);
 				}}
 			/>
-			{/* <Button
-				onClick={async () => {
-					const headers = new Headers();
-					const authenticationValue = getBasicAuthCreds();
-					headers.set("Authorization", "Basic " + authenticationValue);
-					headers.set("Content-Type", "application/fhir+json");
-					let o = {
-						resourceType: "Bundle",
-						type: "transaction",
-						entry: [
-							{
-								request: { method: "POST", url: "Endpoint" },
-								resource: {
-									resourceType: "Endpoint",
-									text: {
-										status: "generated",
-										div: '<div xmlns="http://www.w3.org/1999/xhtml">\n\t\t\tHealth Intersections CarePlan Hub<br/>\n\t\t\tCarePlans can be uploaded to/from this loccation\n\t\t</div>',
-									},
-									status: "active",
-									connectionType: {
-										system:
-											"http://terminology.hl7.org/CodeSystem/endpoint-connection-type",
-										code: "hl7-fhir-rest",
-									},
-									name: "Generated",
-									contact: [
-										{
-											system: "email",
-											value: "endpointmanager@example.org",
-											use: "work",
-										},
-									],
-									period: {
-										start: "2014-09-01",
-									},
-									payloadType: [
-										{
-											coding: [
-												{
-													system: "http://hl7.org/fhir/resource-types",
-													code: "CarePlan",
-												},
-											],
-										},
-									],
-									payloadMimeType: ["application/fhir+xml"],
-									address:
-										"http://fhir3.healthintersections.com.au/open/CarePlan",
-									header: ["bearer-code BASGS534s4"],
-								},
-							},
-						],
-					};
-					let s = JSON.stringify(o);
 
-					fetch("https://localhost:9443/fhir-server/api/v4/", {
-						headers: headers,
-						method: "POST",
-						body: s,
-					})
-						.then((response) => {
-							let j = response.json();
-							return j;
-						})
-						.then((data) => {
-							console.log(data);
-						});
-				}}
-			>
-				Test Error
-			</Button> */}
 			<SearchForm
 				onSubmit={handleSubmit}
 				selectedSearchResource={selectedSearchResource}
