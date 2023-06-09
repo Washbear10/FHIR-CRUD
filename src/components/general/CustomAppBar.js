@@ -23,6 +23,7 @@ import { LoginContext } from "../../utilities/other/Contexts";
 import Link from "@mui/material/Link";
 import CircleIcon from "@mui/icons-material/Circle";
 import { checkOnline } from "../../utilities/querying/query";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { useState, useEffect } from "react";
 import { Button, CircularProgress, Tooltip } from "@mui/material";
 import logo from "../../static/logo.png";
@@ -72,16 +73,39 @@ function CustomAppBar({ content, title }) {
 					"&.MuiToolbar-root": {
 						paddingLeft: "1px",
 						paddingRight: "1px",
-						backgroundColor: "rgba(100,100,150,0.8)",
+						backgroundColor: "rgba(193, 193, 223, 0.8)",
 					},
 				}}
 			>
 				<Box height={"100%"} width={"100%"}>
-					<img src={logo} alt="Chair logo" style={{ width: "100%" }} />
+					<a
+						href="https://www.uni-augsburg.de/de/fakultaet/fai/informatik/prof/misit/"
+						target="_blank"
+					>
+						<img src={logo} alt="Chair logo" style={{ width: "100%" }} />
+					</a>
 				</Box>
 			</Toolbar>
 			<Divider />
-			<List>
+			<List
+				sx={{
+					color: "wheat",
+					"& .MuiListItemIcon-root": {
+						color: "rgba(255, 249, 190, 1)",
+					},
+					"& .MuiListItem-root": {
+						color: "rgba(255, 249, 190, 1)",
+						transition: "0.3s background-Color",
+						"&:hover": {
+							backgroundColor: "rgba(255, 249, 190, 1)",
+							color: "black",
+							"& .MuiListItemIcon-root": {
+								color: "black",
+							},
+						},
+					},
+				}}
+			>
 				<ListItem key={"Search"} disablePadding>
 					<ListItemButton
 						onClick={(e) => {
@@ -92,6 +116,7 @@ function CustomAppBar({ content, title }) {
 							<SearchIcon />
 						</ListItemIcon>
 						<ListItemText primary={"Search"} />
+						{loc.pathname == "/" ? <ChevronLeftIcon /> : null}
 					</ListItemButton>
 				</ListItem>
 				<ListItem key={"Make request"} disablePadding>
@@ -104,6 +129,7 @@ function CustomAppBar({ content, title }) {
 							<ReadMoreIcon />
 						</ListItemIcon>
 						<ListItemText primary={"Make request"} />
+						{loc.pathname == "/request" ? <ChevronLeftIcon /> : null}
 					</ListItemButton>
 				</ListItem>
 				<ListItem key={"About"} disablePadding>
@@ -116,11 +142,30 @@ function CustomAppBar({ content, title }) {
 							<HelpIcon />
 						</ListItemIcon>
 						<ListItemText primary={"About"} />
+						{loc.pathname == "/about" ? <ChevronLeftIcon /> : null}
 					</ListItemButton>
 				</ListItem>
 			</List>
 			<Divider />
-			<List>
+			<List
+				sx={{
+					color: "wheat",
+					"& .MuiListItemIcon-root": {
+						color: "rgba(255, 249, 190, 1)",
+					},
+					"& .MuiListItem-root": {
+						color: "rgba(255, 249, 190, 1)",
+						transition: "0.3s background-Color",
+						"&:hover": {
+							backgroundColor: "rgba(255, 249, 190, 1)",
+							color: "black",
+							"& .MuiListItemIcon-root": {
+								color: "black",
+							},
+						},
+					},
+				}}
+			>
 				<ListItem key={"Login"} disablePadding>
 					<ListItemButton
 						onClick={(e) => {
@@ -146,18 +191,15 @@ function CustomAppBar({ content, title }) {
 					</ListItemButton>
 				</ListItem>
 			</List>
-			<Box sx={{ height: "100%", display: "flex" }}>
-				<Box sx={{ my: "auto", px: "1rem" }}>
-					<Typography variant="body2">
-						Display your advertisment here! WOW!!!
-					</Typography>
-				</Box>
-			</Box>
 		</Box>
 	);
 
 	return (
-		<Box sx={{ display: "flex" }}>
+		<Box
+			sx={{
+				display: "flex",
+			}}
+		>
 			<AppBar
 				position="fixed"
 				sx={{
@@ -278,6 +320,10 @@ function CustomAppBar({ content, title }) {
 						"& .MuiDrawer-paper": {
 							boxSizing: "border-box",
 							width: drawerWidth,
+							boxShadow: "inset 20px 52px 339px 3px rgba(22, 22, 22, 0.815);",
+							/* background:
+								"linear-gradient(0deg, rgba(0,4,54,1) 0%, rgba(253, 253, 253, 1) 48%, rgba(255, 255, 255, 1) 100%);", */
+							backgroundColor: "rgba(68, 72, 99, 0.5)",
 						},
 					}}
 					open

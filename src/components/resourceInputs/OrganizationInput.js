@@ -39,6 +39,8 @@ import {
 	OrganizationAddressUse,
 	organizationType,
 } from "../../utilities/valueSets/valueSets";
+import OrganizationContact from "../../classes/dataTypes/backboneElements/Organization/OrganizationContact";
+import OrganizationContactInput from "../elementInputs/Organization/OrganizationContactInput";
 
 /**
  * Component rendered by InputDialog to display form to display and edit values of a Patient resource.
@@ -157,6 +159,22 @@ const OrganizationInput = ({ resource, modifyResource }) => {
 		newTelecoms[i] = newValue;
 		modifyResource("telecom", newTelecoms);
 	};
+	const handleDeleteContact = (key) => {
+		const i = resource.contact.map((item) => item.internalReactID).indexOf(key);
+		let newContacts = [...resource.contact];
+		newContacts.splice(i, 1);
+		if (newContacts.length == 0) newContacts.push(new OrganizationContact({}));
+		modifyResource("contact", newContacts);
+	};
+
+	const handleChangeContact = (newValue, oldValue) => {
+		const i = resource.contact
+			.map((item) => item.internalReactID)
+			.indexOf(oldValue.internalReactID);
+		let newContacts = [...resource.contact];
+		newContacts[i] = newValue;
+		modifyResource("contact", newContacts);
+	};
 
 	// render section:
 
@@ -170,7 +188,7 @@ const OrganizationInput = ({ resource, modifyResource }) => {
 			<AttributeBlock
 				attributeName="Resource Type"
 				attributeDescription="The Type of this resource"
-				attributeLink={"https://www.hl7.org/fhir/organization.html#resource"}
+				attributeLink={"http://hl7.org/fhir/R4/organization.html"}
 				inputComponents={
 					<DisabledTextField fullWidth disabled placeholder="Organization" />
 				}
@@ -179,9 +197,7 @@ const OrganizationInput = ({ resource, modifyResource }) => {
 			<AttributeBlock
 				attributeName="ID"
 				attributeDescription="The unique ID for this resource"
-				attributeLink={
-					"https://www.hl7.org/fhir/types-definitions.html#Element.id"
-				}
+				attributeLink={"http://hl7.org/fhir/R4/datatypes.html#id"}
 				inputComponents={
 					<DisabledTextField
 						fullWidth
@@ -195,7 +211,9 @@ const OrganizationInput = ({ resource, modifyResource }) => {
 				attributeName="Name"
 				attributeDescription="Name used for the organization"
 				renderKey={resource ? resource.name : null}
-				attributeLink={"https://www.hl7.org/fhir/datatypes.html#HumanName"}
+				attributeLink={
+					"http://hl7.org/fhir/R4/organization-definitions.html#Organization.name"
+				}
 				inputComponents={
 					<SmallTextField
 						value={resource.name}
@@ -209,7 +227,9 @@ const OrganizationInput = ({ resource, modifyResource }) => {
 				attributeName="Alias"
 				attributeDescription="Alias used for the organization"
 				renderKey={resource ? resource.alias : null}
-				attributeLink={"https://www.hl7.org/fhir/datatypes.html#HumanName"}
+				attributeLink={
+					"http://hl7.org/fhir/R4/organization-definitions.html#Organization.alias"
+				}
 				inputComponents={
 					<>
 						<ExtendableComponent
@@ -265,7 +285,7 @@ const OrganizationInput = ({ resource, modifyResource }) => {
 				attributeDescription="Whether the organization's record is still in active use"
 				renderKey={resource ? resource.active : null}
 				attributeLink={
-					"https://www.hl7.org/fhir/organization-definitions.html#Organization.active"
+					"http://hl7.org/fhir/R4/organization-definitions.html#Organization.active"
 				}
 				inputComponents={
 					<BooleanInput
@@ -281,7 +301,9 @@ const OrganizationInput = ({ resource, modifyResource }) => {
 			<AttributeBlock
 				attributeName="Part of"
 				attributeDescription="The organization of which this organization forms a part"
-				attributeLink={"https://www.hl7.org/fhir/references.html#Reference"}
+				attributeLink={
+					"http://hl7.org/fhir/R4/organization-definitions.html#Organization.partOf"
+				}
 				renderKey={resource ? resource.partOf : null}
 				inputComponents={
 					<ReferenceInput
@@ -303,7 +325,7 @@ const OrganizationInput = ({ resource, modifyResource }) => {
 				attributeDescription="Technical endpoints providing access to services operated for the organization"
 				renderKey={resource ? resource.endpoint : null}
 				attributeLink={
-					"https://www.hl7.org/fhir/organization-definitions.html#Organization.endpoint"
+					"http://hl7.org/fhir/R4/organization-definitions.html#Organization.endpoint"
 				}
 				inputComponents={
 					<>
@@ -417,7 +439,7 @@ const OrganizationInput = ({ resource, modifyResource }) => {
 				attributeDescription="Kind of organization"
 				renderKey={resource ? resource.type : null} // used for memoization
 				attributeLink={
-					"https://www.hl7.org/fhir/organization-definitions.html#Organization.type"
+					"http://hl7.org/fhir/R4/organization-definitions.html#Organization.type"
 				}
 				inputComponents={
 					<ExtendableComponent // Identifier cardinality > 1 -> can add new Identifiers
@@ -462,6 +484,7 @@ const OrganizationInput = ({ resource, modifyResource }) => {
 																codeableConcept={singleType.singleType}
 																changeCodeableConcept={handleChangeType}
 																clearOnBlur={false}
+																codesLink="http://hl7.org/fhir/R4/codesystem-organization-type.html#4.3.14.376.2"
 															/>
 														</Subcomponent>
 													</DeleteableComponent>
@@ -478,9 +501,7 @@ const OrganizationInput = ({ resource, modifyResource }) => {
 				attributeName="Address"
 				attributeDescription="An address for the organization"
 				renderKey={resource ? resource.address : null} // used for memoization
-				attributeLink={
-					"http://hl7.org/fhir/R4/organization-definitions.html#Organization.address"
-				}
+				attributeLink={"http://hl7.org/fhir/R4/datatypes.html#Address"}
 				inputComponents={
 					<ExtendableComponent // Identifier cardinality > 1 -> can add new Identifiers
 						title="Add address"
@@ -533,9 +554,7 @@ const OrganizationInput = ({ resource, modifyResource }) => {
 				attributeName="Telecom"
 				attributeDescription="A contact detail for the organization"
 				renderKey={resource ? resource.telecom : null} // used for memoization
-				attributeLink={
-					"http://hl7.org/fhir/R4/organization-definitions.html#Organization.telecom"
-				}
+				attributeLink={"http://hl7.org/fhir/R4/datatypes.html#ContactPoint"}
 				inputComponents={
 					<ExtendableComponent // Identifier cardinality > 1 -> can add new Identifiers
 						title="Add telecom"
@@ -576,6 +595,62 @@ const OrganizationInput = ({ resource, modifyResource }) => {
 																telecom={singleTelecom.singleTelecom}
 																changeTelecom={handleChangeTelecom}
 																allowedUse={OrganizationAddressUse}
+															/>
+														</Subcomponent>
+													</DeleteableComponent>
+												</Box>
+											);
+										})
+								: null
+							: null}
+					</ExtendableComponent>
+				}
+			/>
+			<AttributeBlock
+				attributeName="Contact"
+				attributeDescription="Contact for the organization for a certain purpose"
+				renderKey={resource ? resource.contact : null} // used for memoization
+				attributeLink={
+					"http://hl7.org/fhir/R4/organization-definitions.html#Organization.contact"
+				}
+				inputComponents={
+					<ExtendableComponent
+						title="Add Contact"
+						handleExtend={() => {
+							modifyResource("contact", [
+								...resource.contact,
+								new OrganizationContact({}),
+							]);
+						}}
+					>
+						{resource
+							? resource.contact
+								? resource.contact
+										.map((singleContact, index) => {
+											// helper object to get index and internalReactID as key for the component in the list
+											return {
+												singleContact: singleContact,
+												key: singleContact.internalReactID,
+												index: index,
+											};
+										})
+										.map((singleContact) => {
+											return (
+												<Box key={singleContact.key}>
+													<DeleteableComponent
+														title="Delete this contact"
+														handleDelete={() => {
+															handleDeleteContact(singleContact.key);
+														}}
+														disabled={
+															resource.contact.length == 1 &&
+															isObjectEmptyRecursive(resource.contact)
+														}
+													>
+														<Subcomponent>
+															<OrganizationContactInput
+																contact={singleContact.singleContact}
+																changeContact={handleChangeContact}
 															/>
 														</Subcomponent>
 													</DeleteableComponent>

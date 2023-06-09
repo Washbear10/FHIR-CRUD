@@ -33,6 +33,7 @@ import LinkInput from "../elementInputs/LinkInput";
 import MultipleBirthInput from "../elementInputs/MultipleBirthInput";
 import ReferenceInput from "../elementInputs/ReferenceInput";
 import TelecomInput from "../elementInputs/TelecomInput";
+import { maritalStatus } from "../../utilities/valueSets/valueSets";
 
 /**
  * Component rendered by InputDialog to display form to display and edit values of a Patient resource.
@@ -305,7 +306,7 @@ const PatientInput = ({ resource, modifyResource }) => {
 			<AttributeBlock
 				attributeName="Resource Type"
 				attributeDescription="The Type of this resource"
-				attributeLink={"https://www.hl7.org/fhir/patient.html#resource"}
+				attributeLink={"http://hl7.org/fhir/R4/patient.html"}
 				inputComponents={
 					<DisabledTextField fullWidth disabled placeholder="Patient" />
 				}
@@ -314,9 +315,7 @@ const PatientInput = ({ resource, modifyResource }) => {
 			<AttributeBlock
 				attributeName="ID"
 				attributeDescription="The unique ID for this resource"
-				attributeLink={
-					"https://www.hl7.org/fhir/types-definitions.html#Element.id"
-				}
+				attributeLink={"http://hl7.org/fhir/R4/datatypes.html#id"}
 				inputComponents={
 					<DisabledTextField
 						fullWidth
@@ -330,7 +329,7 @@ const PatientInput = ({ resource, modifyResource }) => {
 				attributeName="Name"
 				attributeDescription="The names associated with this patient"
 				renderKey={resource ? resource.name : null}
-				attributeLink={"https://www.hl7.org/fhir/datatypes.html#HumanName"}
+				attributeLink={"http://hl7.org/fhir/R4/datatypes.html#HumanName"}
 				inputComponents={
 					<ExtendableComponent
 						title="Add a name"
@@ -379,7 +378,7 @@ const PatientInput = ({ resource, modifyResource }) => {
 			<AttributeBlock
 				attributeName="Birthdate"
 				attributeDescription="The date of birth for the individual"
-				attributeLink={"https://www.hl7.org/fhir/datatypes.html#date"}
+				attributeLink={"http://hl7.org/fhir/R4/datatypes.html#date"}
 				inputComponents={
 					<DateTabs
 						value={resource ? resource.birthDate || null : null}
@@ -397,7 +396,7 @@ const PatientInput = ({ resource, modifyResource }) => {
 				attributeName="Gender"
 				attributeDescription="The patients gender"
 				attributeLink={
-					"https://www.hl7.org/fhir/patient-definitions.html#Patient.gender"
+					"http://hl7.org/fhir/R4/patient-definitions.html#Patient.gender"
 				}
 				inputComponents={
 					<GenderInput
@@ -412,7 +411,7 @@ const PatientInput = ({ resource, modifyResource }) => {
 				attributeDescription="Images of the patient"
 				renderKey={resource ? resource.photo : null}
 				attributeLink={
-					"https://www.hl7.org/fhir/patient-definitions.html#Patient.photo"
+					"http://hl7.org/fhir/R4/patient-definitions.html#Patient.photo"
 				}
 				inputComponents={
 					<ExtendableComponent
@@ -464,7 +463,7 @@ const PatientInput = ({ resource, modifyResource }) => {
 				attributeName="Active"
 				attributeDescription="Indicates whether this patient's record is in active use"
 				attributeLink={
-					"https://www.hl7.org/fhir/patient-definitions.html#Patient.active"
+					"http://hl7.org/fhir/R4/patient-definitions.html#Patient.active"
 				}
 				inputComponents={
 					<BooleanInput
@@ -482,7 +481,7 @@ const PatientInput = ({ resource, modifyResource }) => {
 				attributeName="Deceased"
 				attributeDescription="Indicates if (and/or when) the individual is deceased."
 				attributeLink={
-					"https://www.hl7.org/fhir/patient-definitions.html#Patient.deceased_x_"
+					"http://hl7.org/fhir/R4/patient-definitions.html#Patient.deceased_x_"
 				}
 				renderKey={
 					resource
@@ -505,7 +504,7 @@ const PatientInput = ({ resource, modifyResource }) => {
 				attributeName="Address"
 				attributeDescription="Addresses for the individual"
 				renderKey={resource ? resource.address : null}
-				attributeLink={"https://www.hl7.org/fhir/datatypes.html#Address"}
+				attributeLink={"http://hl7.org/fhir/R4/datatypes.html#Address"}
 				inputComponents={
 					<>
 						<ExtendableComponent
@@ -619,7 +618,7 @@ const PatientInput = ({ resource, modifyResource }) => {
 				attributeName="Telecom"
 				attributeDescription="A contact detail for the individual"
 				renderKey={resource ? resource.telecom : null}
-				attributeLink={"https://www.hl7.org/fhir/datatypes.html#ContactPoint"}
+				attributeLink={"http://hl7.org/fhir/R4/datatypes.html#ContactPoint"}
 				inputComponents={
 					<>
 						<ExtendableComponent
@@ -672,12 +671,17 @@ const PatientInput = ({ resource, modifyResource }) => {
 				attributeName="Marital status"
 				attributeDescription="The marital (civil) status of a patient"
 				attributeLink={
-					"https://www.hl7.org/fhir/datatypes.html#CodeableConcept"
+					"http://hl7.org/fhir/R4/patient-definitions.html#Patient.maritalStatus"
 				}
 				inputComponents={
 					<CodeableConeptInput
 						codeableConcept={resource ? resource.maritalStatus : null}
 						changeCodeableConcept={changeMaritalStatus}
+						defaultSystem="http://terminology.hl7.org/CodeSystem/v3-MaritalStatus"
+						bindingCodes={maritalStatus}
+						codesLink={
+							"http://hl7.org/fhir/R4/valueset-marital-status.html#expansion"
+						}
 					/>
 				}
 				renderKey={resource ? resource.maritalStatus : null}
@@ -686,7 +690,7 @@ const PatientInput = ({ resource, modifyResource }) => {
 				attributeName="Multiple birth"
 				attributeDescription="Whether patient is part of a multiple birth. A number indicates the birth number in the sequence."
 				attributeLink={
-					"https://www.hl7.org/fhir/patient-definitions.html#Patient.multipleBirth_x_"
+					"http://hl7.org/fhir/R4/patient-definitions.html#Patient.multipleBirth_x_"
 				}
 				renderKey={
 					resource
@@ -771,7 +775,9 @@ const PatientInput = ({ resource, modifyResource }) => {
 			<AttributeBlock
 				attributeName="General Practitioner"
 				attributeDescription="Patient's nominated primary care provider(s)"
-				attributeLink={"https://www.hl7.org/fhir/references.html#Reference"}
+				attributeLink={
+					"hl7.org/fhir/R4/patient-definitions.html#Patient.generalPractitioner"
+				}
 				renderKey={resource ? resource.generalPractitioner : null}
 				inputComponents={
 					<ExtendableComponent
@@ -860,7 +866,9 @@ const PatientInput = ({ resource, modifyResource }) => {
 			<AttributeBlock
 				attributeName="Managing Organization"
 				attributeDescription="Organization that is the custodian of the patient record"
-				attributeLink={"https://www.hl7.org/fhir/references.html#Reference"}
+				attributeLink={
+					"http://hl7.org/fhir/R4/patient-definitions.html#Patient.managingOrganization"
+				}
 				renderKey={resource ? resource.managingOrganization : null}
 				inputComponents={
 					<ReferenceInput
@@ -881,7 +889,7 @@ const PatientInput = ({ resource, modifyResource }) => {
 				attributeDescription="Links to a Patient or RelatedPerson resource that concern the same actual individual"
 				renderKey={resource ? resource.link : null}
 				attributeLink={
-					"https://www.hl7.org/fhir/patient-definitions.html#Patient.link"
+					"http://hl7.org/fhir/R4/patient-definitions.html#Patient.link"
 				}
 				inputComponents={
 					<ExtendableComponent
@@ -933,7 +941,7 @@ const PatientInput = ({ resource, modifyResource }) => {
 				attributeName="Contact"
 				attributeDescription="Contact parties (e.g. guardian, partner, friend) for the patient"
 				attributeLink={
-					"https://www.hl7.org/fhir/patient-definitions.html#Patient.contact"
+					"http://hl7.org/fhir/R4/patient-definitions.html#Patient.contact"
 				}
 				renderKey={resource ? resource.contact : null}
 				inputComponents={

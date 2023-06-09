@@ -23,7 +23,9 @@ const CodeableConeptInput = ({
 	changeCodeableConcept,
 	defaultSystem,
 	systemUneditable,
+	codesLink,
 	bindingCodes,
+	bindingDisplayTable,
 	systemValueCombinationRequired,
 	...rest
 }) => {
@@ -151,6 +153,7 @@ const CodeableConeptInput = ({
 												<CodingInput
 													coding={coding.coding}
 													changeCoding={handleChangeCoding}
+													codesLink={codesLink}
 													defaultSystem={defaultSystem}
 													bindingCodes={bindingCodes}
 													key={coding.key}

@@ -6,10 +6,13 @@ import { AttributeBlockErrorContext } from "../../utilities/other/Contexts";
 import BooleanInput from "../primitiveInputs/BooleanInput";
 import CodeInput from "../primitiveInputs/CodeInput";
 import SmallTextField from "../styledComponents/SmallTextField";
+import HelpCenterIcon from "@mui/icons-material/HelpCenter";
+import { IconButton, InputAdornment, TextField, Tooltip } from "@mui/material";
 const CodingInput = ({
 	coding,
 	changeCoding,
 	defaultSystem,
+	codesLink,
 	systemUneditable,
 	systemValueCombinationRequired,
 	bindingCodes,
@@ -123,6 +126,30 @@ const CodingInput = ({
 					error={errorMessage ? 1 : 0}
 					helpertext={errorMessage}
 					freeSolo={systemValueCombinationRequired ? false : true}
+					renderInput={(params) => {
+						return (
+							<TextField
+								{...params}
+								label="code"
+								variant="outlined"
+								fullWidth
+								InputProps={{
+									...params.InputProps,
+									endAdornment: (
+										<InputAdornment position="end">
+											<Tooltip title="Lookup code meaning">
+												<IconButton
+													onClick={() => window.open(codesLink, "_blank")}
+												>
+													<HelpCenterIcon color="primary" />
+												</IconButton>
+											</Tooltip>
+										</InputAdornment>
+									),
+								}}
+							/>
+						);
+					}}
 				/>
 			) : (
 				<SmallTextField

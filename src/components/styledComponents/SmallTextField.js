@@ -12,6 +12,17 @@ const SmallTextField = React.forwardRef((props, ref) => {
 				svg: { color: colors.indigo[900] },
 				width: props.width ? props.width : null,
 				backgroundColor: "white",
+				"& .MuiOutlinedInput-root": {
+					"&:hover fieldset": {
+						borderColor: Object.keys(props).includes("overallColor")
+							? props["overallColor"]
+							: null,
+					},
+					"& fieldset": {
+						borderColor: props["overallColor"] ? props["overallColor"] : null,
+					},
+				},
+
 				//minWidth: "100px",
 			}}
 		/>

@@ -14,7 +14,7 @@ const Subcomponent = ({ children, title, description, ...rest }) => {
 									? "solid rgba(26, 35, 126, 0.5)"
 									: "solid rgba(26, 35, 126, 0.4)",
 							borderWidth:
-								title || description ? "1px 1px 1px 1px" : "3px 2px 3px 2px",
+								title || description ? "1px 1px 1px 1px" : "1px 2px 1px 1px",
 							borderRadius: "4px",
 							padding: "12px",
 							maxWidth: "100%",
@@ -24,9 +24,9 @@ const Subcomponent = ({ children, title, description, ...rest }) => {
 							border:
 								title || description
 									? "solid rgba(0, 0, 0, 0.966)"
-									: "solid rgba(26, 35, 126, 0.4)",
+									: "solid rgba(19, 25, 92, 0.4)",
 							borderWidth:
-								title || description ? "1px 1px 1px 1px" : "3px 2px 3px 2px",
+								title || description ? "1px 1px 1px 1px" : "1px 2px 1px 1px",
 							borderRadius: "4px",
 							padding: "12px",
 							maxWidth: "100%",

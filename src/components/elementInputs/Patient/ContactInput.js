@@ -15,6 +15,7 @@ import GenderInput from "../GenderInput";
 import HumanNameInput from "../HumanNameInput";
 import ReferenceInput from "../ReferenceInput";
 import TelecomInput from "../TelecomInput";
+import { patientContactRelationship } from "../../../utilities/valueSets/valueSets";
 
 const ContactInput = ({ contact, changeContact }) => {
 	// Error display section
@@ -186,7 +187,9 @@ const ContactInput = ({ contact, changeContact }) => {
 											codeableConcept={singleRelationship.singleRelationship}
 											changeCodeableConcept={handleChangeRelationship}
 											systemEditable={false}
-											defaultSystem="http://terminology.hl7.org/CodeSystem/v2-01312"
+											defaultSystem="http://hl7.org/fhir/R4/v2/0131/index.html"
+											bindingCodes={patientContactRelationship}
+											codesLink="http://hl7.org/fhir/R4/v2/0131/index.html#definition"
 										/>
 									</Subcomponent>
 								</DeleteableComponent>

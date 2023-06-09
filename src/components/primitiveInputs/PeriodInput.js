@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
@@ -71,7 +71,7 @@ const PeriodInput = ({ period, changePeriod, ...rest }) => {
 
 	// render section
 	return (
-		<>
+		<Stack>
 			<Box
 				sx={{
 					display: "flex",
@@ -135,7 +135,7 @@ const PeriodInput = ({ period, changePeriod, ...rest }) => {
 			>
 				<i>{errorMessage}</i>
 			</Typography>
-		</>
+		</Stack>
 	);
 };
 

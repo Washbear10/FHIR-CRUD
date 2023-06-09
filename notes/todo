@@ -59,3 +59,9 @@ sort by
 bundle delete responses
 only ever "successfull" if no faulty response!
 handle credentials change cookies
+
+
+
+NEW before user tests:
+- pressing tab in creation of body
+- active "false" is shown empty in cell

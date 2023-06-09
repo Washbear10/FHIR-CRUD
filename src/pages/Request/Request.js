@@ -117,7 +117,7 @@ const Request = () => {
 						</Grid>
 						<Grid item xs={10}>
 							<PrefixTextField
-								prefix={process.env.REACT_APP_FHIRBASE}
+								prefix={process.env.REACT_APP_FHIRBASE + "/"}
 								value={urlInput}
 								onChange={(e) => {
 									setUrlInput(e.target.value);
@@ -261,7 +261,7 @@ const Request = () => {
 							onClick={async () => {
 								setLoading(true);
 								let args = [
-									process.env.REACT_APP_FHIRBASE + urlInput,
+									process.env.REACT_APP_FHIRBASE + "/" + urlInput,
 									method,
 									headers,
 								];

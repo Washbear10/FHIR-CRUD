@@ -12,7 +12,14 @@ import Subcomponent from "../../common/Subcomponent";
 import PeriodInput from "../../primitiveInputs/PeriodInput";
 import CodeableConeptInput from "../CodeableConeptInput";
 import { identifierUse } from "../../../utilities/valueSets/valueSets";
-
+import styled from "@emotion/styled";
+import { TextField } from "@mui/material";
+const styles = (theme) => ({
+	notchedOutline: {
+		borderWidth: "1px",
+		borderColor: "yellow !important",
+	},
+});
 const IdentifierInput = ({ identifier, changeIdentifier }) => {
 	// Section for checking validity of inputs
 	//
@@ -146,6 +153,7 @@ const IdentifierInput = ({ identifier, changeIdentifier }) => {
 								value={identifier.value || ""}
 								onChange={handleChangeValue}
 								width="40%"
+								overallColor={errorMessage ? "orange" : null}
 							/>
 						</Box>
 						<Subcomponent

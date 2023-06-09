@@ -76,6 +76,7 @@ const CommunicationInput = ({ communication, changeCommunication }) => {
 					codeableConcept={communication.language}
 					changeCodeableConcept={handleChangeLanguage}
 					defaultSystem="urn:ietf:bcp:47"
+					codesLink="http://hl7.org/fhir/R4/valueset-languages.html#definition"
 					bindingCodes={Object.keys(commonLanguages)}
 					systemUneditable={true}
 					systemValueCombinationRequired={true}

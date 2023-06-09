@@ -15,6 +15,32 @@ export const nameUse = [
 ];
 export const identifierUse = ["usual", "official", "temp", "secondary", "old"];
 export const linkType = ["replaced-by", "replaces", "refer", "seealso"];
+export const patientContactRelationship = [
+	"BP",
+	"C",
+	"CP",
+	"E",
+	"EP",
+	"F",
+	"I",
+	"N",
+	"PR",
+	"S",
+	"U",
+];
+export const maritalStatus = [
+	"A",
+	"D",
+	"I",
+	"L",
+	"M",
+	"P",
+	"S",
+	"T",
+	"U",
+	"W",
+	"UNK",
+];
 export const organizationType = [
 	"prov",
 	"dept",
